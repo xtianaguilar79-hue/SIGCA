@@ -11,6 +11,7 @@ Primera base visual en Next.js y TypeScript alineada con el Documento Maestro SI
 - Fotografías y logo guardados localmente.
 - Documento Maestro original en `docs/`.
 - Base Next.js App Router lista para Vercel.
+- Next.js 15.5.7, versión corregida para CVE-2025-66478.
 
 ## Estado funcional
 
