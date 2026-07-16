@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "./formation.css";
 import "./profile.css";
+import "./accessibility.css";
+import { MobileSideMenu } from "@/components/mobile-side-menu";
 
 export const metadata: Metadata = {
   title: "SIGCA | AOMA Seccional San Juan",
@@ -9,5 +11,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="es"><body>{children}</body></html>;
+  return <html lang="es"><body><MobileSideMenu/>{children}</body></html>;
 }
