@@ -1,0 +1,40 @@
+.learning-resource {
+  margin: 0;
+  overflow: hidden;
+  padding: 18px;
+  background: white;
+  border: 1px solid var(--linea);
+  border-radius: 11px;
+}
+.learning-resource img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 760px;
+  object-fit: contain;
+  border-radius: 7px;
+}
+.learning-resource figcaption {
+  padding: 12px 4px 0;
+  color: var(--gris);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.download-block span {
+  color: #936817;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+.download-block a {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 13px 17px;
+  color: white;
+  background: var(--petroleo);
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+}
+.download-block a:hover { background: #07566a; }

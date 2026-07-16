@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
+  <title id="title">De la memoria al aprendizaje institucional</title><desc id="desc">Ciclo de cinco etapas: recuperar, contextualizar, contrastar, conservar y transmitir para generar aprendizaje institucional.</desc>
+  <rect width="1200" height="1200" fill="#f4f8fa"/><text x="600" y="95" text-anchor="middle" font-family="Arial" font-size="50" font-weight="700" fill="#17324d">De la memoria al aprendizaje institucional</text>
+  <circle cx="600" cy="630" r="230" fill="#17324d"/><text x="600" y="605" text-anchor="middle" font-family="Arial" font-size="38" font-weight="700" fill="white">Aprendizaje</text><text x="600" y="655" text-anchor="middle" font-family="Arial" font-size="38" font-weight="700" fill="white">institucional</text><text x="600" y="705" text-anchor="middle" font-family="Arial" font-size="22" fill="white">Preguntas para el presente,</text><text x="600" y="735" text-anchor="middle" font-family="Arial" font-size="22" fill="white">no recetas automáticas</text>
+  <g font-family="Arial" text-anchor="middle" font-weight="700">
+    <g transform="translate(490 180)"><rect width="220" height="120" rx="25" fill="#f2b134"/><text x="110" y="72" font-size="29">1. Recuperar</text></g>
+    <g transform="translate(850 390)"><rect width="260" height="120" rx="25" fill="#6ab187"/><text x="130" y="72" font-size="29">2. Contextualizar</text></g>
+    <g transform="translate(800 850)"><rect width="240" height="120" rx="25" fill="#5b8def"/><text x="120" y="72" font-size="29" fill="white">3. Contrastar</text></g>
+    <g transform="translate(160 850)"><rect width="240" height="120" rx="25" fill="#c06c84"/><text x="120" y="72" font-size="29" fill="white">4. Conservar</text></g>
+    <g transform="translate(90 390)"><rect width="260" height="120" rx="25" fill="#9b6dcc"/><text x="130" y="72" font-size="29" fill="white">5. Transmitir</text></g>
+  </g>
+  <g fill="none" stroke="#526d82" stroke-width="12"><path d="M710 270 Q860 300 930 390"/><path d="M1030 510 Q1080 680 940 850"/><path d="M800 930 Q600 1050 400 930"/><path d="M260 850 Q110 690 180 510"/><path d="M270 390 Q360 280 490 260"/></g>
+  <text x="600" y="1110" text-anchor="middle" font-family="Arial" font-size="24" fill="#334e68">Rigor · diversidad de voces · autorización · cuidado · trazabilidad</text>
+</svg>

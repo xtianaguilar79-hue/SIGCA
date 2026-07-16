@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1620" viewBox="0 0 1080 1620" role="img" aria-labelledby="title desc">
+  <title id="title">Seis preguntas para analizar un proceso histórico</title>
+  <desc id="desc">Guía vertical con seis preguntas: qué ocurrió, condiciones, actores, organización, fuentes y cambios o continuidades.</desc>
+  <rect width="1080" height="1620" fill="#f4f8fa"/>
+  <rect width="1080" height="250" fill="#087e8b"/>
+  <text x="72" y="105" font-family="Arial" font-size="55" font-weight="700" fill="white">Seis preguntas para analizar</text>
+  <text x="72" y="175" font-family="Arial" font-size="55" font-weight="700" fill="white">un proceso histórico</text>
+  <text x="72" y="220" font-family="Arial" font-size="25" fill="white">Una guía para estudiar la historia del movimiento obrero</text>
+  <g font-family="Arial">
+    <g transform="translate(72 300)"><circle cx="55" cy="55" r="55" fill="#f2b134"/><text x="55" y="72" font-size="48" text-anchor="middle" font-weight="700">1</text><text x="140" y="45" font-size="34" font-weight="700" fill="#17324d">¿Qué ocurrió?</text><text x="140" y="85" font-size="25" fill="#334e68">Ubicá hechos, período y alcance.</text></g>
+    <g transform="translate(72 505)"><circle cx="55" cy="55" r="55" fill="#6ab187"/><text x="55" y="72" font-size="48" text-anchor="middle" font-weight="700">2</text><text x="140" y="45" font-size="34" font-weight="700" fill="#17324d">¿Qué condiciones existían?</text><text x="140" y="85" font-size="25" fill="#334e68">Trabajo, vida, producción y contexto.</text></g>
+    <g transform="translate(72 710)"><circle cx="55" cy="55" r="55" fill="#5b8def"/><text x="55" y="72" font-size="48" text-anchor="middle" font-weight="700" fill="white">3</text><text x="140" y="45" font-size="34" font-weight="700" fill="#17324d">¿Quiénes participaron?</text><text x="140" y="85" font-size="25" fill="#334e68">Actores, posiciones y voces ausentes.</text></g>
+    <g transform="translate(72 915)"><circle cx="55" cy="55" r="55" fill="#c06c84"/><text x="55" y="72" font-size="48" text-anchor="middle" font-weight="700" fill="white">4</text><text x="140" y="45" font-size="34" font-weight="700" fill="#17324d">¿Cómo se organizaron?</text><text x="140" y="85" font-size="25" fill="#334e68">Decisiones, recursos y estrategias.</text></g>
+    <g transform="translate(72 1120)"><circle cx="55" cy="55" r="55" fill="#9b6dcc"/><text x="55" y="72" font-size="48" text-anchor="middle" font-weight="700" fill="white">5</text><text x="140" y="45" font-size="34" font-weight="700" fill="#17324d">¿Qué fuentes lo sostienen?</text><text x="140" y="85" font-size="25" fill="#334e68">Autoría, finalidad, contraste y límites.</text></g>
+    <g transform="translate(72 1325)"><circle cx="55" cy="55" r="55" fill="#ef8354"/><text x="55" y="72" font-size="48" text-anchor="middle" font-weight="700" fill="white">6</text><text x="140" y="45" font-size="34" font-weight="700" fill="#17324d">¿Qué cambió y qué continuó?</text><text x="140" y="85" font-size="25" fill="#334e68">Resultados, retrocesos y debates abiertos.</text></g>
+  </g>
+  <rect x="72" y="1515" width="936" height="4" fill="#087e8b"/><text x="72" y="1565" font-family="Arial" font-size="22" fill="#334e68">Formación Sindical SIGCA · Recurso pedagógico original</text>
+</svg>

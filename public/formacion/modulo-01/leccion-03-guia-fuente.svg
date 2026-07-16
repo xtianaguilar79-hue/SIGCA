@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1500" viewBox="0 0 1080 1500" role="img" aria-labelledby="title desc">
+  <title id="title">Guía para leer críticamente una fuente</title><desc id="desc">Ficha de siete preguntas sobre tipo, autoría, fecha, destinatarios, contenido, omisiones y contraste.</desc>
+  <rect width="1080" height="1500" fill="#f4f8fa"/><rect width="1080" height="230" fill="#17324d"/><text x="70" y="95" font-family="Arial" font-size="52" font-weight="700" fill="white">Guía para leer críticamente</text><text x="70" y="160" font-family="Arial" font-size="52" font-weight="700" fill="white">una fuente histórica</text>
+  <g font-family="Arial" fill="#17324d">
+    <g transform="translate(70 285)"><rect width="940" height="130" rx="22" fill="#dceff1"/><text x="35" y="52" font-size="30" font-weight="700">1. ¿Qué es?</text><text x="35" y="94" font-size="23">Tipo de documento, soporte y estado.</text></g>
+    <g transform="translate(70 435)"><rect width="940" height="130" rx="22" fill="#e4f2e9"/><text x="35" y="52" font-size="30" font-weight="700">2. ¿Quién lo produjo?</text><text x="35" y="94" font-size="23">Persona, organización, organismo o autoría desconocida.</text></g>
+    <g transform="translate(70 585)"><rect width="940" height="130" rx="22" fill="#e8eefb"/><text x="35" y="52" font-size="30" font-weight="700">3. ¿Cuándo y dónde?</text><text x="35" y="94" font-size="23">Fecha, período, lugar y contexto.</text></g>
+    <g transform="translate(70 735)"><rect width="940" height="130" rx="22" fill="#f4e8ed"/><text x="35" y="52" font-size="30" font-weight="700">4. ¿Para quién y para qué?</text><text x="35" y="94" font-size="23">Destinatarios y finalidad declarada o probable.</text></g>
+    <g transform="translate(70 885)"><rect width="940" height="130" rx="22" fill="#eee8f5"/><text x="35" y="52" font-size="30" font-weight="700">5. ¿Qué afirma expresamente?</text><text x="35" y="94" font-size="23">Datos, opiniones, pedidos o decisiones registradas.</text></g>
+    <g transform="translate(70 1035)"><rect width="940" height="130" rx="22" fill="#faeadf"/><text x="35" y="52" font-size="30" font-weight="700">6. ¿Qué omite o deja abierto?</text><text x="35" y="94" font-size="23">Actores ausentes, ambigüedades e información faltante.</text></g>
+    <g transform="translate(70 1185)"><rect width="940" height="130" rx="22" fill="#fff0c9"/><text x="35" y="52" font-size="30" font-weight="700">7. ¿Con qué debe contrastarse?</text><text x="35" y="94" font-size="23">Otras voces, documentos, estadísticas o fuentes oficiales.</text></g>
+  </g>
+  <text x="70" y="1400" font-family="Arial" font-size="24" font-weight="700" fill="#a03c3c">Una norma mencionada en una fuente histórica no queda verificada como vigente.</text><text x="70" y="1440" font-family="Arial" font-size="21" fill="#334e68">Registrar siempre qué permite afirmar la fuente y qué necesita comprobación.</text>
+</svg>
