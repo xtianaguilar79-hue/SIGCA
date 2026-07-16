@@ -34,7 +34,7 @@ export default function AccessPage() {
           <div className="field"><label htmlFor="password">Contraseña</label><input id="password" name="password" type="password" autoComplete="current-password" minLength={8} required /></div>
           {message && <div className={`form-message ${message.type}`} role="alert">{message.text}</div>}
           <button className="submit" disabled={loading}>{loading ? "Verificando acceso..." : "Ingresar a SIGCA"}</button>
-        </form><div className="access-links"><Link href="/recuperar-contrasena">Olvidé mi contraseña</Link><Link href="/registro">Solicitar una cuenta</Link></div><p className="access-note">El acceso está restringido a dirigentes, delegados y personal autorizado. Las acciones sensibles quedan registradas.</p>
+        </form><div className="access-links"><Link href="/recuperar-contrasena">Recuperar contraseña</Link><Link href="/registro">Registro</Link></div><p className="access-note">El acceso está restringido a dirigentes, delegados y personal autorizado. Las acciones sensibles quedan registradas.</p>
       </div>
     </section>
     <section className="access-visual"><div className="visual-content"><div className="gold-line"/><blockquote>“Que ningún conocimiento, compromiso ni reclamo se pierda con el paso del tiempo.”</blockquote><p>MEMORIA INSTITUCIONAL · FORMACIÓN · GESTIÓN SINDICAL</p></div></section>
