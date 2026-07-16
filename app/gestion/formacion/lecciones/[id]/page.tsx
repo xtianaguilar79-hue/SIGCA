@@ -12,10 +12,11 @@ function BlockContent({ block, resource }:{ block:Block; resource?:Resource }) {
   const special = ["concepto_destacado","advertencia","pregunta_reflexion","ejemplo","resumen"].includes(block.tipo);
   if (block.tipo === "imagen" && resource?.ruta) {
     const alt = resource.datos?.texto_alternativo || resource.titulo;
-    return <figure className="learning-resource"><Image src={resource.ruta} width={1080} height={1620} alt={alt}/><figcaption>{resource.titulo}</figcaption></figure>;
+    const horizontal=resource.ruta.toLowerCase().endsWith(".webp");
+    return <figure className="learning-resource"><Image src={resource.ruta} width={horizontal?1600:1080} height={horizontal?1000:1620} alt={alt}/><figcaption>{resource.titulo}</figcaption></figure>;
   }
   if (block.tipo === "descargable" && resource?.ruta) {
-    return <article className="learning-block download-block"><span>MATERIAL DESCARGABLE</span><h2>{resource.titulo}</h2><p>{resource.datos?.descripcion_accesible || "Material complementario para utilizar durante la capacitación."}</p><a href={resource.ruta} target="_blank" rel="noreferrer">Abrir guía en PDF</a></article>;
+    return <article className="learning-block download-block"><span>MATERIAL DESCARGABLE</span><h2>{resource.titulo}</h2><p>{resource.datos?.descripcion_accesible || resource.datos?.texto_alternativo || "Material complementario para utilizar durante la capacitación."}</p><a href={resource.ruta} target="_blank" rel="noreferrer">Abrir guía en PDF</a></article>;
   }
   if (["imagen","video_youtube","descargable"].includes(block.tipo) && data.estado_recurso === "pendiente_produccion") {
     return <article className="learning-block resource-pending"><span>RECURSO EN PREPARACIÓN</span><h2>{block.titulo}</h2><p>Este recurso ilustrativo se incorporará durante la revisión final del curso.</p></article>;
