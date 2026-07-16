@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./formation.css";
+import "./profile.css";
 
 export const metadata: Metadata = {
   title: "SIGCA | AOMA Seccional San Juan",
