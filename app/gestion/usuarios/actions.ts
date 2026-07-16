@@ -49,3 +49,12 @@ export async function rejectUser(formData: FormData) {
   if (error) throw new Error("No fue posible rechazar la cuenta.");
   revalidatePath("/gestion/usuarios");
 }
+
+export async function deleteUserPermanently(formData: FormData) {
+  const { supabase, currentUserId } = await requireAdmin();
+  const id = value(formData, "id");
+  if (!id || id === currentUserId) throw new Error("No podés eliminar tu propia cuenta administradora.");
+  const { error } = await supabase.rpc("eliminar_usuario_sigca", { usuario_id: id });
+  if (error) throw new Error("No fue posible eliminar la cuenta.");
+  revalidatePath("/gestion/usuarios");
+}
