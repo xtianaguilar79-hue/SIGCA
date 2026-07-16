@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { SignOutButton } from "@/components/sign-out-button";
 
 export default async function ManagementPage() {
   const supabase = await createClient();
@@ -31,7 +32,7 @@ export default async function ManagementPage() {
           <a href="#">Afiliaciones</a><a href="#">Gestión sindical</a>
           <a href="#">Academia AOMA</a><a href="#">Biblioteca</a><a href="#">Administración</a>
         </nav>
-        <div className="session"><strong>{name}</strong><span>{String(profile.rol || "Usuario autorizado")}</span></div>
+        <div className="session"><strong>{name}</strong><span>{String(profile.rol || "Usuario autorizado")}</span><SignOutButton/></div>
       </aside>
       <section className="main-area">
         <header className="main-head">
