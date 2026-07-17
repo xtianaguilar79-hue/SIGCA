@@ -4,9 +4,9 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { completeLesson } from "../../actions";
 
-type BlockData = { contenido?:string; introduccion?:string; items?:string[]; cierre?:string; estado_recurso?:string; recurso_id?:string };
+type BlockData = { contenido?:string; introduccion?:string; items?:string[]; cierre?:string; situacion?:string; tarea?:string[]; resolucion?:string; estado_recurso?:string; recurso_id?:string };
 type Block = { id:string; orden:number; tipo:string; titulo:string|null; obligatorio:boolean; datos:BlockData };
-type Resource = { id:string; tipo:string; titulo:string; estado:string; ruta:string|null; datos:{ texto_alternativo?:string; descripcion_accesible?:string } };
+type Resource = { id:string; tipo:string; titulo:string; estado:string; ruta:string|null; datos:{ texto_alternativo?:string; descripcion_accesible?:string; ruta_mobile?:string } };
 
 function BlockContent({ block, resource }:{ block:Block; resource?:Resource }) {
   const data = block.datos || {};
@@ -14,7 +14,7 @@ function BlockContent({ block, resource }:{ block:Block; resource?:Resource }) {
   if (block.tipo === "imagen" && resource?.ruta) {
     const alt = resource.datos?.texto_alternativo || resource.titulo;
     const horizontal=resource.ruta.toLowerCase().endsWith(".webp");
-    return <figure className="learning-resource"><Image src={resource.ruta} width={horizontal?1600:1080} height={horizontal?1000:1620} alt={alt}/><figcaption>{resource.titulo}</figcaption></figure>;
+    return <figure className="learning-resource"><picture>{resource.datos?.ruta_mobile&&<source media="(max-width: 700px)" srcSet={resource.datos.ruta_mobile}/>}<Image src={resource.ruta} width={horizontal?1600:1080} height={horizontal?1000:1620} alt={alt}/></picture><figcaption>{resource.titulo}</figcaption></figure>;
   }
   if (block.tipo === "descargable" && resource?.ruta) {
     return <article className="learning-block download-block"><span>MATERIAL DESCARGABLE</span><h2>{resource.titulo}</h2><p>{resource.datos?.descripcion_accesible || resource.datos?.texto_alternativo || "Material complementario para utilizar durante la capacitación."}</p><a href={resource.ruta} target="_blank" rel="noreferrer">Abrir guía en PDF</a></article>;
@@ -29,7 +29,10 @@ function BlockContent({ block, resource }:{ block:Block; resource?:Resource }) {
     {block.titulo&&<h2>{block.titulo}</h2>}
     {data.introduccion&&<p>{data.introduccion}</p>}
     {data.contenido&&<p>{data.contenido}</p>}
+    {data.situacion&&<p><strong>Situación:</strong> {data.situacion}</p>}
+    {Array.isArray(data.tarea)&&<><h3>Consigna</h3><ul>{data.tarea.map((item,index)=><li key={index}>{item}</li>)}</ul></>}
     {Array.isArray(data.items)&&<ul>{data.items.map((item,index)=><li key={index}>{item}</li>)}</ul>}
+    {data.resolucion&&<p className="block-close"><strong>Orientación:</strong> {data.resolucion}</p>}
     {data.cierre&&<p className="block-close">{data.cierre}</p>}
   </article>;
 }
