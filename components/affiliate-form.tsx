@@ -28,22 +28,27 @@ type EmployerData = {
 };
 
 type PersonData = {
-  apellido: string;
-  nombres: string;
-  dni: string;
-  cuil: string;
+  apellidoNombres: string;
+  domicilio: string;
+  provincia: string;
+  localidad: string;
+  codigoPostal: string;
   fechaNacimiento: string;
+  tipoDocumento: string;
+  numeroDocumento: string;
+  cuil: string;
   nacionalidad: string;
   estadoCivil: string;
-  domicilio: string;
-  localidad: string;
-  provincia: string;
-  codigoPostal: string;
   telefono: string;
   correo: string;
+  areaTrabajo: string;
+  oficio: string;
   fechaIngreso: string;
-  categoria: string;
-  legajo: string;
+  afiliadoAoma: string;
+  numeroAfiliado: string;
+  afiliadoOtroGremio: string;
+  otroGremio: string;
+  observaciones: string;
 };
 
 const emptyEmployer: EmployerData = {
@@ -59,23 +64,38 @@ const emptyEmployer: EmployerData = {
 };
 
 const emptyPerson: PersonData = {
-  apellido: "",
-  nombres: "",
-  dni: "",
-  cuil: "",
+  apellidoNombres: "",
+  domicilio: "",
+  provincia: "",
+  localidad: "",
+  codigoPostal: "",
   fechaNacimiento: "",
+  tipoDocumento: "",
+  numeroDocumento: "",
+  cuil: "",
   nacionalidad: "",
   estadoCivil: "",
-  domicilio: "",
-  localidad: "",
-  provincia: "",
-  codigoPostal: "",
   telefono: "",
   correo: "",
+  areaTrabajo: "",
+  oficio: "",
   fechaIngreso: "",
-  categoria: "",
-  legajo: "",
+  afiliadoAoma: "",
+  numeroAfiliado: "",
+  afiliadoOtroGremio: "",
+  otroGremio: "",
+  observaciones: "",
 };
+
+function formatDate(value: string) {
+  if (!value) return "";
+
+  const [year, month, day] = value.split("-");
+
+  if (!year || !month || !day) return value;
+
+  return `${day}/${month}/${year}`;
+}
 
 export function AffiliateForm({
   companies,
@@ -117,7 +137,7 @@ export function AffiliateForm({
     });
   }
 
-  function changeEmployer(
+  function updateEmployer(
     field: keyof EmployerData,
     value: string
   ) {
@@ -127,7 +147,7 @@ export function AffiliateForm({
     }));
   }
 
-  function changePerson(
+  function updatePerson(
     field: keyof PersonData,
     value: string
   ) {
@@ -153,18 +173,13 @@ export function AffiliateForm({
   return (
     <>
       <form
-        className="form-shell wide affiliation-form"
+        className="form-shell wide affiliation-editor"
         onSubmit={printForm}
       >
-        <div className="print-only affiliation-print-title">
-          <h1>Ficha de afiliación</h1>
-          <p>AOMA Seccional San Juan</p>
-        </div>
-
-        <section className="affiliation-options no-print">
+        <section className="affiliation-options">
           <div className="field">
             <label htmlFor="modo-persona">
-              Datos de la persona
+              Modalidad
             </label>
 
             <select
@@ -179,29 +194,29 @@ export function AffiliateForm({
               }
             >
               <option value="completar">
-                Completar antes de imprimir
+                Completar datos antes de imprimir
               </option>
 
               <option value="blanco">
-                Imprimir en blanco para completar a mano
+                Datos personales en blanco
               </option>
             </select>
           </div>
 
           <div className="field">
-            <label htmlFor="empresa-selector">
+            <label htmlFor="empresa">
               Empresa
             </label>
 
             <select
-              id="empresa-selector"
+              id="empresa"
               value={companyId}
               onChange={(event) =>
                 selectCompany(event.target.value)
               }
             >
               <option value="">
-                Ninguna / completar empleador a mano
+                Ninguna / completar a mano
               </option>
 
               {companies.map((company) => (
@@ -216,31 +231,16 @@ export function AffiliateForm({
           </div>
         </section>
 
-        <section className="affiliation-section">
-          <header>
-            <span>01</span>
-
-            <div>
-              <h2>Datos del empleador</h2>
-
-              <p>
-                Los datos pueden modificarse antes de
-                imprimir la ficha.
-              </p>
-            </div>
-          </header>
+        <fieldset className="affiliation-fieldset">
+          <legend>Datos de la empresa</legend>
 
           <div className="registration-grid">
             <div className="field full">
-              <label htmlFor="razon-social">
-                Razón social
-              </label>
-
+              <label>Razón social</label>
               <input
-                id="razon-social"
                 value={employer.razonSocial}
                 onChange={(event) =>
-                  changeEmployer(
+                  updateEmployer(
                     "razonSocial",
                     event.target.value
                   )
@@ -248,14 +248,12 @@ export function AffiliateForm({
               />
             </div>
 
-            <div className="field">
-              <label htmlFor="rama">Rama</label>
-
+            <div className="field full">
+              <label>Rama</label>
               <input
-                id="rama"
                 value={employer.rama}
                 onChange={(event) =>
-                  changeEmployer(
+                  updateEmployer(
                     "rama",
                     event.target.value
                   )
@@ -263,31 +261,12 @@ export function AffiliateForm({
               />
             </div>
 
-            <div className="field">
-              <label htmlFor="cuit">CUIT</label>
-
-              <input
-                id="cuit"
-                value={employer.cuit}
-                onChange={(event) =>
-                  changeEmployer(
-                    "cuit",
-                    event.target.value
-                  )
-                }
-              />
-            </div>
-
             <div className="field full">
-              <label htmlFor="domicilio-empleador">
-                Domicilio
-              </label>
-
+              <label>Domicilio</label>
               <input
-                id="domicilio-empleador"
                 value={employer.domicilio}
                 onChange={(event) =>
-                  changeEmployer(
+                  updateEmployer(
                     "domicilio",
                     event.target.value
                   )
@@ -296,15 +275,11 @@ export function AffiliateForm({
             </div>
 
             <div className="field">
-              <label htmlFor="localidad-empleador">
-                Localidad
-              </label>
-
+              <label>Localidad</label>
               <input
-                id="localidad-empleador"
                 value={employer.localidad}
                 onChange={(event) =>
-                  changeEmployer(
+                  updateEmployer(
                     "localidad",
                     event.target.value
                   )
@@ -313,15 +288,11 @@ export function AffiliateForm({
             </div>
 
             <div className="field">
-              <label htmlFor="provincia-empleador">
-                Provincia
-              </label>
-
+              <label>Provincia</label>
               <input
-                id="provincia-empleador"
                 value={employer.provincia}
                 onChange={(event) =>
-                  changeEmployer(
+                  updateEmployer(
                     "provincia",
                     event.target.value
                   )
@@ -330,15 +301,11 @@ export function AffiliateForm({
             </div>
 
             <div className="field">
-              <label htmlFor="cp-empleador">
-                Código postal
-              </label>
-
+              <label>Código postal</label>
               <input
-                id="cp-empleador"
                 value={employer.codigoPostal}
                 onChange={(event) =>
-                  changeEmployer(
+                  updateEmployer(
                     "codigoPostal",
                     event.target.value
                   )
@@ -347,16 +314,60 @@ export function AffiliateForm({
             </div>
 
             <div className="field">
-              <label htmlFor="telefono-empleador">
-                Teléfono
-              </label>
-
+              <label>CUIT</label>
               <input
-                id="telefono-empleador"
+                value={employer.cuit}
+                onChange={(event) =>
+                  updateEmployer(
+                    "cuit",
+                    event.target.value
+                  )
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>Correo electrónico</label>
+              <input
+                type="email"
+                value={employer.correo}
+                onChange={(event) =>
+                  updateEmployer(
+                    "correo",
+                    event.target.value
+                  )
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>Teléfono</label>
+              <input
                 value={employer.telefono}
                 onChange={(event) =>
-                  changeEmployer(
+                  updateEmployer(
                     "telefono",
+                    event.target.value
+                  )
+                }
+              />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset className="affiliation-fieldset">
+          <legend>
+            Datos personales y de la actividad
+          </legend>
+
+          <div className="registration-grid">
+            <div className="field full">
+              <label>Apellido/s y nombre/s</label>
+              <input
+                value={person.apellidoNombres}
+                onChange={(event) =>
+                  updatePerson(
+                    "apellidoNombres",
                     event.target.value
                   )
                 }
@@ -364,51 +375,12 @@ export function AffiliateForm({
             </div>
 
             <div className="field full">
-              <label htmlFor="correo-empleador">
-                Correo electrónico
-              </label>
-
+              <label>Domicilio: calle y número</label>
               <input
-                id="correo-empleador"
-                type="email"
-                value={employer.correo}
+                value={person.domicilio}
                 onChange={(event) =>
-                  changeEmployer(
-                    "correo",
-                    event.target.value
-                  )
-                }
-              />
-            </div>
-          </div>
-        </section>
-
-        <section className="affiliation-section">
-          <header>
-            <span>02</span>
-
-            <div>
-              <h2>Datos de la persona a afiliar</h2>
-
-              <p>
-                Pueden completarse ahora o dejarse
-                vacíos para escribirlos con lapicera.
-              </p>
-            </div>
-          </header>
-
-          <div className="registration-grid">
-            <div className="field">
-              <label htmlFor="apellido">
-                Apellido
-              </label>
-
-              <input
-                id="apellido"
-                value={person.apellido}
-                onChange={(event) =>
-                  changePerson(
-                    "apellido",
+                  updatePerson(
+                    "domicilio",
                     event.target.value
                   )
                 }
@@ -416,16 +388,12 @@ export function AffiliateForm({
             </div>
 
             <div className="field">
-              <label htmlFor="nombres">
-                Nombres
-              </label>
-
+              <label>Provincia</label>
               <input
-                id="nombres"
-                value={person.nombres}
+                value={person.provincia}
                 onChange={(event) =>
-                  changePerson(
-                    "nombres",
+                  updatePerson(
+                    "provincia",
                     event.target.value
                   )
                 }
@@ -433,26 +401,12 @@ export function AffiliateForm({
             </div>
 
             <div className="field">
-              <label htmlFor="dni">DNI</label>
-
+              <label>Localidad</label>
               <input
-                id="dni"
-                value={person.dni}
+                value={person.localidad}
                 onChange={(event) =>
-                  changePerson("dni", event.target.value)
-                }
-              />
-            </div>
-
-            <div className="field">
-              <label htmlFor="cuil">CUIL</label>
-
-              <input
-                id="cuil"
-                value={person.cuil}
-                onChange={(event) =>
-                  changePerson(
-                    "cuil",
+                  updatePerson(
+                    "localidad",
                     event.target.value
                   )
                 }
@@ -460,16 +414,25 @@ export function AffiliateForm({
             </div>
 
             <div className="field">
-              <label htmlFor="fecha-nacimiento">
-                Fecha de nacimiento
-              </label>
-
+              <label>Código postal</label>
               <input
-                id="fecha-nacimiento"
+                value={person.codigoPostal}
+                onChange={(event) =>
+                  updatePerson(
+                    "codigoPostal",
+                    event.target.value
+                  )
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>Fecha de nacimiento</label>
+              <input
                 type="date"
                 value={person.fechaNacimiento}
                 onChange={(event) =>
-                  changePerson(
+                  updatePerson(
                     "fechaNacimiento",
                     event.target.value
                   )
@@ -478,15 +441,50 @@ export function AffiliateForm({
             </div>
 
             <div className="field">
-              <label htmlFor="nacionalidad">
-                Nacionalidad
-              </label>
-
+              <label>Tipo de documento</label>
               <input
-                id="nacionalidad"
+                value={person.tipoDocumento}
+                onChange={(event) =>
+                  updatePerson(
+                    "tipoDocumento",
+                    event.target.value
+                  )
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>Número de documento</label>
+              <input
+                value={person.numeroDocumento}
+                onChange={(event) =>
+                  updatePerson(
+                    "numeroDocumento",
+                    event.target.value
+                  )
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>CUIL</label>
+              <input
+                value={person.cuil}
+                onChange={(event) =>
+                  updatePerson(
+                    "cuil",
+                    event.target.value
+                  )
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>Nacionalidad</label>
+              <input
                 value={person.nacionalidad}
                 onChange={(event) =>
-                  changePerson(
+                  updatePerson(
                     "nacionalidad",
                     event.target.value
                   )
@@ -495,15 +493,11 @@ export function AffiliateForm({
             </div>
 
             <div className="field">
-              <label htmlFor="estado-civil">
-                Estado civil
-              </label>
-
+              <label>Estado civil</label>
               <input
-                id="estado-civil"
                 value={person.estadoCivil}
                 onChange={(event) =>
-                  changePerson(
+                  updatePerson(
                     "estadoCivil",
                     event.target.value
                   )
@@ -512,15 +506,11 @@ export function AffiliateForm({
             </div>
 
             <div className="field">
-              <label htmlFor="telefono-persona">
-                Teléfono
-              </label>
-
+              <label>Teléfono</label>
               <input
-                id="telefono-persona"
                 value={person.telefono}
                 onChange={(event) =>
-                  changePerson(
+                  updatePerson(
                     "telefono",
                     event.target.value
                   )
@@ -528,85 +518,13 @@ export function AffiliateForm({
               />
             </div>
 
-            <div className="field full">
-              <label htmlFor="domicilio-persona">
-                Domicilio
-              </label>
-
-              <input
-                id="domicilio-persona"
-                value={person.domicilio}
-                onChange={(event) =>
-                  changePerson(
-                    "domicilio",
-                    event.target.value
-                  )
-                }
-              />
-            </div>
-
             <div className="field">
-              <label htmlFor="localidad-persona">
-                Localidad
-              </label>
-
+              <label>Correo electrónico</label>
               <input
-                id="localidad-persona"
-                value={person.localidad}
-                onChange={(event) =>
-                  changePerson(
-                    "localidad",
-                    event.target.value
-                  )
-                }
-              />
-            </div>
-
-            <div className="field">
-              <label htmlFor="provincia-persona">
-                Provincia
-              </label>
-
-              <input
-                id="provincia-persona"
-                value={person.provincia}
-                onChange={(event) =>
-                  changePerson(
-                    "provincia",
-                    event.target.value
-                  )
-                }
-              />
-            </div>
-
-            <div className="field">
-              <label htmlFor="cp-persona">
-                Código postal
-              </label>
-
-              <input
-                id="cp-persona"
-                value={person.codigoPostal}
-                onChange={(event) =>
-                  changePerson(
-                    "codigoPostal",
-                    event.target.value
-                  )
-                }
-              />
-            </div>
-
-            <div className="field">
-              <label htmlFor="correo-persona">
-                Correo electrónico
-              </label>
-
-              <input
-                id="correo-persona"
                 type="email"
                 value={person.correo}
                 onChange={(event) =>
-                  changePerson(
+                  updatePerson(
                     "correo",
                     event.target.value
                   )
@@ -615,34 +533,78 @@ export function AffiliateForm({
             </div>
 
             <div className="field">
-              <label htmlFor="fecha-ingreso">
-                Fecha de ingreso
-              </label>
-
+              <label>Área de trabajo</label>
               <input
-                id="fecha-ingreso"
+                value={person.areaTrabajo}
+                onChange={(event) =>
+                  updatePerson(
+                    "areaTrabajo",
+                    event.target.value
+                  )
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>Oficio</label>
+              <input
+                value={person.oficio}
+                onChange={(event) =>
+                  updatePerson(
+                    "oficio",
+                    event.target.value
+                  )
+                }
+              />
+            </div>
+
+            <div className="field">
+              <label>Fecha de ingreso</label>
+              <input
                 type="date"
                 value={person.fechaIngreso}
                 onChange={(event) =>
-                  changePerson(
+                  updatePerson(
                     "fechaIngreso",
                     event.target.value
                   )
                 }
               />
             </div>
+          </div>
+        </fieldset>
 
+        <fieldset className="affiliation-fieldset">
+          <legend>Otros datos</legend>
+
+          <div className="registration-grid">
             <div className="field">
-              <label htmlFor="categoria">
-                Categoría
+              <label>
+                ¿Fue afiliado a AOMA?
               </label>
 
-              <input
-                id="categoria"
-                value={person.categoria}
+              <select
+                value={person.afiliadoAoma}
                 onChange={(event) =>
-                  changePerson(
-                    "categoria",
+                  updatePerson(
+                    "afiliadoAoma",
+                    event.target.value
+                  )
+                }
+              >
+                <option value="">Sin completar</option>
+                <option value="Sí">Sí</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+
+            <div className="field">
+              <label>Número de afiliado</label>
+              <input
+                value={person.numeroAfiliado}
+                onChange={(event) =>
+                  updatePerson(
+                    "numeroAfiliado",
                     event.target.value
                   )
                 }
@@ -650,69 +612,302 @@ export function AffiliateForm({
             </div>
 
             <div className="field">
-              <label htmlFor="legajo">
-                Número de legajo
+              <label>
+                ¿Fue afiliado a otro gremio?
               </label>
 
-              <input
-                id="legajo"
-                value={person.legajo}
+              <select
+                value={person.afiliadoOtroGremio}
                 onChange={(event) =>
-                  changePerson(
-                    "legajo",
+                  updatePerson(
+                    "afiliadoOtroGremio",
+                    event.target.value
+                  )
+                }
+              >
+                <option value="">Sin completar</option>
+                <option value="Sí">Sí</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+
+            <div className="field">
+              <label>¿Cuál?</label>
+              <input
+                value={person.otroGremio}
+                onChange={(event) =>
+                  updatePerson(
+                    "otroGremio",
+                    event.target.value
+                  )
+                }
+              />
+            </div>
+
+            <div className="field full">
+              <label>Observaciones</label>
+              <input
+                value={person.observaciones}
+                onChange={(event) =>
+                  updatePerson(
+                    "observaciones",
                     event.target.value
                   )
                 }
               />
             </div>
           </div>
-        </section>
+        </fieldset>
 
-        <div className="affiliation-actions no-print">
-          <button className="submit" type="submit">
-            Imprimir ficha
-          </button>
-        </div>
-
-        <section className="affiliation-signatures">
-          <div>
-            <span />
-            <p>Firma de la persona afiliada</p>
-          </div>
-
-          <div>
-            <span />
-            <p>Aclaración</p>
-          </div>
-
-          <div>
-            <span />
-            <p>Fecha</p>
-          </div>
-        </section>
+        <button className="submit" type="submit">
+          Imprimir ficha oficial
+        </button>
       </form>
 
-      <style jsx global>{`
-        .print-only {
-          display: none;
-        }
+      <article className="official-affiliation-print">
+        <header className="official-title">
+          ASOCIACIÓN OBRERA MINERA ARGENTINA
+        </header>
 
-        .affiliation-form {
+        <div className="official-contact">
+          <b>ROSARIO 436</b>
+          <b>1424 - CAPITAL FEDERAL</b>
+          <b>Tel. 4901-3277 / 4902-5983 Rot.</b>
+        </div>
+
+        <section className="official-opening">
+          <div className="official-exclusive">
+            <p>USO EXCLUSIVO DE A.O.M.A.</p>
+            <p>Afiliado N.º __________________</p>
+            <p>Seccional: ____________________</p>
+          </div>
+
+          <div className="official-request">
+            <h1>SOLICITUD DE AFILIACIÓN</h1>
+            <p>
+              ______ de __________________ de 20____
+            </p>
+          </div>
+        </section>
+
+        <div className="official-recipient">
+          <p>Compañero</p>
+          <p>Secretario General</p>
+          <p>Dn. Iván Malla</p>
+
+          <strong>PRESENTE</strong>
+        </div>
+
+        <p className="official-letter">
+          De mi mayor consideración: Tengo el agrado de
+          dirigirme a Ud. solicitando mi filiación a esa
+          Organización Gremial, para ello declaro conocer
+          mis derechos y obligaciones que la ley y los
+          Estatutos me confieren, detallando a
+          continuación lo siguiente:
+        </p>
+
+        <section className="official-section">
+          <h2>DATOS DE LA EMPRESA DONDE TRABAJO</h2>
+
+          <p>
+            Razón Social:{" "}
+            <span>{employer.razonSocial}</span>
+          </p>
+
+          <p>
+            Rama: <span>{employer.rama}</span>
+          </p>
+
+          <div className="official-row">
+            <p>
+              Domicilio:{" "}
+              <span>{employer.domicilio}</span>
+            </p>
+
+            <p>
+              Localidad:{" "}
+              <span>{employer.localidad}</span>
+            </p>
+          </div>
+
+          <div className="official-row">
+            <p>
+              Provincia:{" "}
+              <span>{employer.provincia}</span>
+            </p>
+
+            <p>
+              Código Postal:{" "}
+              <span>{employer.codigoPostal}</span>
+            </p>
+
+            <p>
+              C.U.I.T.: <span>{employer.cuit}</span>
+            </p>
+          </div>
+
+          <div className="official-row">
+            <p>
+              Correo Electrónico:{" "}
+              <span>{employer.correo}</span>
+            </p>
+
+            <p>
+              Teléfono:{" "}
+              <span>{employer.telefono}</span>
+            </p>
+          </div>
+        </section>
+
+        <section className="official-section">
+          <h2>DATOS PERSONALES Y DE MI ACTIVIDAD</h2>
+
+          <p>
+            Apellido/s y Nombre/s:{" "}
+            <span>{person.apellidoNombres}</span>
+          </p>
+
+          <p>
+            Domicilio: Calle y N.º{" "}
+            <span>{person.domicilio}</span>
+          </p>
+
+          <div className="official-row">
+            <p>
+              Provincia: <span>{person.provincia}</span>
+            </p>
+
+            <p>
+              Localidad: <span>{person.localidad}</span>
+            </p>
+
+            <p>
+              Código Postal:{" "}
+              <span>{person.codigoPostal}</span>
+            </p>
+          </div>
+
+          <div className="official-row">
+            <p>
+              Fecha de Nac.:{" "}
+              <span>
+                {formatDate(person.fechaNacimiento)}
+              </span>
+            </p>
+
+            <p>
+              Tipo de Documento:{" "}
+              <span>{person.tipoDocumento}</span>
+            </p>
+
+            <p>
+              N.º de Doc.:{" "}
+              <span>{person.numeroDocumento}</span>
+            </p>
+          </div>
+
+          <div className="official-row">
+            <p>
+              CUIL N.º: <span>{person.cuil}</span>
+            </p>
+
+            <p>
+              Nacionalidad:{" "}
+              <span>{person.nacionalidad}</span>
+            </p>
+
+            <p>
+              Estado Civil:{" "}
+              <span>{person.estadoCivil}</span>
+            </p>
+          </div>
+
+          <div className="official-row">
+            <p>
+              Teléfono: <span>{person.telefono}</span>
+            </p>
+
+            <p>
+              Correo Electrónico:{" "}
+              <span>{person.correo}</span>
+            </p>
+          </div>
+
+          <div className="official-row">
+            <p>
+              Área de trabajo:{" "}
+              <span>{person.areaTrabajo}</span>
+            </p>
+
+            <p>
+              Oficio: <span>{person.oficio}</span>
+            </p>
+
+            <p>
+              Fecha de ingreso a la empresa:{" "}
+              <span>
+                {formatDate(person.fechaIngreso)}
+              </span>
+            </p>
+          </div>
+        </section>
+
+        <section className="official-section">
+          <h2>OTROS DATOS</h2>
+
+          <p>
+            ¿Fue afiliado a A.O.M.A.?{" "}
+            SI {person.afiliadoAoma === "Sí" ? "☒" : "☐"}{" "}
+            NO {person.afiliadoAoma === "No" ? "☒" : "☐"}{" "}
+            N.º de Afiliado:{" "}
+            <span>{person.numeroAfiliado}</span>
+          </p>
+
+          <p>
+            ¿Fue afiliado a otro gremio?{" "}
+            SI{" "}
+            {person.afiliadoOtroGremio === "Sí"
+              ? "☒"
+              : "☐"}{" "}
+            NO{" "}
+            {person.afiliadoOtroGremio === "No"
+              ? "☒"
+              : "☐"}{" "}
+            ¿Cuál? <span>{person.otroGremio}</span>
+          </p>
+        </section>
+
+        <p className="official-closing">
+          Sin otro particular, saludo a Ud. muy
+          atentamente.
+        </p>
+
+        <div className="official-signatures">
+          <p>Firma de Recepción de A.O.M.A. Central.</p>
+          <p>Firma del Solicitante.</p>
+        </div>
+
+        <p className="official-observations">
+          <b>OBSERVACIONES:</b>{" "}
+          <span>{person.observaciones}</span>
+        </p>
+      </article>
+
+      <style jsx global>{`
+        .affiliation-editor {
           display: grid;
-          gap: 22px;
+          gap: 20px;
         }
 
         .affiliation-options {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 15px;
-          padding: 18px;
-          border: 1px solid var(--linea);
-          border-radius: 10px;
-          background: var(--fondo);
         }
 
-        .affiliation-options select {
+        .affiliation-options select,
+        .affiliation-fieldset select {
           width: 100%;
           padding: 13px 14px;
           border: 1px solid #cddade;
@@ -722,105 +917,25 @@ export function AffiliateForm({
           font-size: 16px;
         }
 
-        .affiliation-section {
-          overflow: hidden;
+        .affiliation-fieldset {
+          margin: 0;
+          padding: 20px;
           border: 1px solid var(--linea);
           border-radius: 11px;
         }
 
-        .affiliation-section > header {
-          display: flex;
-          align-items: center;
-          gap: 13px;
-          padding: 16px 18px;
-          border-bottom: 1px solid var(--linea);
-          background: #edf5f6;
-        }
-
-        .affiliation-section > header span {
-          display: grid;
-          width: 38px;
-          height: 38px;
-          place-items: center;
-          border-radius: 8px;
-          background: var(--petroleo);
-          color: white;
-          font-weight: 900;
-        }
-
-        .affiliation-section h2 {
-          margin: 0;
+        .affiliation-fieldset legend {
+          padding: 0 8px;
           color: var(--petroleo);
           font: 700 20px Georgia, serif;
         }
 
-        .affiliation-section header p {
-          margin: 4px 0 0;
-          color: var(--gris);
-          font-size: 14px;
-        }
-
-        .affiliation-section .registration-grid {
-          padding: 20px;
-        }
-
-        .affiliation-actions {
-          display: flex;
-          justify-content: flex-end;
-        }
-
-        .affiliation-actions .submit {
-          min-width: 190px;
-        }
-
-        .affiliation-signatures {
-          display: grid;
-          grid-template-columns: 2fr 2fr 1fr;
-          gap: 22px;
-          margin-top: 35px;
-        }
-
-        .affiliation-signatures span {
-          display: block;
-          height: 42px;
-          border-bottom: 1px solid #263f48;
-        }
-
-        .affiliation-signatures p {
-          margin: 6px 0 0;
-          font-size: 12px;
-          text-align: center;
-        }
-
-        :root[data-theme="dark"]
-          .affiliation-options,
-        :root[data-theme="dark"]
-          .affiliation-section {
-          border-color: #49636c;
-          background: #18343e;
-        }
-
-        :root[data-theme="dark"]
-          .affiliation-section
-          > header {
-          border-color: #49636c;
-          background: #21434e;
-        }
-
-        :root[data-theme="dark"]
-          .affiliation-options
-          select {
-          border-color: #59747d;
-          background: #10272f;
-          color: white;
+        .official-affiliation-print {
+          display: none;
         }
 
         @media (max-width: 700px) {
           .affiliation-options {
-            grid-template-columns: 1fr;
-          }
-
-          .affiliation-signatures {
             grid-template-columns: 1fr;
           }
         }
@@ -828,7 +943,7 @@ export function AffiliateForm({
         @media print {
           @page {
             size: A4;
-            margin: 12mm;
+            margin: 10mm;
           }
 
           body {
@@ -843,7 +958,7 @@ export function AffiliateForm({
           .home-brand-link,
           .library-back,
           .main-head,
-          .no-print {
+          .affiliation-editor {
             display: none !important;
           }
 
@@ -854,93 +969,132 @@ export function AffiliateForm({
             max-width: none !important;
             margin: 0 !important;
             padding: 0 !important;
-            background: white !important;
           }
 
-          .form-shell.affiliation-form {
+          .official-affiliation-print {
             display: block !important;
-            width: 100% !important;
-            max-width: none !important;
-            padding: 0 !important;
-            border: 0 !important;
-            box-shadow: none !important;
-            background: white !important;
+            width: 100%;
+            color: black;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.18;
           }
 
-          .print-only {
-            display: block !important;
-          }
-
-          .affiliation-print-title {
+          .official-title {
             margin-bottom: 12px;
+            text-align: center;
+            font-size: 19pt;
+            font-weight: 900;
+          }
+
+          .official-contact {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid black;
+            font-size: 10pt;
+          }
+
+          .official-opening {
+            display: grid;
+            grid-template-columns: 37% 63%;
+          }
+
+          .official-exclusive {
+            padding: 5px 8px;
+            border: 1px solid black;
+          }
+
+          .official-exclusive p {
+            margin: 3px 0;
+          }
+
+          .official-request {
+            padding: 12px;
             text-align: center;
           }
 
-          .affiliation-print-title h1 {
-            margin: 0;
-            font: 700 22px Georgia, serif;
+          .official-request h1 {
+            margin: 0 0 25px;
+            font-size: 15pt;
           }
 
-          .affiliation-print-title p {
-            margin: 3px 0 0;
-            font-size: 12px;
+          .official-recipient p {
+            margin: 2px 0;
           }
 
-          .affiliation-section {
-            break-inside: avoid;
-            margin-bottom: 12px;
-            border: 1px solid #777 !important;
-            background: white !important;
+          .official-recipient strong {
+            display: block;
+            margin-top: 14px;
+            text-decoration: underline;
           }
 
-          .affiliation-section > header {
-            padding: 8px 10px;
-            border-color: #999 !important;
-            background: #ededed !important;
+          .official-letter {
+            margin: 18px 0 8px;
+            text-align: justify;
           }
 
-          .affiliation-section > header span {
-            width: 27px;
-            height: 27px;
-            background: #333 !important;
-            font-size: 11px;
+          .official-section {
+            margin-top: 8px;
+            padding-top: 5px;
+            border-top: 4px double black;
           }
 
-          .affiliation-section h2 {
+          .official-section h2 {
+            margin: 0 0 6px;
+            font-size: 11.5pt;
+            text-decoration: underline;
+          }
+
+          .official-section p {
+            display: flex;
+            margin: 4px 0;
+            white-space: nowrap;
+          }
+
+          .official-section p span,
+          .official-observations span {
+            min-height: 14px;
+            flex: 1;
+            margin-left: 4px;
+            border-bottom: 1px solid black;
+          }
+
+          .official-row {
+            display: flex;
+            gap: 10px;
+          }
+
+          .official-row p {
+            flex: 1;
+          }
+
+          .official-closing {
+            margin: 26px 0 35px;
+            text-align: center;
+          }
+
+          .official-signatures {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 150px;
+            margin: 0 35px 24px;
+          }
+
+          .official-signatures p {
+            padding-top: 6px;
+            border-top: 1px solid black;
+            text-align: center;
+            font-size: 8pt;
+          }
+
+          .official-observations {
+            display: flex;
+            margin-top: 14px;
+          }
+
+          :root[data-theme="dark"]
+            .official-affiliation-print {
             color: black !important;
-            font-size: 15px;
-          }
-
-          .affiliation-section header p {
-            display: none;
-          }
-
-          .affiliation-section
-            .registration-grid {
-            gap: 7px 12px;
-            padding: 10px;
-          }
-
-          .field label {
-            color: black !important;
-            font-size: 10px;
-          }
-
-          .field input,
-          .registration-grid select {
-            min-height: 26px;
-            padding: 3px 2px;
-            border: 0 !important;
-            border-bottom: 1px solid #555 !important;
-            border-radius: 0 !important;
-            background: white !important;
-            color: black !important;
-            font-size: 11px;
-          }
-
-          .affiliation-signatures {
-            break-inside: avoid;
-            margin-top: 22px;
           }
         }
       `}</style>
