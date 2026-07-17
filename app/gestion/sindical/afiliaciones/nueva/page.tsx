@@ -1,13 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import {
+  AffiliateForm,
+  EmpresaAfiliacion,
+} from "@/components/affiliate-form";
 import { SignOutButton } from "@/components/sign-out-button";
-
-type Empresa = {
-  id: string | number;
-  nombre: string;
-};
+import { createClient } from "@/lib/supabase/server";
 
 export default async function NuevaAfiliacionPage() {
   const supabase = await createClient();
@@ -22,9 +21,7 @@ export default async function NuevaAfiliacionPage() {
 
   const { data: profile } = await supabase
     .from("usuarios")
-    .select(
-      "nombre,apellido,dni,telefono,mail,fecha_nacimiento,rol,estado,activo"
-    )
+    .select("nombre,apellido,rol,estado,activo")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -39,12 +36,14 @@ export default async function NuevaAfiliacionPage() {
 
   const { data: companyRows } = await supabase
     .from("empresas")
-    .select("id,nombre")
+    .select(
+      "id,nombre,rama,domicilio,localidad,provincia,codigo_postal,cuit,correo_electronico,telefono"
+    )
     .eq("activa", true)
     .order("nombre");
 
   const companies =
-    (companyRows ?? []) as Empresa[];
+    (companyRows ?? []) as EmpresaAfiliacion[];
 
   const name = [profile.nombre, profile.apellido]
     .filter(Boolean)
@@ -132,130 +131,13 @@ export default async function NuevaAfiliacionPage() {
             <h1>Nueva ficha</h1>
 
             <p>
-              Seleccioná la empresa y verificá los datos
-              personales antes de preparar la ficha.
+              Completá los datos disponibles o dejalos
+              en blanco para escribirlos con lapicera.
             </p>
           </div>
         </header>
 
-        <section className="form-shell wide">
-          <form className="registration-grid">
-            <div className="field full">
-              <label htmlFor="empresa">
-                Empresa
-              </label>
-
-              <select
-                id="empresa"
-                name="empresa"
-                required
-                defaultValue=""
-              >
-                <option value="" disabled>
-                  Seleccionar una empresa
-                </option>
-
-                {companies.map((company) => (
-                  <option
-                    key={company.id}
-                    value={company.id}
-                  >
-                    {company.nombre}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="field">
-              <label htmlFor="nombre">
-                Nombre
-              </label>
-
-              <input
-                id="nombre"
-                name="nombre"
-                defaultValue={profile.nombre || ""}
-                required
-              />
-            </div>
-
-            <div className="field">
-              <label htmlFor="apellido">
-                Apellido
-              </label>
-
-              <input
-                id="apellido"
-                name="apellido"
-                defaultValue={profile.apellido || ""}
-                required
-              />
-            </div>
-
-            <div className="field">
-              <label htmlFor="dni">
-                DNI
-              </label>
-
-              <input
-                id="dni"
-                name="dni"
-                defaultValue={profile.dni || ""}
-                required
-              />
-            </div>
-
-            <div className="field">
-              <label htmlFor="fecha_nacimiento">
-                Fecha de nacimiento
-              </label>
-
-              <input
-                id="fecha_nacimiento"
-                name="fecha_nacimiento"
-                type="date"
-                defaultValue={
-                  profile.fecha_nacimiento || ""
-                }
-                required
-              />
-            </div>
-
-            <div className="field">
-              <label htmlFor="telefono">
-                Teléfono
-              </label>
-
-              <input
-                id="telefono"
-                name="telefono"
-                defaultValue={profile.telefono || ""}
-                required
-              />
-            </div>
-
-            <div className="field">
-              <label htmlFor="email">
-                Correo electrónico
-              </label>
-
-              <input
-                id="email"
-                name="email"
-                type="email"
-                defaultValue={profile.mail || ""}
-                required
-              />
-            </div>
-
-            <div className="form-message warning full">
-              En esta primera etapa verificamos la empresa
-              y los datos personales. En el próximo paso
-              incorporaremos los datos del empleador y la
-              generación de la ficha oficial.
-            </div>
-          </form>
-        </section>
+        <AffiliateForm companies={companies} />
       </section>
     </main>
   );
