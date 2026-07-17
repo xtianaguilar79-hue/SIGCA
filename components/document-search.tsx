@@ -2,19 +2,35 @@
 
 import {
   FormEvent,
-  KeyboardEvent,
+  memo,
   useEffect,
   useRef,
   useState,
 } from "react";
 
+const StaticDocument = memo(function StaticDocument({
+  html,
+  documentRef,
+}: {
+  html: string;
+  documentRef: React.RefObject<HTMLElement | null>;
+}) {
+  return (
+    <article
+      ref={documentRef}
+      className="document-content"
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
+});
+
 export function DocumentSearch({ html }: { html: string }) {
   const documentRef = useRef<HTMLElement>(null);
   const matchesRef = useRef<HTMLElement[]>([]);
+  const currentRef = useRef(-1);
 
   const [query, setQuery] = useState("");
-  const [total, setTotal] = useState(0);
-  const [current, setCurrent] = useState(-1);
+  const [counter, setCounter] = useState("0 resultados");
 
   function escapeRegExp(value: string) {
     return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -24,38 +40,59 @@ export function DocumentSearch({ html }: { html: string }) {
     const container = documentRef.current;
     if (!container) return;
 
-    container.querySelectorAll("mark.document-search-match").forEach((mark) => {
-      mark.replaceWith(document.createTextNode(mark.textContent || ""));
-    });
+    container
+      .querySelectorAll("mark.document-search-match")
+      .forEach((mark) => {
+        mark.replaceWith(
+          document.createTextNode(mark.textContent || "")
+        );
+      });
 
     container.normalize();
     matchesRef.current = [];
+    currentRef.current = -1;
   }
 
-  function goToMatch(index: number) {
+  function showMatch(index: number) {
     const matches = matchesRef.current;
-    if (!matches.length) return;
 
-    const normalizedIndex = (index + matches.length) % matches.length;
+    if (!matches.length) {
+      setCounter("0 resultados");
+      return;
+    }
+
+    const newIndex = (index + matches.length) % matches.length;
+    currentRef.current = newIndex;
 
     matches.forEach((match) => {
       match.classList.remove("document-search-current");
       match.removeAttribute("aria-current");
+      match.removeAttribute("tabindex");
     });
 
-    const selected = matches[normalizedIndex];
+    const selected = matches[newIndex];
+
     selected.classList.add("document-search-current");
     selected.setAttribute("aria-current", "true");
+    selected.setAttribute("tabindex", "-1");
 
-    setCurrent(normalizedIndex);
+    setCounter(`${newIndex + 1} de ${matches.length}`);
 
-    requestAnimationFrame(() => {
+    selected.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+      inline: "nearest",
+    });
+
+    window.setTimeout(() => {
       selected.scrollIntoView({
         behavior: "smooth",
         block: "center",
         inline: "nearest",
       });
-    });
+
+      selected.focus({ preventScroll: true });
+    }, 250);
   }
 
   function performSearch(event?: FormEvent) {
@@ -65,20 +102,21 @@ export function DocumentSearch({ html }: { html: string }) {
     const term = query.trim();
 
     clearHighlights();
-    setTotal(0);
-    setCurrent(-1);
+    setCounter("0 resultados");
 
     if (!container || !term) return;
+
+    const normalizedTerm = term.toLocaleLowerCase("es");
 
     const walker = document.createTreeWalker(
       container,
       NodeFilter.SHOW_TEXT,
       {
         acceptNode(node) {
-          const text = node.textContent || "";
           const parent = node.parentElement;
+          const text = node.textContent || "";
 
-          if (!text.trim() || !parent) {
+          if (!parent || !text.trim()) {
             return NodeFilter.FILTER_REJECT;
           }
 
@@ -90,9 +128,9 @@ export function DocumentSearch({ html }: { html: string }) {
             return NodeFilter.FILTER_REJECT;
           }
 
-          return text.toLocaleLowerCase("es").includes(
-            term.toLocaleLowerCase("es")
-          )
+          return text
+            .toLocaleLowerCase("es")
+            .includes(normalizedTerm)
             ? NodeFilter.FILTER_ACCEPT
             : NodeFilter.FILTER_REJECT;
         },
@@ -100,17 +138,20 @@ export function DocumentSearch({ html }: { html: string }) {
     );
 
     const textNodes: Text[] = [];
-    let node: Node | null;
+    let currentNode: Node | null;
 
-    while ((node = walker.nextNode())) {
-      textNodes.push(node as Text);
+    while ((currentNode = walker.nextNode())) {
+      textNodes.push(currentNode as Text);
     }
 
-    const expression = new RegExp(`(${escapeRegExp(term)})`, "giu");
+    const expression = new RegExp(
+      `(${escapeRegExp(term)})`,
+      "giu"
+    );
 
     textNodes.forEach((textNode) => {
-      const text = textNode.textContent || "";
-      const parts = text.split(expression);
+      const originalText = textNode.textContent || "";
+      const parts = originalText.split(expression);
 
       if (parts.length === 1) return;
 
@@ -120,7 +161,7 @@ export function DocumentSearch({ html }: { html: string }) {
         if (!part) return;
 
         if (
-          part.toLocaleLowerCase("es") === term.toLocaleLowerCase("es")
+          part.toLocaleLowerCase("es") === normalizedTerm
         ) {
           const mark = document.createElement("mark");
           mark.className = "document-search-match";
@@ -134,41 +175,29 @@ export function DocumentSearch({ html }: { html: string }) {
       textNode.replaceWith(fragment);
     });
 
-    const matches = Array.from(
+    matchesRef.current = Array.from(
       container.querySelectorAll<HTMLElement>(
         "mark.document-search-match"
       )
     );
 
-    matchesRef.current = matches;
-    setTotal(matches.length);
-
-    if (matches.length > 0) {
-      goToMatch(0);
-    }
-  }
-
-  function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      performSearch();
-    }
-
-    if (event.key === "Escape") {
-      setQuery("");
-      clearHighlights();
-      setTotal(0);
-      setCurrent(-1);
+    if (matchesRef.current.length) {
+      showMatch(0);
     }
   }
 
   useEffect(() => {
-    return () => clearHighlights();
+    return () => {
+      clearHighlights();
+    };
   }, []);
 
   return (
     <>
-      <form className="document-search" onSubmit={performSearch}>
+      <form
+        className="document-search"
+        onSubmit={performSearch}
+      >
         <label htmlFor="document-search-input">
           Buscar dentro del documento
         </label>
@@ -180,9 +209,7 @@ export function DocumentSearch({ html }: { html: string }) {
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              onKeyDown={handleInputKeyDown}
-              placeholder="Escribí una palabra…"
-              aria-label="Palabra que se buscará dentro del documento"
+              placeholder="Buscar una palabra…"
             />
 
             <button
@@ -196,37 +223,38 @@ export function DocumentSearch({ html }: { html: string }) {
           </div>
 
           <div className="document-search-navigation">
-            <span aria-live="polite">
-              {total > 0 ? `${current + 1} de ${total}` : "0 resultados"}
-            </span>
+            <span aria-live="polite">{counter}</span>
 
             <button
               type="button"
-              onClick={() => goToMatch(current - 1)}
-              disabled={total === 0}
+              className="document-search-arrow"
+              onClick={() =>
+                showMatch(currentRef.current - 1)
+              }
+              disabled={!matchesRef.current.length}
               aria-label="Resultado anterior"
-              title="Resultado anterior"
             >
-              ←
+              {"<"}
             </button>
 
             <button
               type="button"
-              onClick={() => goToMatch(current + 1)}
-              disabled={total === 0}
+              className="document-search-arrow"
+              onClick={() =>
+                showMatch(currentRef.current + 1)
+              }
+              disabled={!matchesRef.current.length}
               aria-label="Resultado siguiente"
-              title="Resultado siguiente"
             >
-              →
+              {">"}
             </button>
           </div>
         </div>
       </form>
 
-      <article
-        ref={documentRef}
-        className="document-content"
-        dangerouslySetInnerHTML={{ __html: html }}
+      <StaticDocument
+        html={html}
+        documentRef={documentRef}
       />
     </>
   );
