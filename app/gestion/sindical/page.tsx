@@ -41,7 +41,7 @@ export default async function GestionSindicalPage() {
   return (
     <main className="management">
       <aside className="side">
-        <div className="side-brand">
+        <Link className="side-brand" href="/gestion">
           <Image
             src="/logo-aoma.png"
             width={39}
@@ -53,7 +53,7 @@ export default async function GestionSindicalPage() {
             <strong>SIGCA</strong>
             <span>SECCIONAL SAN JUAN</span>
           </div>
-        </div>
+        </Link>
 
         <nav>
           <Link href="/gestion">
@@ -88,11 +88,13 @@ export default async function GestionSindicalPage() {
 
         <div className="session">
           <strong>{name}</strong>
+
           <span>
             {String(
-              profile.rol || "Usuario autorizado",
+              profile.rol || "Usuario autorizado"
             )}
           </span>
+
           <SignOutButton />
         </div>
       </aside>
@@ -114,16 +116,22 @@ export default async function GestionSindicalPage() {
         </header>
 
         <div className="cards">
-          <article className="module">
+          <Link
+            className="module module-link"
+            href="/gestion/sindical/afiliaciones"
+          >
             <span>▤</span>
+
             <h2>Afiliaciones</h2>
+
             <p>
               Solicitudes, fichas oficiales, altas,
               bajas, traslados y seguimiento por
               empresa.
             </p>
-            <small>PRÓXIMA ETAPA</small>
-          </article>
+
+            <small>INGRESAR</small>
+          </Link>
 
           <article className="module">
             <span>▧</span>
