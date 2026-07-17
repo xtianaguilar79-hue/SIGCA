@@ -144,3 +144,156 @@
   border-left-color: #d6a743;
   color: #f0dfb8;
 }
+/* Buscador interno de leyes y convenios */
+.document-search {
+  position: sticky;
+  top: 82px;
+  z-index: 5;
+  margin-bottom: 18px;
+  padding: 17px;
+  border: 1px solid var(--linea);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px #173d4b18;
+}
+
+.document-search > label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--petroleo);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.document-search-controls {
+  display: flex;
+  gap: 9px;
+}
+
+.document-search-controls input {
+  flex: 1;
+  min-width: 0;
+  min-height: 46px;
+  padding: 12px 14px;
+  border: 1px solid #bdced3;
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--tinta);
+  font-size: 16px;
+}
+
+.document-search-controls input:focus {
+  border-color: #2c788b;
+  outline: 3px solid #2c788b35;
+}
+
+.document-search button {
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid #9db8bf;
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--petroleo);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.document-search button:hover:not(:disabled) {
+  background: #e8f2f4;
+}
+
+.document-search button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.document-search-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.document-search-navigation > span {
+  color: var(--gris);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.document-search-navigation > div {
+  display: flex;
+  gap: 8px;
+}
+
+.document-search-mark {
+  border-radius: 3px;
+  background: #ffe37d;
+  color: #162f38;
+  padding: 1px 2px;
+}
+
+.document-search-mark-active {
+  background: #e88b2f;
+  color: #111111;
+  outline: 3px solid #e88b2f55;
+}
+
+:root[data-theme="dark"] .document-search {
+  background: #18343e;
+  border-color: #49636c;
+  box-shadow: 0 8px 24px #0005;
+}
+
+:root[data-theme="dark"] .document-search > label {
+  color: #f2f7f8;
+}
+
+:root[data-theme="dark"] .document-search-controls input {
+  background: #0b222a;
+  border-color: #59747d;
+  color: #f5f8f9;
+}
+
+:root[data-theme="dark"] .document-search-controls input::placeholder {
+  color: #a9bdc2;
+}
+
+:root[data-theme="dark"] .document-search button {
+  background: #10272f;
+  border-color: #59747d;
+  color: #e8f2f4;
+}
+
+:root[data-theme="dark"]
+  .document-search button:hover:not(:disabled) {
+  background: #244752;
+}
+
+:root[data-theme="dark"]
+  .document-search-navigation > span {
+  color: #c8d8dc;
+}
+
+@media (max-width: 700px) {
+  .document-search {
+    position: relative;
+    top: auto;
+    padding: 15px;
+  }
+
+  .document-search-controls {
+    flex-direction: column;
+  }
+
+  .document-search-navigation {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .document-search-navigation > div {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+}
