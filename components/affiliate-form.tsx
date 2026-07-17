@@ -92,9 +92,7 @@ function formatDate(value: string) {
 
   const [year, month, day] = value.split("-");
 
-  if (!year || !month || !day) {
-    return value;
-  }
+  if (!year || !month || !day) return value;
 
   return `${day}/${month}/${year}`;
 }
@@ -581,7 +579,9 @@ export function AffiliateForm({
 
           <div className="registration-grid">
             <div className="field">
-              <label>¿Fue afiliado a AOMA?</label>
+              <label>
+                ¿Fue afiliado a AOMA?
+              </label>
 
               <select
                 value={person.afiliadoAoma}
@@ -694,6 +694,7 @@ export function AffiliateForm({
           <p>Compañero</p>
           <p>Secretario General</p>
           <p>Dn. Iván Malla</p>
+
           <strong>PRESENTE</strong>
         </div>
 
@@ -710,150 +711,141 @@ export function AffiliateForm({
           <h2>DATOS DE LA EMPRESA DONDE TRABAJO</h2>
 
           <p>
-            Razón Social:
+            Razón Social:{" "}
             <span>{employer.razonSocial}</span>
           </p>
 
           <p>
-            Rama:
-            <span>{employer.rama}</span>
+            Rama: <span>{employer.rama}</span>
           </p>
 
           <div className="official-row">
             <p>
-              Domicilio:
+              Domicilio:{" "}
               <span>{employer.domicilio}</span>
             </p>
 
             <p>
-              Localidad:
+              Localidad:{" "}
               <span>{employer.localidad}</span>
             </p>
           </div>
 
           <div className="official-row">
             <p>
-              Provincia:
+              Provincia:{" "}
               <span>{employer.provincia}</span>
             </p>
 
             <p>
-              Código Postal:
+              Código Postal:{" "}
               <span>{employer.codigoPostal}</span>
             </p>
 
             <p>
-              C.U.I.T.:
-              <span>{employer.cuit}</span>
+              C.U.I.T.: <span>{employer.cuit}</span>
             </p>
           </div>
 
           <div className="official-row">
             <p>
-              Correo Electrónico:
+              Correo Electrónico:{" "}
               <span>{employer.correo}</span>
             </p>
 
             <p>
-              Teléfono:
+              Teléfono:{" "}
               <span>{employer.telefono}</span>
             </p>
           </div>
         </section>
 
         <section className="official-section">
-          <h2>
-            DATOS PERSONALES Y DE MI ACTIVIDAD
-          </h2>
+          <h2>DATOS PERSONALES Y DE MI ACTIVIDAD</h2>
 
           <p>
-            Apellido/s y Nombre/s:
+            Apellido/s y Nombre/s:{" "}
             <span>{person.apellidoNombres}</span>
           </p>
 
           <p>
-            Domicilio: Calle y N.º
+            Domicilio: Calle y N.º{" "}
             <span>{person.domicilio}</span>
           </p>
 
           <div className="official-row">
             <p>
-              Provincia:
-              <span>{person.provincia}</span>
+              Provincia: <span>{person.provincia}</span>
             </p>
 
             <p>
-              Localidad:
-              <span>{person.localidad}</span>
+              Localidad: <span>{person.localidad}</span>
             </p>
 
             <p>
-              Código Postal:
+              Código Postal:{" "}
               <span>{person.codigoPostal}</span>
             </p>
           </div>
 
           <div className="official-row">
             <p>
-              Fecha de Nac.:
+              Fecha de Nac.:{" "}
               <span>
                 {formatDate(person.fechaNacimiento)}
               </span>
             </p>
 
             <p>
-              Tipo de Documento:
+              Tipo de Documento:{" "}
               <span>{person.tipoDocumento}</span>
             </p>
 
             <p>
-              N.º de Doc.:
+              N.º de Doc.:{" "}
               <span>{person.numeroDocumento}</span>
             </p>
           </div>
 
           <div className="official-row">
             <p>
-              CUIL N.º:
-              <span>{person.cuil}</span>
+              CUIL N.º: <span>{person.cuil}</span>
             </p>
 
             <p>
-              Nacionalidad:
+              Nacionalidad:{" "}
               <span>{person.nacionalidad}</span>
             </p>
 
             <p>
-              Estado Civil:
+              Estado Civil:{" "}
               <span>{person.estadoCivil}</span>
             </p>
           </div>
 
           <div className="official-row">
             <p>
-              Teléfono:
-              <span>{person.telefono}</span>
+              Teléfono: <span>{person.telefono}</span>
             </p>
 
             <p>
-              Correo Electrónico:
+              Correo Electrónico:{" "}
               <span>{person.correo}</span>
             </p>
           </div>
 
           <div className="official-row">
             <p>
-              Área de trabajo:
+              Área de trabajo:{" "}
               <span>{person.areaTrabajo}</span>
             </p>
 
             <p>
-              Oficio:
-              <span>{person.oficio}</span>
+              Oficio: <span>{person.oficio}</span>
             </p>
 
             <p>
-              Fecha de ingreso a la empresa:
+              Fecha de ingreso a la empresa:{" "}
               <span>
                 {formatDate(person.fechaIngreso)}
               </span>
@@ -865,20 +857,16 @@ export function AffiliateForm({
           <h2>OTROS DATOS</h2>
 
           <p>
-            ¿Fue afiliado a A.O.M.A.? SI{" "}
-            {person.afiliadoAoma === "Sí"
-              ? "☒"
-              : "☐"}{" "}
-            NO{" "}
-            {person.afiliadoAoma === "No"
-              ? "☒"
-              : "☐"}{" "}
-            N.º de Afiliado:
+            ¿Fue afiliado a A.O.M.A.?{" "}
+            SI {person.afiliadoAoma === "Sí" ? "☒" : "☐"}{" "}
+            NO {person.afiliadoAoma === "No" ? "☒" : "☐"}{" "}
+            N.º de Afiliado:{" "}
             <span>{person.numeroAfiliado}</span>
           </p>
 
           <p>
-            ¿Fue afiliado a otro gremio? SI{" "}
+            ¿Fue afiliado a otro gremio?{" "}
+            SI{" "}
             {person.afiliadoOtroGremio === "Sí"
               ? "☒"
               : "☐"}{" "}
@@ -886,8 +874,7 @@ export function AffiliateForm({
             {person.afiliadoOtroGremio === "No"
               ? "☒"
               : "☐"}{" "}
-            ¿Cuál?
-            <span>{person.otroGremio}</span>
+            ¿Cuál? <span>{person.otroGremio}</span>
           </p>
         </section>
 
@@ -897,15 +884,12 @@ export function AffiliateForm({
         </p>
 
         <div className="official-signatures">
-          <p>
-            Firma de Recepción de A.O.M.A. Central.
-          </p>
-
+          <p>Firma de Recepción de A.O.M.A. Central.</p>
           <p>Firma del Solicitante.</p>
         </div>
 
         <p className="official-observations">
-          <b>OBSERVACIONES:</b>
+          <b>OBSERVACIONES:</b>{" "}
           <span>{person.observaciones}</span>
         </p>
       </article>
@@ -1004,13 +988,14 @@ export function AffiliateForm({
             left: 0 !important;
             display: block !important;
             box-sizing: border-box !important;
-            width: 100% !important;
+            width: 108.7% !important;
             height: auto !important;
             min-height: 0 !important;
-            max-height: 278mm !important;
+            max-height: none !important;
             margin: 0 !important;
             padding: 0 !important;
-            overflow: hidden !important;
+            overflow: visible !important;
+            zoom: 0.92 !important;
             break-before: avoid-page !important;
             break-after: avoid-page !important;
             break-inside: avoid-page !important;
@@ -1019,8 +1004,7 @@ export function AffiliateForm({
             page-break-inside: avoid !important;
             background: white !important;
             color: black !important;
-            font-family:
-              Arial, Helvetica, sans-serif !important;
+            font-family: Arial, Helvetica, sans-serif !important;
             font-size: 11.3pt !important;
             line-height: 1.25 !important;
           }
@@ -1129,7 +1113,7 @@ export function AffiliateForm({
           }
 
           .official-closing {
-            margin: 8mm 0 12mm !important;
+            margin: 6mm 0 9mm !important;
             text-align: center !important;
           }
 
@@ -1137,7 +1121,7 @@ export function AffiliateForm({
             display: grid !important;
             grid-template-columns: 1fr 1fr !important;
             gap: 42mm !important;
-            margin: 0 12mm 8mm !important;
+            margin: 0 12mm 5mm !important;
             break-inside: avoid !important;
           }
 
@@ -1156,8 +1140,7 @@ export function AffiliateForm({
             align-items: flex-end !important;
           }
 
-          :root[data-theme="dark"]
-            .official-affiliation-print {
+          :root[data-theme="dark"] .official-affiliation-print {
             background: white !important;
             color: black !important;
           }
@@ -1166,3 +1149,4 @@ export function AffiliateForm({
     </>
   );
 }
+
