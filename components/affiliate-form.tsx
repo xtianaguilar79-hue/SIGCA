@@ -92,7 +92,9 @@ function formatDate(value: string) {
 
   const [year, month, day] = value.split("-");
 
-  if (!year || !month || !day) return value;
+  if (!year || !month || !day) {
+    return value;
+  }
 
   return `${day}/${month}/${year}`;
 }
@@ -579,9 +581,7 @@ export function AffiliateForm({
 
           <div className="registration-grid">
             <div className="field">
-              <label>
-                ¿Fue afiliado a AOMA?
-              </label>
+              <label>¿Fue afiliado a AOMA?</label>
 
               <select
                 value={person.afiliadoAoma}
@@ -694,7 +694,6 @@ export function AffiliateForm({
           <p>Compañero</p>
           <p>Secretario General</p>
           <p>Dn. Iván Malla</p>
-
           <strong>PRESENTE</strong>
         </div>
 
@@ -711,141 +710,150 @@ export function AffiliateForm({
           <h2>DATOS DE LA EMPRESA DONDE TRABAJO</h2>
 
           <p>
-            Razón Social:{" "}
+            Razón Social:
             <span>{employer.razonSocial}</span>
           </p>
 
           <p>
-            Rama: <span>{employer.rama}</span>
+            Rama:
+            <span>{employer.rama}</span>
           </p>
 
           <div className="official-row">
             <p>
-              Domicilio:{" "}
+              Domicilio:
               <span>{employer.domicilio}</span>
             </p>
 
             <p>
-              Localidad:{" "}
+              Localidad:
               <span>{employer.localidad}</span>
             </p>
           </div>
 
           <div className="official-row">
             <p>
-              Provincia:{" "}
+              Provincia:
               <span>{employer.provincia}</span>
             </p>
 
             <p>
-              Código Postal:{" "}
+              Código Postal:
               <span>{employer.codigoPostal}</span>
             </p>
 
             <p>
-              C.U.I.T.: <span>{employer.cuit}</span>
+              C.U.I.T.:
+              <span>{employer.cuit}</span>
             </p>
           </div>
 
           <div className="official-row">
             <p>
-              Correo Electrónico:{" "}
+              Correo Electrónico:
               <span>{employer.correo}</span>
             </p>
 
             <p>
-              Teléfono:{" "}
+              Teléfono:
               <span>{employer.telefono}</span>
             </p>
           </div>
         </section>
 
         <section className="official-section">
-          <h2>DATOS PERSONALES Y DE MI ACTIVIDAD</h2>
+          <h2>
+            DATOS PERSONALES Y DE MI ACTIVIDAD
+          </h2>
 
           <p>
-            Apellido/s y Nombre/s:{" "}
+            Apellido/s y Nombre/s:
             <span>{person.apellidoNombres}</span>
           </p>
 
           <p>
-            Domicilio: Calle y N.º{" "}
+            Domicilio: Calle y N.º
             <span>{person.domicilio}</span>
           </p>
 
           <div className="official-row">
             <p>
-              Provincia: <span>{person.provincia}</span>
+              Provincia:
+              <span>{person.provincia}</span>
             </p>
 
             <p>
-              Localidad: <span>{person.localidad}</span>
+              Localidad:
+              <span>{person.localidad}</span>
             </p>
 
             <p>
-              Código Postal:{" "}
+              Código Postal:
               <span>{person.codigoPostal}</span>
             </p>
           </div>
 
           <div className="official-row">
             <p>
-              Fecha de Nac.:{" "}
+              Fecha de Nac.:
               <span>
                 {formatDate(person.fechaNacimiento)}
               </span>
             </p>
 
             <p>
-              Tipo de Documento:{" "}
+              Tipo de Documento:
               <span>{person.tipoDocumento}</span>
             </p>
 
             <p>
-              N.º de Doc.:{" "}
+              N.º de Doc.:
               <span>{person.numeroDocumento}</span>
             </p>
           </div>
 
           <div className="official-row">
             <p>
-              CUIL N.º: <span>{person.cuil}</span>
+              CUIL N.º:
+              <span>{person.cuil}</span>
             </p>
 
             <p>
-              Nacionalidad:{" "}
+              Nacionalidad:
               <span>{person.nacionalidad}</span>
             </p>
 
             <p>
-              Estado Civil:{" "}
+              Estado Civil:
               <span>{person.estadoCivil}</span>
             </p>
           </div>
 
           <div className="official-row">
             <p>
-              Teléfono: <span>{person.telefono}</span>
+              Teléfono:
+              <span>{person.telefono}</span>
             </p>
 
             <p>
-              Correo Electrónico:{" "}
+              Correo Electrónico:
               <span>{person.correo}</span>
             </p>
           </div>
 
           <div className="official-row">
             <p>
-              Área de trabajo:{" "}
+              Área de trabajo:
               <span>{person.areaTrabajo}</span>
             </p>
 
             <p>
-              Oficio: <span>{person.oficio}</span>
+              Oficio:
+              <span>{person.oficio}</span>
             </p>
 
             <p>
-              Fecha de ingreso a la empresa:{" "}
+              Fecha de ingreso a la empresa:
               <span>
                 {formatDate(person.fechaIngreso)}
               </span>
@@ -857,16 +865,20 @@ export function AffiliateForm({
           <h2>OTROS DATOS</h2>
 
           <p>
-            ¿Fue afiliado a A.O.M.A.?{" "}
-            SI {person.afiliadoAoma === "Sí" ? "☒" : "☐"}{" "}
-            NO {person.afiliadoAoma === "No" ? "☒" : "☐"}{" "}
-            N.º de Afiliado:{" "}
+            ¿Fue afiliado a A.O.M.A.? SI{" "}
+            {person.afiliadoAoma === "Sí"
+              ? "☒"
+              : "☐"}{" "}
+            NO{" "}
+            {person.afiliadoAoma === "No"
+              ? "☒"
+              : "☐"}{" "}
+            N.º de Afiliado:
             <span>{person.numeroAfiliado}</span>
           </p>
 
           <p>
-            ¿Fue afiliado a otro gremio?{" "}
-            SI{" "}
+            ¿Fue afiliado a otro gremio? SI{" "}
             {person.afiliadoOtroGremio === "Sí"
               ? "☒"
               : "☐"}{" "}
@@ -874,7 +886,8 @@ export function AffiliateForm({
             {person.afiliadoOtroGremio === "No"
               ? "☒"
               : "☐"}{" "}
-            ¿Cuál? <span>{person.otroGremio}</span>
+            ¿Cuál?
+            <span>{person.otroGremio}</span>
           </p>
         </section>
 
@@ -884,12 +897,15 @@ export function AffiliateForm({
         </p>
 
         <div className="official-signatures">
-          <p>Firma de Recepción de A.O.M.A. Central.</p>
+          <p>
+            Firma de Recepción de A.O.M.A. Central.
+          </p>
+
           <p>Firma del Solicitante.</p>
         </div>
 
         <p className="official-observations">
-          <b>OBSERVACIONES:</b>{" "}
+          <b>OBSERVACIONES:</b>
           <span>{person.observaciones}</span>
         </p>
       </article>
@@ -942,11 +958,18 @@ export function AffiliateForm({
 
         @media print {
           @page {
-            size: A4;
-            margin: 10mm;
+            size: A4 portrait;
+            margin: 7mm 9mm;
           }
 
+          html,
           body {
+            width: 100% !important;
+            height: auto !important;
+            min-height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: visible !important;
             background: white !important;
             color: black !important;
           }
@@ -966,134 +989,176 @@ export function AffiliateForm({
           .main-area {
             display: block !important;
             width: 100% !important;
-            max-width: none !important;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
             margin: 0 !important;
             padding: 0 !important;
+            overflow: visible !important;
+            background: white !important;
           }
 
           .official-affiliation-print {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
             display: block !important;
-            width: 100%;
-            color: black;
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 10.5pt;
-            line-height: 1.18;
+            box-sizing: border-box !important;
+            width: 100% !important;
+            height: auto !important;
+            min-height: 0 !important;
+            max-height: 278mm !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            break-before: avoid-page !important;
+            break-after: avoid-page !important;
+            break-inside: avoid-page !important;
+            page-break-before: avoid !important;
+            page-break-after: avoid !important;
+            page-break-inside: avoid !important;
+            background: white !important;
+            color: black !important;
+            font-family:
+              Arial, Helvetica, sans-serif !important;
+            font-size: 11.3pt !important;
+            line-height: 1.25 !important;
           }
 
           .official-title {
-            margin-bottom: 12px;
-            text-align: center;
-            font-size: 19pt;
-            font-weight: 900;
+            margin: 2mm 0 4mm !important;
+            text-align: center !important;
+            font-size: 20pt !important;
+            font-weight: 900 !important;
           }
 
           .official-contact {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 1px solid black;
-            font-size: 10pt;
+            display: flex !important;
+            justify-content: space-between !important;
+            padding-bottom: 1mm !important;
+            border-bottom: 1px solid black !important;
+            font-size: 10.5pt !important;
           }
 
           .official-opening {
-            display: grid;
-            grid-template-columns: 37% 63%;
+            display: grid !important;
+            grid-template-columns: 37% 63% !important;
+            min-height: 37mm !important;
           }
 
           .official-exclusive {
-            padding: 5px 8px;
-            border: 1px solid black;
+            padding: 2mm 3mm !important;
+            border: 1px solid black !important;
           }
 
           .official-exclusive p {
-            margin: 3px 0;
+            margin: 1.5mm 0 !important;
           }
 
           .official-request {
-            padding: 12px;
-            text-align: center;
+            padding: 5mm 3mm !important;
+            text-align: center !important;
           }
 
           .official-request h1 {
-            margin: 0 0 25px;
-            font-size: 15pt;
+            margin: 0 0 10mm !important;
+            font-size: 16pt !important;
+          }
+
+          .official-request p {
+            margin: 0 !important;
+          }
+
+          .official-recipient {
+            margin-top: 1.5mm !important;
           }
 
           .official-recipient p {
-            margin: 2px 0;
+            margin: 0.8mm 0 !important;
           }
 
           .official-recipient strong {
-            display: block;
-            margin-top: 14px;
-            text-decoration: underline;
+            display: block !important;
+            margin-top: 5mm !important;
+            text-decoration: underline !important;
           }
 
           .official-letter {
-            margin: 18px 0 8px;
-            text-align: justify;
+            margin: 7mm 0 3mm !important;
+            line-height: 1.28 !important;
+            text-align: justify !important;
           }
 
           .official-section {
-            margin-top: 8px;
-            padding-top: 5px;
-            border-top: 4px double black;
+            margin-top: 2.5mm !important;
+            padding-top: 2mm !important;
+            border-top: 4px double black !important;
+            break-inside: avoid !important;
           }
 
           .official-section h2 {
-            margin: 0 0 6px;
-            font-size: 11.5pt;
-            text-decoration: underline;
+            margin: 0 0 2.5mm !important;
+            font-size: 12.5pt !important;
+            text-decoration: underline !important;
           }
 
           .official-section p {
-            display: flex;
-            margin: 4px 0;
-            white-space: nowrap;
+            display: flex !important;
+            min-height: 6mm !important;
+            margin: 1.3mm 0 !important;
+            align-items: flex-end !important;
+            white-space: nowrap !important;
           }
 
           .official-section p span,
           .official-observations span {
-            min-height: 14px;
-            flex: 1;
-            margin-left: 4px;
-            border-bottom: 1px solid black;
+            min-height: 5mm !important;
+            flex: 1 !important;
+            margin-left: 1.5mm !important;
+            border-bottom: 1px solid black !important;
           }
 
           .official-row {
-            display: flex;
-            gap: 10px;
+            display: flex !important;
+            gap: 3mm !important;
           }
 
           .official-row p {
-            flex: 1;
+            flex: 1 !important;
+            min-width: 0 !important;
           }
 
           .official-closing {
-            margin: 26px 0 35px;
-            text-align: center;
+            margin: 8mm 0 12mm !important;
+            text-align: center !important;
           }
 
           .official-signatures {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 150px;
-            margin: 0 35px 24px;
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 42mm !important;
+            margin: 0 12mm 8mm !important;
+            break-inside: avoid !important;
           }
 
           .official-signatures p {
-            padding-top: 6px;
-            border-top: 1px solid black;
-            text-align: center;
-            font-size: 8pt;
+            margin: 0 !important;
+            padding-top: 2mm !important;
+            border-top: 1px solid black !important;
+            text-align: center !important;
+            font-size: 8.5pt !important;
           }
 
           .official-observations {
-            display: flex;
-            margin-top: 14px;
+            display: flex !important;
+            min-height: 8mm !important;
+            margin: 0 !important;
+            align-items: flex-end !important;
           }
 
           :root[data-theme="dark"]
             .official-affiliation-print {
+            background: white !important;
             color: black !important;
           }
         }
