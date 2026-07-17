@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { SignOutButton } from "@/components/sign-out-button";
+import { DocumentSearch } from "@/components/document-search";
 import { buscarDocumento } from "@/lib/biblioteca";
 import { createClient } from "@/lib/supabase/server";
 
