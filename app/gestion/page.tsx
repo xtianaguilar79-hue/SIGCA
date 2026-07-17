@@ -116,26 +116,18 @@ export default async function ManagementPage() {
         </header>
 
         <div className="cards">
-          <article className="module">
-            <span>▤</span>
-            <h2>Afiliaciones</h2>
-            <p>
-              Solicitudes, fichas oficiales y
-              seguimiento administrativo por empresa
-              autorizada.
-            </p>
-            <small>PRÓXIMA ETAPA</small>
-          </article>
-
-          <article className="module">
-            <span>◇</span>
-            <h2>Gestión sindical</h2>
-            <p>
-              Actas, visitas, inspecciones, reclamos,
-              compromisos y expedientes relacionados.
-            </p>
-            <small>EN PREPARACIÓN</small>
-          </article>
+          <Link
+  className="module module-link"
+  href="/gestion/sindical"
+>
+  <span>◇</span>
+  <h2>Gestión sindical</h2>
+  <p>
+    Afiliaciones, actas, visitas, reclamos,
+    compromisos y expedientes relacionados.
+  </p>
+  <small>ABRIR GESTIÓN SINDICAL</small>
+</Link>
 
           <Link
             className="module module-link"
