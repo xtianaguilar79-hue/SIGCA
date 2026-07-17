@@ -124,12 +124,7 @@ export default async function DocumentoPage({
           </p>
         </div>
 
-        <article
-          className="document-content"
-          dangerouslySetInnerHTML={{
-            __html: documento.contenidoHtml,
-          }}
-        />
+        <DocumentSearch html={documento.contenidoHtml} />
       </section>
     </main>
   );
