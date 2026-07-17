@@ -1,27 +1,293 @@
-.side a{font-size:15px;line-height:1.35}.session strong{font-size:14px}.session span,.sign-out{font-size:13px}.main-head p{font-size:16px;line-height:1.5}.kicker{font-size:12px}.module h2{font-size:21px}.module p{font-size:16px;line-height:1.6}.module small{font-size:12px}.course-meta span,.course-status strong,.course-status span{font-size:12px}.course-copy h3{font-size:17px}.course-copy>p{font-size:16px}.section-heading>span{font-size:14px}.formation-module h3{font-size:21px}.formation-module header p{font-size:15px}.lesson-row strong{font-size:17px}.lesson-row p{font-size:15px}.lesson-row b{font-size:14px}.lesson-top a,.lesson-top span{font-size:14px}.lesson-intro>p:not(.kicker){font-size:17px}.lesson-intro>div strong{font-size:13px}.lesson-intro>div span{font-size:16px}.learning-block p,.learning-block li{font-size:17px}.resource-pending>span,.activity-block>span{font-size:12px}.lesson-footer a{font-size:15px}.secure,.review-badge{font-size:12px}.access-copy>p:not(.kicker),.field input,.registration-grid select{font-size:16px}.field label{font-size:14px}.access-note,.back-link{font-size:13px}.access-links a{font-size:15px}.form-intro{font-size:16px}.form-message{font-size:14px}.mobile-menu-button,.mobile-menu-backdrop{display:none}
-@media(max-width:850px){.side{height:72px;justify-content:flex-start;gap:12px;z-index:20}.mobile-menu-button{position:fixed;display:grid;place-items:center;right:14px;top:13px;width:46px;height:46px;border:1px solid #ffffff35;border-radius:8px;background:#0b5264;color:white;font-size:28px;line-height:1;z-index:23}.side nav,.side .session{display:none}.mobile-menu-open{overflow:hidden}.mobile-menu-open .side{position:fixed;inset:0 auto 0 0;width:min(86vw,330px);height:100vh;display:flex;flex-direction:column;align-items:stretch;padding:14px 16px 20px;box-shadow:12px 0 35px #00182055}.mobile-menu-open .side-brand{padding-bottom:15px;border-bottom:1px solid #ffffff1d}.mobile-menu-open .side nav{display:grid;margin-top:22px;overflow:auto}.mobile-menu-open .side .session{display:block;margin-top:auto}.mobile-menu-backdrop{display:block;position:fixed;inset:0;border:0;background:#00182080;z-index:19}.mobile-menu-open .mobile-menu-button{background:#163f4a}}
-@media(min-width:851px){.mobile-menu-button,.mobile-menu-backdrop{display:none!important}}
-body:not(:has(.management)) .mobile-menu-button,body:not(:has(.management)) .mobile-menu-backdrop{display:none!important}
-@media(max-width:850px){.mobile-menu-open .mobile-menu-button{left:min(calc(86vw - 58px),272px);right:auto;top:13px;background:#ffffff12}.mobile-menu-open .side nav{flex:0 1 auto;min-height:0}.mobile-menu-open .side .session{display:block!important;flex:none;width:100%;margin-top:auto;padding:15px 8px 4px;background:var(--petroleo-oscuro)}.mobile-menu-open .side .sign-out{display:block;width:100%;padding:12px;margin-top:12px;font-size:14px}.mobile-menu-open .side a{padding:13px 12px}}
-.home-brand-link{display:none;position:fixed;left:16px;top:14px;width:205px;height:52px;z-index:12;border-radius:8px}.home-brand-link span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}body:has(.management) .home-brand-link{display:block}.side-brand{color:white;text-decoration:none}@media(min-width:851px){.main-head{padding-right:155px}}@media(max-width:850px){.mobile-menu-button{left:14px;right:auto}.side-brand{margin-left:54px}.home-brand-link{left:69px;top:10px;width:190px;height:52px;z-index:22}.mobile-menu-open .mobile-menu-button{left:min(calc(86vw - 58px),272px);right:auto}.mobile-menu-open .side-brand{margin-left:0}.mobile-menu-open .home-brand-link{left:16px;width:210px}}
-/* Sidebar móvil completamente desplazable */
+.side a {
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.session strong {
+  font-size: 14px;
+}
+
+.session span,
+.sign-out {
+  font-size: 13px;
+}
+
+.main-head p {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.kicker {
+  font-size: 12px;
+}
+
+.module h2 {
+  font-size: 21px;
+}
+
+.module p {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.module small {
+  font-size: 12px;
+}
+
+.course-meta span,
+.course-status strong,
+.course-status span {
+  font-size: 12px;
+}
+
+.course-copy h3 {
+  font-size: 17px;
+}
+
+.course-copy > p {
+  font-size: 16px;
+}
+
+.section-heading > span {
+  font-size: 14px;
+}
+
+.formation-module h3 {
+  font-size: 21px;
+}
+
+.formation-module header p {
+  font-size: 15px;
+}
+
+.lesson-row strong {
+  font-size: 17px;
+}
+
+.lesson-row p {
+  font-size: 15px;
+}
+
+.lesson-row b {
+  font-size: 14px;
+}
+
+.lesson-top a,
+.lesson-top span {
+  font-size: 14px;
+}
+
+.lesson-intro > p:not(.kicker) {
+  font-size: 17px;
+}
+
+.lesson-intro > div strong {
+  font-size: 13px;
+}
+
+.lesson-intro > div span {
+  font-size: 16px;
+}
+
+.learning-block p,
+.learning-block li {
+  font-size: 17px;
+}
+
+.resource-pending > span,
+.activity-block > span {
+  font-size: 12px;
+}
+
+.lesson-footer a {
+  font-size: 15px;
+}
+
+.secure,
+.review-badge {
+  font-size: 12px;
+}
+
+.access-copy > p:not(.kicker),
+.field input,
+.registration-grid select {
+  font-size: 16px;
+}
+
+.field label {
+  font-size: 14px;
+}
+
+.access-note,
+.back-link {
+  font-size: 13px;
+}
+
+.access-links a {
+  font-size: 15px;
+}
+
+.form-intro {
+  font-size: 16px;
+}
+
+.form-message {
+  font-size: 14px;
+}
+
+.mobile-menu-button,
+.mobile-menu-backdrop {
+  display: none;
+}
+
+/* Afiliaciones ahora pertenece a Gestión Sindical.
+   Se oculta como opción independiente en todos los sidebar. */
+.side nav > :nth-child(2) {
+  display: none !important;
+}
+
+/* Marca SIGCA enlazada con el inicio */
+.home-brand-link {
+  display: none;
+  position: fixed;
+  left: 16px;
+  top: 14px;
+  width: 205px;
+  height: 52px;
+  z-index: 12;
+  border-radius: 8px;
+}
+
+.home-brand-link span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+}
+
+body:has(.management) .home-brand-link {
+  display: block;
+}
+
+.side-brand {
+  color: white;
+  text-decoration: none;
+}
+
+@media (min-width: 851px) {
+  .mobile-menu-button,
+  .mobile-menu-backdrop {
+    display: none !important;
+  }
+
+  .main-head {
+    padding-right: 155px;
+  }
+}
+
+body:not(:has(.management)) .mobile-menu-button,
+body:not(:has(.management)) .mobile-menu-backdrop {
+  display: none !important;
+}
+
+/* Apariencia móvil */
 @media (max-width: 850px) {
+  .side {
+    height: 72px;
+    justify-content: flex-start;
+    gap: 12px;
+    z-index: 20;
+  }
+
+  .side nav,
+  .side .session {
+    display: none;
+  }
+
+  .mobile-menu-button {
+    position: fixed;
+    left: 14px;
+    right: auto;
+    top: 13px;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: 1px solid #ffffff35;
+    border-radius: 8px;
+    background: #0b5264;
+    color: white;
+    font-size: 28px;
+    line-height: 1;
+    z-index: 23;
+  }
+
+  .mobile-menu-backdrop {
+    position: fixed;
+    inset: 0;
+    display: block;
+    border: 0;
+    background: #00182080;
+    z-index: 19;
+  }
+
+  .side-brand {
+    margin-left: 54px;
+  }
+
+  .home-brand-link {
+    left: 69px;
+    top: 10px;
+    width: 190px;
+    height: 52px;
+    z-index: 22;
+  }
+
+  /* Sidebar abierto */
+  .mobile-menu-open {
+    overflow: hidden;
+  }
+
   .mobile-menu-open .side {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: min(86vw, 330px);
     height: 100vh;
     height: 100dvh;
     max-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px 16px calc(28px + env(safe-area-inset-bottom));
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: calc(28px + env(safe-area-inset-bottom));
+    box-shadow: 12px 0 35px #00182055;
+  }
+
+  .mobile-menu-open .side-brand {
+    margin-left: 0;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ffffff1d;
   }
 
   .mobile-menu-open .side nav {
     display: grid;
     flex: none;
     min-height: auto;
+    margin-top: 10px;
     overflow: visible;
+  }
+
+  .mobile-menu-open .side nav > :nth-child(2) {
+    display: none !important;
+  }
+
+  .mobile-menu-open .side a {
+    padding: 13px 12px;
   }
 
   .mobile-menu-open .side .session {
@@ -31,6 +297,7 @@ body:not(:has(.management)) .mobile-menu-button,body:not(:has(.management)) .mob
     margin-top: 24px;
     margin-bottom: 8px;
     padding: 15px 8px 8px;
+    background: var(--petroleo-oscuro);
   }
 
   .mobile-menu-open .side .sign-out {
@@ -41,8 +308,16 @@ body:not(:has(.management)) .mobile-menu-button,body:not(:has(.management)) .mob
     padding: 12px;
     font-size: 15px;
   }
-/* Afiliaciones ahora pertenece a Gestión Sindical.
-   Oculta su antigua opción independiente en todos los sidebar. */
-.side nav > :nth-child(2) {
-  display: none !important;
+
+  .mobile-menu-open .mobile-menu-button {
+    left: min(calc(86vw - 58px), 272px);
+    right: auto;
+    top: 13px;
+    background: #ffffff12;
+  }
+
+  .mobile-menu-open .home-brand-link {
+    left: 16px;
+    width: 210px;
+  }
 }
