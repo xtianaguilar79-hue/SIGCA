@@ -14,6 +14,11 @@ export function MobileSideMenu(){
   useEffect(()=>{
     function closeAfterSelection(event:MouseEvent){
       const target=event.target as Element|null;
+      const link=target?.closest(".side nav a");
+      if(link?.textContent?.trim()==="Biblioteca"&&link.getAttribute("href")==="#"){
+        event.preventDefault();
+        window.location.href="/gestion/biblioteca";
+      }
       if(target?.closest(".side nav a")||target?.closest(".side .sign-out")||target?.closest(".home-brand-link")) setOpen(false);
     }
     document.addEventListener("click",closeAfterSelection);
