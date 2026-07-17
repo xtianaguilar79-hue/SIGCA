@@ -147,6 +147,36 @@ function drawField(
   }
 }
 
+function drawTemplateField(
+  page: PDFPage,
+  font: PDFFont,
+  value: string,
+  x: number,
+  y: number,
+  width: number,
+  size = 9
+) {
+  if (!value.trim()) return;
+
+  // La plantilla ya contiene la linea para completar a mano.
+  // Si existe un dato, se borra solamente esa linea, sin cubrir etiquetas.
+  page.drawRectangle({
+    x,
+    y: y - 4,
+    width,
+    height: 8,
+    color: rgb(1, 1, 1),
+  });
+
+  page.drawText(fitText(value, font, size, width - 2), {
+    x: x + 2,
+    y,
+    size,
+    font,
+    color: rgb(0, 0, 0),
+  });
+}
+
 function markBox(page: PDFPage, x: number, y: number) {
   page.drawLine({
     start: { x: x + 2, y: y + 2 },
@@ -159,6 +189,71 @@ function markBox(page: PDFPage, x: number, y: number) {
     end: { x: x + 2, y: y + 13 },
     thickness: 1.2,
     color: rgb(0, 0, 0),
+  });
+}
+
+function clearPdfRow(page: PDFPage, y: number) {
+  page.drawRectangle({
+    x: 26,
+    y: y - 5,
+    width: 537,
+    height: 17,
+    color: rgb(1, 1, 1),
+  });
+}
+
+function drawPdfLabel(
+  page: PDFPage,
+  font: PDFFont,
+  label: string,
+  x: number,
+  y: number
+) {
+  page.drawText(label, {
+    x,
+    y,
+    size: 10.5,
+    font,
+    color: rgb(0, 0, 0),
+  });
+}
+
+function drawPdfValueOrLine(
+  page: PDFPage,
+  font: PDFFont,
+  value: string,
+  x: number,
+  y: number,
+  endX: number,
+  size = 9
+) {
+  const width = endX - x;
+  if (value.trim()) {
+    page.drawText(fitText(value, font, size, width - 2), {
+      x: x + 2,
+      y,
+      size,
+      font,
+      color: rgb(0, 0, 0),
+    });
+  } else {
+    page.drawLine({
+      start: { x, y: y - 1 },
+      end: { x: endX, y: y - 1 },
+      thickness: 0.55,
+      color: rgb(0, 0, 0),
+    });
+  }
+}
+
+function drawEmptyBox(page: PDFPage, x: number, y: number) {
+  page.drawRectangle({
+    x,
+    y,
+    width: 17,
+    height: 17,
+    borderWidth: 0.7,
+    borderColor: rgb(0, 0, 0),
   });
 }
 
@@ -181,31 +276,73 @@ async function createOfficialPdf(employer: EmployerData, person: PersonData) {
   drawField(page, font, employer.correo, 125, 442, 222);
   drawField(page, font, employer.telefono, 418, 442, 129);
 
-  // Datos personales. La plantilla se limpia antes de escribir cada campo.
-  drawField(page, font, person.apellidoNombres, 134, 395, 413);
-  drawField(page, font, person.domicilio, 126, 371, 421);
-  drawField(page, font, person.provincia, 73, 346, 139);
-  drawField(page, font, person.localidad, 274, 346, 124);
-  drawField(page, font, person.codigoPostal, 472, 346, 75);
-  drawField(page, font, formatDate(person.fechaNacimiento), 97, 322, 94);
-  drawField(page, font, person.tipoDocumento, 294, 322, 59, 8.5);
-  drawField(page, font, person.numeroDocumento, 414, 322, 133);
-  drawField(page, font, person.cuil, 66, 299, 123);
-  drawField(page, font, person.nacionalidad, 259, 299, 99);
-  drawField(page, font, person.estadoCivil, 424, 299, 123);
-  drawField(page, font, person.telefono, 73, 276, 171);
-  drawField(page, font, person.correo, 337, 276, 210);
-  drawField(page, font, person.areaTrabajo, 84, 253, 104);
-  drawField(page, font, person.oficio, 219, 253, 85);
-  drawField(page, font, formatDate(person.fechaIngreso), 458, 253, 89);
+  // Datos personales: se reconstruye cada renglon completo para evitar
+  // recortes o restos de las lineas originales de la plantilla.
+  [381, 357, 332, 308, 284, 260, 236].forEach((y) => clearPdfRow(page, y));
 
-  drawField(page, font, person.numeroAfiliado, 319, 189, 195);
-  drawField(page, font, person.otroGremio, 296, 162, 220);
+  drawPdfLabel(page, font, "Apellido/s y Nombre/s", 27, 381);
+  drawPdfValueOrLine(page, font, person.apellidoNombres, 138, 381, 562);
 
-  if (person.afiliadoAoma === "Sí") markBox(page, 170, 181);
-  if (person.afiliadoAoma === "No") markBox(page, 223, 181);
-  if (person.afiliadoOtroGremio === "Sí") markBox(page, 180, 154);
-  if (person.afiliadoOtroGremio === "No") markBox(page, 233, 154);
+  drawPdfLabel(page, font, "Domicilio: Calle y N.º", 27, 357);
+  drawPdfValueOrLine(page, font, person.domicilio, 130, 357, 562);
+
+  drawPdfLabel(page, font, "Provincia:", 27, 332);
+  drawPdfValueOrLine(page, font, person.provincia, 77, 332, 212);
+  drawPdfLabel(page, font, "Localidad:", 219, 332);
+  drawPdfValueOrLine(page, font, person.localidad, 278, 332, 398);
+  drawPdfLabel(page, font, "Código Postal:", 414, 332);
+  drawPdfValueOrLine(page, font, person.codigoPostal, 485, 332, 562);
+
+  drawPdfLabel(page, font, "Fecha de Nac.:", 27, 308);
+  drawPdfValueOrLine(page, font, formatDate(person.fechaNacimiento), 101, 308, 191);
+  drawPdfLabel(page, font, "Tipo de Documento:", 199, 308);
+  drawPdfValueOrLine(page, font, person.tipoDocumento, 298, 308, 353, 8.5);
+  drawPdfLabel(page, font, "N.º de Doc.:", 367, 308);
+  drawPdfValueOrLine(page, font, person.numeroDocumento, 418, 308, 562);
+
+  drawPdfLabel(page, font, "CUIL N.º:", 27, 284);
+  drawPdfValueOrLine(page, font, person.cuil, 70, 284, 189);
+  drawPdfLabel(page, font, "Nacionalidad:", 194, 284);
+  drawPdfValueOrLine(page, font, person.nacionalidad, 263, 284, 358);
+  drawPdfLabel(page, font, "Estado Civil:", 363, 284);
+  drawPdfValueOrLine(page, font, person.estadoCivil, 428, 284, 562);
+
+  drawPdfLabel(page, font, "Teléfono:", 27, 260);
+  drawPdfValueOrLine(page, font, person.telefono, 77, 260, 244);
+  drawPdfLabel(page, font, "Correo Electrónico:", 248, 260);
+  drawPdfValueOrLine(page, font, person.correo, 341, 260, 562);
+
+  drawPdfLabel(page, font, "Área de trabajo:", 27, 236);
+  drawPdfValueOrLine(page, font, person.areaTrabajo, 98, 236, 188);
+  drawPdfLabel(page, font, "Oficio:", 195, 236);
+  drawPdfValueOrLine(page, font, person.oficio, 226, 236, 304);
+  drawPdfLabel(page, font, "Fecha de ingreso a la empresa:", 316, 236);
+  drawPdfValueOrLine(page, font, formatDate(person.fechaIngreso), 462, 236, 562);
+
+  // Otros datos: mismo criterio, renglon limpio y casillas nuevas.
+  clearPdfRow(page, 170);
+  clearPdfRow(page, 144);
+
+  drawPdfLabel(page, font, "¿Fue afiliado a A.O.M.A.?", 27, 170);
+  drawPdfLabel(page, font, "SI", 162, 170);
+  drawEmptyBox(page, 170, 165);
+  drawPdfLabel(page, font, "NO", 210, 170);
+  drawEmptyBox(page, 223, 165);
+  drawPdfLabel(page, font, "N.º de Afiliado:", 272, 170);
+  drawPdfValueOrLine(page, font, person.numeroAfiliado, 365, 170, 529);
+
+  drawPdfLabel(page, font, "¿Fue afiliado a otro gremio?", 27, 144);
+  drawPdfLabel(page, font, "SI", 171, 144);
+  drawEmptyBox(page, 180, 138);
+  drawPdfLabel(page, font, "NO", 220, 144);
+  drawEmptyBox(page, 233, 138);
+  drawPdfLabel(page, font, "¿Cuál?", 273, 144);
+  drawPdfValueOrLine(page, font, person.otroGremio, 310, 144, 531);
+
+  if (person.afiliadoAoma === "Sí") markBox(page, 170, 165);
+  if (person.afiliadoAoma === "No") markBox(page, 223, 165);
+  if (person.afiliadoOtroGremio === "Sí") markBox(page, 180, 138);
+  if (person.afiliadoOtroGremio === "No") markBox(page, 233, 138);
 
   if (person.observaciones.trim()) {
     page.drawRectangle({
