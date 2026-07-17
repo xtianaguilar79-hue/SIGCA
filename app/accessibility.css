@@ -513,7 +513,7 @@ body:not(:has(.management)) .mobile-menu-backdrop {
     left: 16px;
     width: 210px;
   }
-
+}
 /* =========================================================
    FICHA DE AFILIACIÓN — CONTRASTE EN MODO OSCURO
    ========================================================= */
@@ -596,5 +596,4 @@ body:not(:has(.management)) .mobile-menu-backdrop {
   border-color: #49636c;
   color: #aebfc4;
   opacity: 1;
-}
 }
