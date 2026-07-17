@@ -41,4 +41,8 @@ body:not(:has(.management)) .mobile-menu-button,body:not(:has(.management)) .mob
     padding: 12px;
     font-size: 15px;
   }
+/* Afiliaciones ahora pertenece a Gestión Sindical.
+   Oculta su antigua opción independiente en todos los sidebar. */
+.side nav > :nth-child(2) {
+  display: none !important;
 }
