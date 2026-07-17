@@ -1,0 +1,18 @@
+{
+  "id": "ficha-practica-modulo-05-accesible",
+  "titulo": "Ficha para analizar una estrategia sindical en contexto",
+  "campos": [
+    "situacion_y_periodo",
+    "problema_colectivo",
+    "actores_e_intereses",
+    "mandato_y_organizacion",
+    "estrategia_sindical",
+    "respuestas",
+    "evidencias",
+    "resultados_y_consecuencias",
+    "ensenanza_actual",
+    "pendientes"
+  ],
+  "instrucciones": "Completar en texto. No incluir datos personales. Separar hechos, interpretaciones y pendientes.",
+  "accesibilidad": "Etiquetas textuales, orden lineal y compatible con lector de pantalla."
+}
