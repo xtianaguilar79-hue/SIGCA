@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { completeLesson } from "../../actions";
 
 type BlockData = { contenido?:string; introduccion?:string; items?:string[]; cierre?:string; estado_recurso?:string; recurso_id?:string };
 type Block = { id:string; orden:number; tipo:string; titulo:string|null; obligatorio:boolean; datos:BlockData };
@@ -33,7 +34,7 @@ function BlockContent({ block, resource }:{ block:Block; resource?:Resource }) {
   </article>;
 }
 
-export default async function LessonPage({ params }:{ params:Promise<{id:string}> }) {
+export default async function LessonPage({ params,searchParams }:{ params:Promise<{id:string}>;searchParams:Promise<{estado?:string}> }) {
   const { id } = await params;
   const supabase = await createClient();
   const { data:{ user } } = await supabase.auth.getUser();
@@ -44,6 +45,9 @@ export default async function LessonPage({ params }:{ params:Promise<{id:string}
   if (!lesson) notFound();
   const { data:blocks } = await supabase.from("fs_bloques").select("id,orden,tipo,titulo,obligatorio,datos").eq("leccion_id",id).order("orden");
   const { data:resources } = await supabase.from("fs_recursos").select("id,tipo,titulo,estado,ruta,datos").eq("leccion_id",id);
+  const {data:progress}=await supabase.from("fs_progreso_lecciones").select("estado").eq("usuario_id",user.id).eq("leccion_id",id).maybeSingle();
+  const {estado}=await searchParams;
   const resourceMap = new Map(((resources??[]) as Resource[]).map(resource=>[resource.id,resource]));
-  return <main className="lesson-page"><header className="lesson-top"><Link href="/gestion/formacion">← Volver a Formación Sindical</Link><span>LECCIÓN {lesson.orden}</span></header><section className="lesson-intro"><p className="kicker">FORMACIÓN SINDICAL</p><h1>{lesson.titulo}</h1><p>{lesson.proposito}</p>{lesson.objetivo&&<div><strong>Objetivo</strong><span>{lesson.objetivo}</span></div>}</section><section className="learning-content">{((blocks??[]) as Block[]).map(block=><BlockContent block={block} resource={block.datos?.recurso_id ? resourceMap.get(block.datos.recurso_id) : undefined} key={block.id}/>)}</section><footer className="lesson-footer"><Link href="/gestion/formacion">Volver al recorrido formativo</Link></footer></main>;
+  const completed=progress?.estado==="completada";
+  return <main className="lesson-page"><header className="lesson-top"><Link href="/gestion/formacion">← Volver a Formación Sindical</Link><span>LECCIÓN {lesson.orden}</span></header><section className="lesson-intro"><p className="kicker">FORMACIÓN SINDICAL</p><h1>{lesson.titulo}</h1><p>{lesson.proposito}</p>{lesson.objetivo&&<div><strong>Objetivo</strong><span>{lesson.objetivo}</span></div>}</section>{estado==="completada"&&<div className="lesson-feedback">Lección completada. Tu progreso quedó guardado.</div>}{estado==="error"&&<div className="lesson-feedback error">No pudimos guardar el progreso. Intentá nuevamente.</div>}<section className="learning-content">{((blocks??[]) as Block[]).map(block=><BlockContent block={block} resource={block.datos?.recurso_id ? resourceMap.get(block.datos.recurso_id) : undefined} key={block.id}/>)}</section><footer className="lesson-footer"><Link href="/gestion/formacion">Volver al recorrido formativo</Link>{completed?<span className="lesson-done">✓ Lección completada</span>:<form action={completeLesson}><input type="hidden" name="lesson_id" value={id}/><button type="submit">Marcar como completada</button></form>}</footer></main>;
 }
