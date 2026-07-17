@@ -1,12 +1,60 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import {
+  FormEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 export function DocumentSearch({ html }: { html: string }) {
   const contentRef = useRef<HTMLElement>(null);
-  const [query, setQuery] = useState("");
+
+  const [inputValue, setInputValue] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [resultCount, setResultCount] = useState(0);
   const [activeResult, setActiveResult] = useState(0);
+
+  function getMarks() {
+    return contentRef.current?.querySelectorAll<HTMLElement>(
+      ".document-search-mark",
+    );
+  }
+
+  function moveToResult(index: number) {
+    const marks = getMarks();
+
+    if (!marks || !marks.length) {
+      return;
+    }
+
+    const safeIndex =
+      ((index % marks.length) + marks.length) % marks.length;
+
+    marks.forEach((mark) => {
+      mark.classList.remove("document-search-mark-active");
+    });
+
+    const selectedMark = marks[safeIndex];
+
+    selectedMark.classList.add(
+      "document-search-mark-active",
+    );
+
+    setActiveResult(safeIndex);
+
+    selectedMark.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+      inline: "nearest",
+    });
+
+    window.setTimeout(() => {
+      selectedMark.focus({
+        preventScroll: true,
+      });
+    }, 450);
+  }
 
   useEffect(() => {
     const container = contentRef.current;
@@ -17,46 +65,50 @@ export function DocumentSearch({ html }: { html: string }) {
 
     container.innerHTML = html;
 
-    const searchTerm = query.trim();
+    const term = searchTerm.trim();
 
-    if (searchTerm.length < 2) {
+    if (term.length < 2) {
       setResultCount(0);
       setActiveResult(0);
       return;
     }
 
-    const escapedTerm = searchTerm.replace(
+    const escapedTerm = term.replace(
       /[.*+?^${}()|[\]\\]/g,
       "\\$&",
     );
 
-    const expression = new RegExp(`(${escapedTerm})`, "gi");
+    const expression = new RegExp(
+      `(${escapedTerm})`,
+      "gi",
+    );
 
     const walker = document.createTreeWalker(
       container,
       NodeFilter.SHOW_TEXT,
     );
 
-    const textNodes: Text[] = [];
+    const nodes: Text[] = [];
     let currentNode = walker.nextNode();
 
     while (currentNode) {
       const parent = currentNode.parentElement;
+      const text = currentNode.textContent || "";
 
       if (
         parent &&
-        !["SCRIPT", "STYLE", "MARK"].includes(parent.tagName) &&
-        currentNode.textContent?.toLowerCase().includes(
-          searchTerm.toLowerCase(),
-        )
+        !["SCRIPT", "STYLE", "MARK"].includes(
+          parent.tagName,
+        ) &&
+        text.toLowerCase().includes(term.toLowerCase())
       ) {
-        textNodes.push(currentNode as Text);
+        nodes.push(currentNode as Text);
       }
 
       currentNode = walker.nextNode();
     }
 
-    textNodes.forEach((textNode) => {
+    nodes.forEach((textNode) => {
       const text = textNode.textContent || "";
       const parts = text.split(expression);
 
@@ -64,138 +116,174 @@ export function DocumentSearch({ html }: { html: string }) {
         return;
       }
 
-      const fragment = document.createDocumentFragment();
+      const fragment =
+        document.createDocumentFragment();
 
       parts.forEach((part) => {
-        if (part.toLowerCase() === searchTerm.toLowerCase()) {
+        if (part.toLowerCase() === term.toLowerCase()) {
           const mark = document.createElement("mark");
+
           mark.className = "document-search-mark";
           mark.textContent = part;
+          mark.tabIndex = -1;
+
           fragment.appendChild(mark);
         } else {
-          fragment.appendChild(document.createTextNode(part));
+          fragment.appendChild(
+            document.createTextNode(part),
+          );
         }
       });
 
-      textNode.parentNode?.replaceChild(fragment, textNode);
+      textNode.parentNode?.replaceChild(
+        fragment,
+        textNode,
+      );
     });
 
-    const marks = container.querySelectorAll(
+    const marks = container.querySelectorAll<HTMLElement>(
       ".document-search-mark",
     );
 
     setResultCount(marks.length);
-    setActiveResult(marks.length ? 1 : 0);
-  }, [html, query]);
+    setActiveResult(0);
 
-  useEffect(() => {
-    const container = contentRef.current;
+    if (marks.length) {
+      window.setTimeout(() => {
+        moveToResult(0);
+      }, 100);
+    }
+  }, [html, searchTerm]);
 
-    if (!container || activeResult < 1) {
+  function submitSearch(
+    event: FormEvent<HTMLFormElement>,
+  ) {
+    event.preventDefault();
+
+    const newTerm = inputValue.trim();
+
+    if (newTerm.length < 2) {
+      setSearchTerm("");
       return;
     }
 
-    const marks = container.querySelectorAll(
-      ".document-search-mark",
-    );
-
-    marks.forEach((mark) =>
-      mark.classList.remove("document-search-mark-active"),
-    );
-
-    const selected = marks[activeResult - 1];
-
-    if (selected) {
-      selected.classList.add("document-search-mark-active");
-      selected.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
+    if (newTerm === searchTerm) {
+      moveToResult(0);
+      return;
     }
-  }, [activeResult, resultCount]);
+
+    setSearchTerm(newTerm);
+  }
 
   function previousResult() {
-    if (!resultCount) {
-      return;
-    }
-
-    setActiveResult((current) =>
-      current <= 1 ? resultCount : current - 1,
-    );
+    moveToResult(activeResult - 1);
   }
 
   function nextResult() {
-    if (!resultCount) {
-      return;
-    }
-
-    setActiveResult((current) =>
-      current >= resultCount ? 1 : current + 1,
-    );
+    moveToResult(activeResult + 1);
   }
 
   function clearSearch() {
-    setQuery("");
+    setInputValue("");
+    setSearchTerm("");
+    setResultCount(0);
+    setActiveResult(0);
+
+    if (contentRef.current) {
+      contentRef.current.innerHTML = html;
+    }
   }
 
   return (
     <>
       <section
-        className="document-search"
+        className="document-search document-search-compact"
         aria-label="Buscar dentro del documento"
       >
-        <label htmlFor="document-search-input">
-          Buscar dentro de esta ley o convenio
-        </label>
+        <form
+          className="document-search-bar"
+          onSubmit={submitSearch}
+        >
+          <label
+            className="document-search-hidden-label"
+            htmlFor="document-search-input"
+          >
+            Buscar dentro del documento
+          </label>
 
-        <div className="document-search-controls">
           <input
             id="document-search-input"
             type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Ejemplo: jornada, salario, seguridad..."
+            value={inputValue}
+            onChange={(event) =>
+              setInputValue(event.target.value)
+            }
+            placeholder="Buscar dentro del documento..."
           />
 
-          {query && (
+          {inputValue && (
             <button
               type="button"
-              className="document-search-clear"
+              className="document-search-icon-button"
               onClick={clearSearch}
+              aria-label="Limpiar búsqueda"
+              title="Limpiar búsqueda"
             >
-              Limpiar
+              ×
             </button>
           )}
-        </div>
 
-        <div className="document-search-navigation">
+          <button
+            type="submit"
+            className="document-search-submit"
+            aria-label="Buscar"
+            title="Buscar"
+          >
+            <svg
+              width="21"
+              height="21"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="M20 20l-4-4" />
+            </svg>
+          </button>
+        </form>
+
+        <div className="document-search-results">
           <span aria-live="polite">
-            {query.trim().length < 2
-              ? "Escribí al menos dos letras."
+            {!searchTerm
+              ? "Ingresá una palabra"
               : resultCount
-                ? `${activeResult} de ${resultCount} coincidencias`
-                : "No se encontraron coincidencias."}
+                ? `${activeResult + 1} de ${resultCount}`
+                : "Sin resultados"}
           </span>
 
-          <div>
-            <button
-              type="button"
-              onClick={previousResult}
-              disabled={!resultCount}
-              aria-label="Coincidencia anterior"
-            >
-              ← Anterior
-            </button>
+          <button
+            type="button"
+            className="document-search-arrow"
+            onClick={previousResult}
+            disabled={!resultCount}
+            aria-label="Coincidencia anterior"
+            title="Coincidencia anterior"
+          >
+            ←
+          </button>
 
-            <button
-              type="button"
-              onClick={nextResult}
-              disabled={!resultCount}
-              aria-label="Coincidencia siguiente"
-            >
-              Siguiente →
-            </button>
-          </div>
+          <button
+            type="button"
+            className="document-search-arrow"
+            onClick={nextResult}
+            disabled={!resultCount}
+            aria-label="Coincidencia siguiente"
+            title="Coincidencia siguiente"
+          >
+            →
+          </button>
         </div>
       </section>
 
