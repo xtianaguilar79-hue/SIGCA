@@ -1,36 +1,40 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-const navigationData: Record<
-  string,
-  { href: string; icon: string }
-> = {
-  "inicio institucional": {
+const mainNavigation = [
+  {
+    label: "Inicio institucional",
     href: "/gestion",
     icon: "⌂",
   },
-  "gestión sindical": {
+  {
+    label: "Gestión sindical",
     href: "/gestion/sindical",
     icon: "◆",
   },
-  "formación sindical": {
+  {
+    label: "Formación Sindical",
     href: "/gestion/formacion",
     icon: "▤",
   },
-  biblioteca: {
+  {
+    label: "Biblioteca",
     href: "/gestion/biblioteca",
     icon: "▥",
   },
-  "mi perfil": {
+  {
+    label: "Mi perfil",
     href: "/gestion/perfil",
     icon: "●",
   },
-  "administración de usuarios": {
-    href: "/gestion/usuarios",
-    icon: "⚙",
-  },
+];
+
+const adminNavigation = {
+  label: "Administración de usuarios",
+  href: "/gestion/usuarios",
+  icon: "⚙",
 };
 
 function normalizeText(value: string) {
@@ -39,6 +43,20 @@ function normalizeText(value: string) {
     .toLocaleLowerCase("es")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
+}
+
+function isCurrentRoute(
+  currentPath: string,
+  href: string
+) {
+  if (href === "/gestion") {
+    return currentPath === "/gestion";
+  }
+
+  return (
+    currentPath === href ||
+    currentPath.startsWith(`${href}/`)
+  );
 }
 
 export function MobileSideMenu() {
@@ -58,42 +76,156 @@ export function MobileSideMenu() {
   }, [open]);
 
   useEffect(() => {
+    let preparing = false;
+
     function prepareNavigation() {
-      const links = document.querySelectorAll<HTMLAnchorElement>(
-        ".side nav a"
-      );
+      if (preparing) return;
 
-      links.forEach((link) => {
-        const originalText = link.textContent?.trim() || "";
-        const normalized = normalizeText(originalText);
+      preparing = true;
 
-        if (normalized === "afiliaciones") {
-          link.hidden = true;
-          link.style.display = "none";
-          link.setAttribute("aria-hidden", "true");
-          return;
-        }
+      const currentPath = window.location.pathname;
 
-        const navigationEntry = Object.entries(
-          navigationData
-        ).find(
-          ([label]) =>
-            normalizeText(label) === normalized
-        );
+      document
+        .querySelectorAll<HTMLElement>(".side")
+        .forEach((side) => {
+          const nav =
+            side.querySelector<HTMLElement>("nav");
 
-        if (!navigationEntry) return;
+          if (!nav) return;
 
-        const [, data] = navigationEntry;
+          const currentLinks = Array.from(
+            nav.querySelectorAll<HTMLAnchorElement>("a")
+          );
 
-        link.href = data.href;
-        link.dataset.navIcon = data.icon;
-      });
+          const sessionRole =
+            side
+              .querySelector(".session span")
+              ?.textContent?.trim() || "";
+
+          const hasAdminLink = currentLinks.some(
+            (link) =>
+              normalizeText(link.textContent || "") ===
+              normalizeText(
+                "Administración de usuarios"
+              )
+          );
+
+          const isAdministrator =
+            normalizeText(sessionRole).includes(
+              "administrador"
+            );
+
+          const navigationItems = [
+            ...mainNavigation,
+            ...(hasAdminLink || isAdministrator
+              ? [adminNavigation]
+              : []),
+          ];
+
+          const expectedSignature = navigationItems
+            .map((item) => item.href)
+            .join("|");
+
+          const currentSignature = currentLinks
+            .filter(
+              (link) =>
+                normalizeText(link.textContent || "") !==
+                "afiliaciones"
+            )
+            .map((link) => {
+              const url = new URL(
+                link.href,
+                window.location.origin
+              );
+
+              return url.pathname;
+            })
+            .join("|");
+
+          if (currentSignature !== expectedSignature) {
+            const fragment =
+              document.createDocumentFragment();
+
+            navigationItems.forEach((item) => {
+              const link =
+                document.createElement("a");
+
+              link.href = item.href;
+              link.textContent = item.label;
+              link.dataset.navIcon = item.icon;
+
+              if (
+                isCurrentRoute(
+                  currentPath,
+                  item.href
+                )
+              ) {
+                link.classList.add("active");
+                link.setAttribute(
+                  "aria-current",
+                  "page"
+                );
+              }
+
+              fragment.appendChild(link);
+            });
+
+            nav.replaceChildren(fragment);
+          } else {
+            currentLinks.forEach((link) => {
+              const item = navigationItems.find(
+                (navigationItem) => {
+                  const url = new URL(
+                    link.href,
+                    window.location.origin
+                  );
+
+                  return (
+                    url.pathname ===
+                    navigationItem.href
+                  );
+                }
+              );
+
+              if (!item) return;
+
+              link.textContent = item.label;
+              link.href = item.href;
+              link.dataset.navIcon = item.icon;
+
+              const active = isCurrentRoute(
+                currentPath,
+                item.href
+              );
+
+              link.classList.toggle(
+                "active",
+                active
+              );
+
+              if (active) {
+                link.setAttribute(
+                  "aria-current",
+                  "page"
+                );
+              } else {
+                link.removeAttribute(
+                  "aria-current"
+                );
+              }
+            });
+          }
+        });
+
+      preparing = false;
     }
 
     prepareNavigation();
 
     const observer = new MutationObserver(() => {
-      prepareNavigation();
+      window.requestAnimationFrame(
+        prepareNavigation
+      );
     });
 
     observer.observe(document.body, {
