@@ -4,3 +4,41 @@
 body:not(:has(.management)) .mobile-menu-button,body:not(:has(.management)) .mobile-menu-backdrop{display:none!important}
 @media(max-width:850px){.mobile-menu-open .mobile-menu-button{left:min(calc(86vw - 58px),272px);right:auto;top:13px;background:#ffffff12}.mobile-menu-open .side nav{flex:0 1 auto;min-height:0}.mobile-menu-open .side .session{display:block!important;flex:none;width:100%;margin-top:auto;padding:15px 8px 4px;background:var(--petroleo-oscuro)}.mobile-menu-open .side .sign-out{display:block;width:100%;padding:12px;margin-top:12px;font-size:14px}.mobile-menu-open .side a{padding:13px 12px}}
 .home-brand-link{display:none;position:fixed;left:16px;top:14px;width:205px;height:52px;z-index:12;border-radius:8px}.home-brand-link span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}body:has(.management) .home-brand-link{display:block}.side-brand{color:white;text-decoration:none}@media(min-width:851px){.main-head{padding-right:155px}}@media(max-width:850px){.mobile-menu-button{left:14px;right:auto}.side-brand{margin-left:54px}.home-brand-link{left:69px;top:10px;width:190px;height:52px;z-index:22}.mobile-menu-open .mobile-menu-button{left:min(calc(86vw - 58px),272px);right:auto}.mobile-menu-open .side-brand{margin-left:0}.mobile-menu-open .home-brand-link{left:16px;width:210px}}
+/* Sidebar móvil completamente desplazable */
+@media (max-width: 850px) {
+  .mobile-menu-open .side {
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: calc(28px + env(safe-area-inset-bottom));
+  }
+
+  .mobile-menu-open .side nav {
+    display: grid;
+    flex: none;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .mobile-menu-open .side .session {
+    display: block !important;
+    flex: none;
+    width: 100%;
+    margin-top: 24px;
+    margin-bottom: 8px;
+    padding: 15px 8px 8px;
+  }
+
+  .mobile-menu-open .side .sign-out {
+    display: block;
+    width: 100%;
+    min-height: 46px;
+    margin-top: 12px;
+    padding: 12px;
+    font-size: 15px;
+  }
+}
