@@ -1,6 +1,13 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import {
+  PDFDocument,
+  PDFFont,
+  PDFPage,
+  StandardFonts,
+  rgb,
+} from "pdf-lib";
 
 export type EmpresaAfiliacion = {
   id: string | number;
@@ -97,6 +104,135 @@ function formatDate(value: string) {
   return `${day}/${month}/${year}`;
 }
 
+function fitText(value: string, font: PDFFont, size: number, width: number) {
+  let result = value.trim();
+  while (result && font.widthOfTextAtSize(result, size) > width) {
+    result = result.slice(0, -1);
+  }
+  return result === value.trim() ? result : `${result.slice(0, -3)}...`;
+}
+
+function drawField(
+  page: PDFPage,
+  font: PDFFont,
+  value: string,
+  x: number,
+  y: number,
+  width: number,
+  size = 9
+) {
+  page.drawRectangle({
+    x: x - 1,
+    y: y - 3,
+    width: width + 2,
+    height: 14,
+    color: rgb(1, 1, 1),
+  });
+
+  if (value.trim()) {
+    page.drawText(fitText(value, font, size, width), {
+      x,
+      y,
+      size,
+      font,
+      color: rgb(0, 0, 0),
+    });
+  } else {
+    page.drawLine({
+      start: { x, y: y - 1 },
+      end: { x: x + width, y: y - 1 },
+      thickness: 0.55,
+      color: rgb(0, 0, 0),
+    });
+  }
+}
+
+function markBox(page: PDFPage, x: number, y: number) {
+  page.drawLine({
+    start: { x: x + 2, y: y + 2 },
+    end: { x: x + 13, y: y + 13 },
+    thickness: 1.2,
+    color: rgb(0, 0, 0),
+  });
+  page.drawLine({
+    start: { x: x + 13, y: y + 2 },
+    end: { x: x + 2, y: y + 13 },
+    thickness: 1.2,
+    color: rgb(0, 0, 0),
+  });
+}
+
+async function createOfficialPdf(employer: EmployerData, person: PersonData) {
+  const template = await fetch("/plantilla_ficha_afiliacion_AOMA.pdf");
+  if (!template.ok) throw new Error("No se encontró la plantilla PDF en public.");
+
+  const pdf = await PDFDocument.load(await template.arrayBuffer());
+  const page = pdf.getPage(0);
+  const font = await pdf.embedFont(StandardFonts.Helvetica);
+
+  // Datos del empleador.
+  drawField(page, font, employer.razonSocial, 95, 518, 452);
+  drawField(page, font, employer.rama, 61, 499, 486);
+  drawField(page, font, employer.domicilio, 78, 480, 267);
+  drawField(page, font, employer.localidad, 430, 480, 117);
+  drawField(page, font, employer.provincia, 76, 461, 128);
+  drawField(page, font, employer.codigoPostal, 285, 461, 64);
+  drawField(page, font, employer.cuit, 407, 461, 140);
+  drawField(page, font, employer.correo, 125, 442, 222);
+  drawField(page, font, employer.telefono, 418, 442, 129);
+
+  // Datos personales. La plantilla se limpia antes de escribir cada campo.
+  drawField(page, font, person.apellidoNombres, 134, 395, 413);
+  drawField(page, font, person.domicilio, 126, 371, 421);
+  drawField(page, font, person.provincia, 73, 346, 139);
+  drawField(page, font, person.localidad, 274, 346, 124);
+  drawField(page, font, person.codigoPostal, 472, 346, 75);
+  drawField(page, font, formatDate(person.fechaNacimiento), 97, 322, 94);
+  drawField(page, font, person.tipoDocumento, 294, 322, 59, 8.5);
+  drawField(page, font, person.numeroDocumento, 414, 322, 133);
+  drawField(page, font, person.cuil, 66, 299, 123);
+  drawField(page, font, person.nacionalidad, 259, 299, 99);
+  drawField(page, font, person.estadoCivil, 424, 299, 123);
+  drawField(page, font, person.telefono, 73, 276, 171);
+  drawField(page, font, person.correo, 337, 276, 210);
+  drawField(page, font, person.areaTrabajo, 84, 253, 104);
+  drawField(page, font, person.oficio, 219, 253, 85);
+  drawField(page, font, formatDate(person.fechaIngreso), 458, 253, 89);
+
+  drawField(page, font, person.numeroAfiliado, 319, 189, 195);
+  drawField(page, font, person.otroGremio, 296, 162, 220);
+
+  if (person.afiliadoAoma === "Sí") markBox(page, 170, 181);
+  if (person.afiliadoAoma === "No") markBox(page, 223, 181);
+  if (person.afiliadoOtroGremio === "Sí") markBox(page, 180, 154);
+  if (person.afiliadoOtroGremio === "No") markBox(page, 233, 154);
+
+  if (person.observaciones.trim()) {
+    page.drawRectangle({
+      x: 117,
+      y: 32,
+      width: 430,
+      height: 14,
+      color: rgb(1, 1, 1),
+    });
+    page.drawText(fitText(person.observaciones, font, 8.5, 428), {
+      x: 117,
+      y: 35,
+      size: 8.5,
+      font,
+      color: rgb(0, 0, 0),
+    });
+    page.drawLine({
+      start: { x: 117, y: 33 },
+      end: { x: 547, y: 33 },
+      thickness: 0.55,
+      color: rgb(0, 0, 0),
+    });
+  }
+
+  return pdf.save();
+}
+
 export function AffiliateForm({
   companies,
 }: {
@@ -165,9 +301,37 @@ export function AffiliateForm({
     }
   }
 
-  function printForm(event: FormEvent) {
+  async function printForm(event: FormEvent) {
     event.preventDefault();
-    window.print();
+
+    const pdfWindow = window.open("", "_blank");
+
+    try {
+      const bytes = await createOfficialPdf(employer, person);
+      const safeBytes = new Uint8Array(bytes);
+      const blob = new Blob([safeBytes.buffer as ArrayBuffer], {
+        type: "application/pdf",
+      });
+      const url = URL.createObjectURL(blob);
+
+      if (pdfWindow) {
+        pdfWindow.location.href = url;
+      } else {
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "ficha-afiliacion-AOMA.pdf";
+        link.click();
+      }
+
+      window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch (error) {
+      pdfWindow?.close();
+      alert(
+        error instanceof Error
+          ? error.message
+          : "No fue posible generar la ficha."
+      );
+    }
   }
 
   return (
@@ -1149,4 +1313,3 @@ export function AffiliateForm({
     </>
   );
 }
-
