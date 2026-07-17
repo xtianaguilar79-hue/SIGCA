@@ -514,3 +514,86 @@ body:not(:has(.management)) .mobile-menu-backdrop {
     width: 210px;
   }
 }
+/* =========================================================
+   FICHA DE AFILIACIÓN — CONTRASTE EN MODO OSCURO
+   ========================================================= */
+
+:root[data-theme="dark"] .affiliation-editor {
+  color: #edf5f6;
+}
+
+:root[data-theme="dark"] .affiliation-options,
+:root[data-theme="dark"] .affiliation-fieldset {
+  background: #18343e;
+  border-color: #49636c;
+}
+
+:root[data-theme="dark"] .affiliation-fieldset legend {
+  color: #f4f8f9;
+}
+
+:root[data-theme="dark"] .affiliation-editor .field label {
+  color: #edf5f6;
+}
+
+:root[data-theme="dark"] .affiliation-editor input,
+:root[data-theme="dark"] .affiliation-editor select {
+  background: #0b222a;
+  border: 1px solid #5f7b84;
+  color: #f5f8f9;
+}
+
+:root[data-theme="dark"] .affiliation-editor input::placeholder {
+  color: #aebfc4;
+  opacity: 1;
+}
+
+:root[data-theme="dark"] .affiliation-editor input:hover,
+:root[data-theme="dark"] .affiliation-editor select:hover {
+  border-color: #86bbc6;
+}
+
+:root[data-theme="dark"] .affiliation-editor input:focus,
+:root[data-theme="dark"] .affiliation-editor select:focus {
+  border-color: #8fd0de;
+  outline: 3px solid rgba(143, 208, 222, 0.25);
+  outline-offset: 1px;
+  box-shadow: none;
+}
+
+:root[data-theme="dark"] .affiliation-editor select option {
+  background: #10272f;
+  color: #f5f8f9;
+}
+
+:root[data-theme="dark"] .affiliation-editor input[type="date"] {
+  color-scheme: dark;
+}
+
+:root[data-theme="dark"]
+  .affiliation-editor
+  input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.9;
+}
+
+:root[data-theme="dark"] .affiliation-editor .submit {
+  background: #e8b640;
+  border-color: #e8b640;
+  color: #082f3a;
+  font-weight: 800;
+}
+
+:root[data-theme="dark"] .affiliation-editor .submit:hover {
+  background: #f3c85e;
+  border-color: #f3c85e;
+  color: #062832;
+}
+
+:root[data-theme="dark"] .affiliation-editor input:disabled,
+:root[data-theme="dark"] .affiliation-editor select:disabled {
+  background: #243d45;
+  border-color: #49636c;
+  color: #aebfc4;
+  opacity: 1;
+}
