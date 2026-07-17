@@ -123,33 +123,45 @@ export default async function AfiliacionesPage() {
         </header>
 
         <div className="cards">
-          <article className="module">
+          <Link
+            className="module module-link"
+            href="/gestion/sindical/afiliaciones/nueva"
+          >
             <span>＋</span>
+
             <h2>Nueva ficha de afiliación</h2>
+
             <p>
-              Selección de empresa y carga de los datos
-              necesarios para generar la ficha oficial.
+              Seleccioná la empresa y completá los datos
+              para preparar la ficha oficial.
             </p>
-            <small>PRÓXIMO PASO</small>
-          </article>
+
+            <small>INGRESAR</small>
+          </Link>
 
           <article className="module">
             <span>▤</span>
+
             <h2>Fichas generadas</h2>
+
             <p>
               Consulta e impresión de las fichas
               preparadas anteriormente.
             </p>
+
             <small>EN PREPARACIÓN</small>
           </article>
 
           <article className="module">
             <span>⌕</span>
+
             <h2>Seguimiento</h2>
+
             <p>
               Estado de presentación, observaciones,
               altas, bajas y traslados.
             </p>
+
             <small>EN PREPARACIÓN</small>
           </article>
         </div>
