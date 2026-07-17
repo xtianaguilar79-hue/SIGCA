@@ -689,4 +689,15 @@
     max-height: 42px !important;
     font-size: 22px !important;
   }
+/* Mantiene el buscador visible debajo del encabezado móvil */
+@media (max-width: 850px) {
+  .document-search {
+    position: sticky !important;
+    top: 82px !important;
+    z-index: 18 !important;
+  }
+
+  .document-search-current {
+    scroll-margin-top: 210px !important;
+  }
 }
