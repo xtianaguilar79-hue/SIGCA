@@ -51,7 +51,7 @@ export default async function DocumentoPage({
   return (
     <main className="management">
       <aside className="side">
-        <div className="side-brand">
+        <Link className="side-brand" href="/gestion">
           <Image
             src="/logo-aoma.png"
             width={39}
@@ -63,22 +63,31 @@ export default async function DocumentoPage({
             <strong>SIGCA</strong>
             <span>SECCIONAL SAN JUAN</span>
           </div>
-        </div>
+        </Link>
 
         <nav>
-          <Link href="/gestion">Inicio institucional</Link>
-          <a href="#">Afiliaciones</a>
-          <a href="#">Gestión sindical</a>
+          <Link href="/gestion">
+            Inicio institucional
+          </Link>
+
+          <Link href="/gestion/sindical">
+            Gestión sindical
+          </Link>
+
           <Link href="/gestion/formacion">
             Formación Sindical
           </Link>
+
           <Link
             className="active"
             href="/gestion/biblioteca"
           >
             Biblioteca
           </Link>
-          <Link href="/gestion/perfil">Mi perfil</Link>
+
+          <Link href="/gestion/perfil">
+            Mi perfil
+          </Link>
 
           {isAdmin && (
             <Link href="/gestion/usuarios">
@@ -89,9 +98,11 @@ export default async function DocumentoPage({
 
         <div className="session">
           <strong>{name}</strong>
+
           <span>
             {String(profile.rol || "Usuario autorizado")}
           </span>
+
           <SignOutButton />
         </div>
       </aside>
@@ -112,19 +123,26 @@ export default async function DocumentoPage({
           </span>
 
           <p>{documento.numero}</p>
+
           <h1>{documento.titulo}</h1>
+
           <p>{documento.resumen}</p>
         </header>
 
-        <div className="library-notice">
-          <strong>Material de consulta institucional</strong>
+        <DocumentSearch
+          html={documento.contenidoHtml}
+        />
+
+        <div className="library-notice library-notice-bottom">
+          <strong>
+            Material de consulta institucional
+          </strong>
+
           <p>
             Ante una situación concreta, consultá la versión
             vigente y solicitá asesoramiento sindical o jurídico.
           </p>
         </div>
-
-        <DocumentSearch html={documento.contenidoHtml} />
       </section>
     </main>
   );
