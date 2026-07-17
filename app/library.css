@@ -701,3 +701,156 @@
     scroll-margin-top: 210px !important;
   }
 }
+/* Buscador documental compacto */
+.document-search {
+  width: min(100%, 760px) !important;
+  margin: 0 auto 14px !important;
+  padding: 8px 10px !important;
+  gap: 5px !important;
+  border-radius: 10px !important;
+}
+
+.document-search > label {
+  font-size: 13px !important;
+}
+
+.document-search-controls {
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+}
+
+.document-search-field {
+  min-width: 150px !important;
+  flex: 1 1 auto !important;
+}
+
+.document-search-field input {
+  height: 40px !important;
+  padding: 6px 11px !important;
+  font-size: 15px !important;
+}
+
+.document-search-submit {
+  width: 42px !important;
+  height: 40px !important;
+  min-width: 42px !important;
+  flex-basis: 42px !important;
+  font-size: 16px !important;
+}
+
+.document-search-navigation {
+  display: flex !important;
+  flex: 0 0 auto !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+  gap: 5px !important;
+}
+
+.document-search-navigation span {
+  min-width: 64px !important;
+  font-size: 12px !important;
+  white-space: nowrap !important;
+}
+
+.document-search-navigation .document-search-arrow {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  max-width: 36px !important;
+  max-height: 36px !important;
+  border-radius: 7px !important;
+  font-size: 18px !important;
+}
+
+/* Versión para teléfono */
+@media (max-width: 700px) {
+  .document-search {
+    position: sticky !important;
+    top: 72px !important;
+    z-index: 18 !important;
+    width: 100% !important;
+    margin: 0 0 10px !important;
+    padding: 6px !important;
+    border-radius: 0 0 9px 9px !important;
+    box-shadow: 0 5px 15px #173d4b20 !important;
+  }
+
+  .document-search > label {
+    display: none !important;
+  }
+
+  .document-search-controls {
+    display: flex !important;
+    width: 100% !important;
+    gap: 5px !important;
+  }
+
+  .document-search-field {
+    display: flex !important;
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+  }
+
+  .document-search-field input {
+    min-width: 0 !important;
+    height: 38px !important;
+    padding: 5px 9px !important;
+    font-size: 14px !important;
+  }
+
+  .document-search-submit {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    flex: 0 0 38px !important;
+  }
+
+  .document-search-navigation {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    gap: 3px !important;
+  }
+
+  .document-search-navigation span {
+    min-width: 38px !important;
+    max-width: 45px !important;
+    font-size: 10px !important;
+    line-height: 1.1 !important;
+    white-space: normal !important;
+  }
+
+  .document-search-navigation .document-search-arrow {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    max-width: 32px !important;
+    max-height: 32px !important;
+    padding: 0 !important;
+    font-size: 17px !important;
+  }
+
+  .document-search-current {
+    scroll-margin-top: 135px !important;
+  }
+}
+
+/* Teléfonos especialmente angostos */
+@media (max-width: 390px) {
+  .document-search-navigation span {
+    min-width: 34px !important;
+    max-width: 38px !important;
+    font-size: 9px !important;
+  }
+
+  .document-search-navigation .document-search-arrow {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
+    max-width: 30px !important;
+    max-height: 30px !important;
+  }
+}
