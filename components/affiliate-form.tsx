@@ -44,6 +44,8 @@ type PersonData = {
   tipoDocumento: string;
   numeroDocumento: string;
   cuil: string;
+  cuilPrefijo: string;
+  cuilDigito: string;
   nacionalidad: string;
   estadoCivil: string;
   telefono: string;
@@ -80,6 +82,8 @@ const emptyPerson: PersonData = {
   tipoDocumento: "",
   numeroDocumento: "",
   cuil: "",
+  cuilPrefijo: "",
+  cuilDigito: "",
   nacionalidad: "",
   estadoCivil: "",
   telefono: "",
@@ -94,6 +98,33 @@ const emptyPerson: PersonData = {
   observaciones: "",
 };
 
+const ARGENTINE_PROVINCES = [
+  "Buenos Aires",
+  "Ciudad Autónoma de Buenos Aires",
+  "Catamarca",
+  "Chaco",
+  "Chubut",
+  "Córdoba",
+  "Corrientes",
+  "Entre Ríos",
+  "Formosa",
+  "Jujuy",
+  "La Pampa",
+  "La Rioja",
+  "Mendoza",
+  "Misiones",
+  "Neuquén",
+  "Río Negro",
+  "Salta",
+  "San Juan",
+  "San Luis",
+  "Santa Cruz",
+  "Santa Fe",
+  "Santiago del Estero",
+  "Tierra del Fuego, Antártida e Islas del Atlántico Sur",
+  "Tucumán",
+] as const;
+
 function formatDate(value: string) {
   if (!value) return "";
 
@@ -102,6 +133,16 @@ function formatDate(value: string) {
   if (!year || !month || !day) return value;
 
   return `${day}/${month}/${year}`;
+}
+
+function formatCuil(person: PersonData) {
+  const parts = [
+    person.cuilPrefijo.trim(),
+    person.numeroDocumento.trim(),
+    person.cuilDigito.trim(),
+  ];
+
+  return parts.every(Boolean) ? parts.join("-") : parts.filter(Boolean).join("-");
 }
 
 function fitText(value: string, font: PDFFont, size: number, width: number) {
@@ -145,36 +186,6 @@ function drawField(
       color: rgb(0, 0, 0),
     });
   }
-}
-
-function drawTemplateField(
-  page: PDFPage,
-  font: PDFFont,
-  value: string,
-  x: number,
-  y: number,
-  width: number,
-  size = 9
-) {
-  if (!value.trim()) return;
-
-  // La plantilla ya contiene la linea para completar a mano.
-  // Si existe un dato, se borra solamente esa linea, sin cubrir etiquetas.
-  page.drawRectangle({
-    x,
-    y: y - 4,
-    width,
-    height: 8,
-    color: rgb(1, 1, 1),
-  });
-
-  page.drawText(fitText(value, font, size, width - 2), {
-    x: x + 2,
-    y,
-    size,
-    font,
-    color: rgb(0, 0, 0),
-  });
 }
 
 function markBox(page: PDFPage, x: number, y: number) {
@@ -264,60 +275,61 @@ async function createOfficialPdf(employer: EmployerData, person: PersonData) {
   const pdf = await PDFDocument.load(await template.arrayBuffer());
   const page = pdf.getPage(0);
   const font = await pdf.embedFont(StandardFonts.Helvetica);
+  const valueFont = await pdf.embedFont(StandardFonts.HelveticaBold);
 
   // Datos del empleador.
-  drawField(page, font, employer.razonSocial, 95, 518, 452);
-  drawField(page, font, employer.rama, 61, 499, 486);
-  drawField(page, font, employer.domicilio, 78, 480, 267);
-  drawField(page, font, employer.localidad, 430, 480, 117);
-  drawField(page, font, employer.provincia, 76, 461, 128);
-  drawField(page, font, employer.codigoPostal, 285, 461, 64);
-  drawField(page, font, employer.cuit, 407, 461, 140);
-  drawField(page, font, employer.correo, 125, 442, 222);
-  drawField(page, font, employer.telefono, 418, 442, 129);
+  drawField(page, valueFont, employer.razonSocial, 101, 517, 446, 9.5);
+  drawField(page, valueFont, employer.rama, 68, 498, 479, 9.5);
+  drawField(page, valueFont, employer.domicilio, 85, 479, 260, 9.5);
+  drawField(page, valueFont, employer.localidad, 435, 479, 112, 9.5);
+  drawField(page, valueFont, employer.provincia, 83, 460, 121, 9.5);
+  drawField(page, valueFont, employer.codigoPostal, 293, 460, 56, 9.5);
+  drawField(page, valueFont, employer.cuit, 414, 460, 133, 9.5);
+  drawField(page, valueFont, employer.correo, 132, 441, 215, 9.5);
+  drawField(page, valueFont, employer.telefono, 425, 441, 122, 9.5);
 
   // Datos personales: se reconstruye cada renglon completo para evitar
   // recortes o restos de las lineas originales de la plantilla.
   [381, 357, 332, 308, 284, 260, 236].forEach((y) => clearPdfRow(page, y));
 
   drawPdfLabel(page, font, "Apellido/s y Nombre/s", 27, 381);
-  drawPdfValueOrLine(page, font, person.apellidoNombres, 138, 381, 562);
+  drawPdfValueOrLine(page, valueFont, person.apellidoNombres, 138, 381, 562, 9.3);
 
   drawPdfLabel(page, font, "Domicilio: Calle y N.º", 27, 357);
-  drawPdfValueOrLine(page, font, person.domicilio, 130, 357, 562);
+  drawPdfValueOrLine(page, valueFont, person.domicilio, 130, 357, 562, 9.3);
 
   drawPdfLabel(page, font, "Provincia:", 27, 332);
-  drawPdfValueOrLine(page, font, person.provincia, 77, 332, 212);
+  drawPdfValueOrLine(page, valueFont, person.provincia, 77, 332, 212, 9.3);
   drawPdfLabel(page, font, "Localidad:", 219, 332);
-  drawPdfValueOrLine(page, font, person.localidad, 278, 332, 398);
+  drawPdfValueOrLine(page, valueFont, person.localidad, 278, 332, 398, 9.3);
   drawPdfLabel(page, font, "Código Postal:", 414, 332);
-  drawPdfValueOrLine(page, font, person.codigoPostal, 485, 332, 562);
+  drawPdfValueOrLine(page, valueFont, person.codigoPostal, 485, 332, 562, 9.3);
 
   drawPdfLabel(page, font, "Fecha de Nac.:", 27, 308);
-  drawPdfValueOrLine(page, font, formatDate(person.fechaNacimiento), 101, 308, 191);
+  drawPdfValueOrLine(page, valueFont, formatDate(person.fechaNacimiento), 101, 308, 191, 9.3);
   drawPdfLabel(page, font, "Tipo de Documento:", 199, 308);
-  drawPdfValueOrLine(page, font, person.tipoDocumento, 298, 308, 353, 8.5);
+  drawPdfValueOrLine(page, valueFont, person.tipoDocumento, 298, 308, 353, 9);
   drawPdfLabel(page, font, "N.º de Doc.:", 367, 308);
-  drawPdfValueOrLine(page, font, person.numeroDocumento, 418, 308, 562);
+  drawPdfValueOrLine(page, valueFont, person.numeroDocumento, 418, 308, 562, 9.3);
 
   drawPdfLabel(page, font, "CUIL N.º:", 27, 284);
-  drawPdfValueOrLine(page, font, person.cuil, 70, 284, 189);
+  drawPdfValueOrLine(page, valueFont, formatCuil(person), 70, 284, 189, 9.3);
   drawPdfLabel(page, font, "Nacionalidad:", 194, 284);
-  drawPdfValueOrLine(page, font, person.nacionalidad, 263, 284, 358);
+  drawPdfValueOrLine(page, valueFont, person.nacionalidad, 263, 284, 358, 9.3);
   drawPdfLabel(page, font, "Estado Civil:", 363, 284);
-  drawPdfValueOrLine(page, font, person.estadoCivil, 428, 284, 562);
+  drawPdfValueOrLine(page, valueFont, person.estadoCivil, 428, 284, 562, 9.3);
 
   drawPdfLabel(page, font, "Teléfono:", 27, 260);
-  drawPdfValueOrLine(page, font, person.telefono, 77, 260, 244);
+  drawPdfValueOrLine(page, valueFont, person.telefono, 77, 260, 244, 9.3);
   drawPdfLabel(page, font, "Correo Electrónico:", 248, 260);
-  drawPdfValueOrLine(page, font, person.correo, 341, 260, 562);
+  drawPdfValueOrLine(page, valueFont, person.correo, 341, 260, 562, 9.3);
 
   drawPdfLabel(page, font, "Área de trabajo:", 27, 236);
-  drawPdfValueOrLine(page, font, person.areaTrabajo, 98, 236, 188);
+  drawPdfValueOrLine(page, valueFont, person.areaTrabajo, 98, 236, 188, 9.3);
   drawPdfLabel(page, font, "Oficio:", 195, 236);
-  drawPdfValueOrLine(page, font, person.oficio, 226, 236, 304);
+  drawPdfValueOrLine(page, valueFont, person.oficio, 226, 236, 304, 9.3);
   drawPdfLabel(page, font, "Fecha de ingreso a la empresa:", 316, 236);
-  drawPdfValueOrLine(page, font, formatDate(person.fechaIngreso), 462, 236, 562);
+  drawPdfValueOrLine(page, valueFont, formatDate(person.fechaIngreso), 462, 236, 562, 9.3);
 
   // Otros datos: mismo criterio, renglon limpio y casillas nuevas.
   clearPdfRow(page, 170);
@@ -325,24 +337,24 @@ async function createOfficialPdf(employer: EmployerData, person: PersonData) {
 
   drawPdfLabel(page, font, "¿Fue afiliado a A.O.M.A.?", 27, 170);
   drawPdfLabel(page, font, "SI", 162, 170);
-  drawEmptyBox(page, 170, 165);
+  drawEmptyBox(page, 180, 165);
   drawPdfLabel(page, font, "NO", 210, 170);
-  drawEmptyBox(page, 223, 165);
+  drawEmptyBox(page, 232, 165);
   drawPdfLabel(page, font, "N.º de Afiliado:", 272, 170);
-  drawPdfValueOrLine(page, font, person.numeroAfiliado, 365, 170, 529);
+  drawPdfValueOrLine(page, valueFont, person.numeroAfiliado, 365, 170, 529, 9.3);
 
   drawPdfLabel(page, font, "¿Fue afiliado a otro gremio?", 27, 144);
   drawPdfLabel(page, font, "SI", 171, 144);
-  drawEmptyBox(page, 180, 138);
+  drawEmptyBox(page, 190, 138);
   drawPdfLabel(page, font, "NO", 220, 144);
-  drawEmptyBox(page, 233, 138);
+  drawEmptyBox(page, 242, 138);
   drawPdfLabel(page, font, "¿Cuál?", 273, 144);
-  drawPdfValueOrLine(page, font, person.otroGremio, 310, 144, 531);
+  drawPdfValueOrLine(page, valueFont, person.otroGremio, 310, 144, 531, 9.3);
 
-  if (person.afiliadoAoma === "Sí") markBox(page, 170, 165);
-  if (person.afiliadoAoma === "No") markBox(page, 223, 165);
-  if (person.afiliadoOtroGremio === "Sí") markBox(page, 180, 138);
-  if (person.afiliadoOtroGremio === "No") markBox(page, 233, 138);
+  if (person.afiliadoAoma === "Sí") markBox(page, 180, 165);
+  if (person.afiliadoAoma === "No") markBox(page, 232, 165);
+  if (person.afiliadoOtroGremio === "Sí") markBox(page, 190, 138);
+  if (person.afiliadoOtroGremio === "No") markBox(page, 242, 138);
 
   if (person.observaciones.trim()) {
     page.drawRectangle({
@@ -456,7 +468,7 @@ export function AffiliateForm({
       } else {
         const link = document.createElement("a");
         link.href = url;
-        link.download = "ficha-afiliacion-AOMA.pdf";
+        link.download = "Ficha de afiliación AOMA.pdf";
         link.click();
       }
 
@@ -467,6 +479,32 @@ export function AffiliateForm({
         error instanceof Error
           ? error.message
           : "No fue posible generar la ficha."
+      );
+    }
+  }
+
+  async function downloadForm() {
+    try {
+      const bytes = await createOfficialPdf(employer, person);
+      const safeBytes = new Uint8Array(bytes);
+      const blob = new Blob([safeBytes.buffer as ArrayBuffer], {
+        type: "application/pdf",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "Ficha de afiliación AOMA.pdf";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch (error) {
+      alert(
+        error instanceof Error
+          ? error.message
+          : "No fue posible descargar la ficha."
       );
     }
   }
@@ -690,7 +728,7 @@ export function AffiliateForm({
 
             <div className="field">
               <label>Provincia</label>
-              <input
+              <select
                 value={person.provincia}
                 onChange={(event) =>
                   updatePerson(
@@ -698,7 +736,14 @@ export function AffiliateForm({
                     event.target.value
                   )
                 }
-              />
+              >
+                <option value="">Seleccionar provincia</option>
+                {ARGENTINE_PROVINCES.map((province) => (
+                  <option key={province} value={province}>
+                    {province}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="field">
@@ -743,7 +788,7 @@ export function AffiliateForm({
 
             <div className="field">
               <label>Tipo de documento</label>
-              <input
+              <select
                 value={person.tipoDocumento}
                 onChange={(event) =>
                   updatePerson(
@@ -751,7 +796,11 @@ export function AffiliateForm({
                     event.target.value
                   )
                 }
-              />
+              >
+                <option value="">Seleccionar</option>
+                <option value="DNI">DNI</option>
+                <option value="CI">CI - Cédula de identidad</option>
+              </select>
             </div>
 
             <div className="field">
@@ -769,15 +818,39 @@ export function AffiliateForm({
 
             <div className="field">
               <label>CUIL</label>
-              <input
-                value={person.cuil}
-                onChange={(event) =>
-                  updatePerson(
-                    "cuil",
-                    event.target.value
-                  )
-                }
-              />
+              <div className="cuil-editor">
+                <input
+                  aria-label="Prefijo del CUIL"
+                  inputMode="numeric"
+                  maxLength={2}
+                  placeholder="XX"
+                  value={person.cuilPrefijo}
+                  onChange={(event) =>
+                    updatePerson(
+                      "cuilPrefijo",
+                      event.target.value.replace(/\D/g, "").slice(0, 2)
+                    )
+                  }
+                />
+                <input
+                  aria-label="Número de documento del CUIL"
+                  value={person.numeroDocumento}
+                  readOnly
+                />
+                <input
+                  aria-label="Dígito verificador del CUIL"
+                  inputMode="numeric"
+                  maxLength={1}
+                  placeholder="X"
+                  value={person.cuilDigito}
+                  onChange={(event) =>
+                    updatePerson(
+                      "cuilDigito",
+                      event.target.value.replace(/\D/g, "").slice(0, 1)
+                    )
+                  }
+                />
+              </div>
             </div>
 
             <div className="field">
@@ -960,9 +1033,18 @@ export function AffiliateForm({
           </div>
         </fieldset>
 
-        <button className="submit" type="submit">
-          Imprimir ficha oficial
-        </button>
+        <div className="affiliation-actions">
+          <button className="submit" type="submit">
+            Ver o imprimir ficha
+          </button>
+          <button
+            className="submit download-affiliation"
+            type="button"
+            onClick={downloadForm}
+          >
+            Descargar ficha PDF
+          </button>
+        </div>
       </form>
 
       <article className="official-affiliation-print">
@@ -1235,9 +1317,49 @@ export function AffiliateForm({
           display: none;
         }
 
+        .cuil-editor {
+          display: grid;
+          grid-template-columns: 64px minmax(130px, 1fr) 54px;
+          gap: 8px;
+        }
+
+        .cuil-editor input {
+          min-width: 0;
+          text-align: center;
+        }
+
+        .cuil-editor input[readonly] {
+          background: #eef3f4;
+        }
+
+        :root[data-theme="dark"] .cuil-editor input[readonly] {
+          background: #243d45;
+          border-color: #5f7b84;
+          color: #f5f8f9;
+        }
+
+        .affiliation-actions {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+        }
+
+        .download-affiliation {
+          background: #0b5264;
+          color: white;
+        }
+
         @media (max-width: 700px) {
           .affiliation-options {
             grid-template-columns: 1fr;
+          }
+
+          .affiliation-actions {
+            grid-template-columns: 1fr;
+          }
+
+          .cuil-editor {
+            grid-template-columns: 54px minmax(105px, 1fr) 48px;
           }
         }
 
