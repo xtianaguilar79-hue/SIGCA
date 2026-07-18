@@ -63,3 +63,16 @@
   border-color: #5f7b84 !important;
   color: #f5f8f9 !important;
 }
+/* Ubicación de la campanita en computadoras */
+@media (min-width: 1200px) {
+  .notification-shell {
+    left: 315px !important;
+    right: auto !important;
+    top: 15px !important;
+  }
+
+  .notification-bell {
+    width: 48px !important;
+    height: 48px !important;
+  }
+}
