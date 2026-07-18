@@ -66,7 +66,7 @@
 /* Ubicación de la campanita en computadoras */
 @media (min-width: 1200px) {
   .notification-shell {
-    left: 315px !important;
+    left: 235px !important;
     right: auto !important;
     top: 15px !important;
   }
