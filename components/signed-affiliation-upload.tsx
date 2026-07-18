@@ -94,6 +94,16 @@ export function SignedAffiliationUpload({
         {loading ? "Procesando..." : path ? "Reemplazar archivo" : "Subir PDF o foto"}
         <input type="file" accept="application/pdf,image/jpeg,image/png,image/webp" disabled={loading} onChange={uploadFile}/>
       </label>
+      <label className="signed-upload-button camera">
+  Escanear con cámara
+  <input
+    type="file"
+    accept="image/*"
+    capture="environment"
+    disabled={loading}
+    onChange={uploadFile}
+  />
+</label>
       {path && <button type="button" disabled={loading} onClick={openFile}>Ver archivo</button>}
     </div>
     {message && <p role="status">{message}</p>}
