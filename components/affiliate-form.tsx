@@ -23,7 +23,7 @@ export type EmpresaAfiliacion = {
   telefono: string | null;
 };
 
-type EmployerData = {
+export type EmployerData = {
   razonSocial: string;
   rama: string;
   domicilio: string;
@@ -35,7 +35,7 @@ type EmployerData = {
   telefono: string;
 };
 
-type PersonData = {
+export type PersonData = {
   apellidoNombres: string;
   domicilio: string;
   provincia: string;
@@ -391,10 +391,18 @@ async function createOfficialPdf(employer: EmployerData, person: PersonData) {
 
 export function AffiliateForm({
   companies,
+  applicationId,
+  initialCompanyId = "",
+  initialEmployer,
+  initialPerson,
 }: {
   companies: EmpresaAfiliacion[];
+  applicationId?: string;
+  initialCompanyId?: string;
+  initialEmployer?: EmployerData;
+  initialPerson?: PersonData;
 }) {
-  const [companyId, setCompanyId] = useState("");
+  const [companyId, setCompanyId] = useState(initialCompanyId);
   const [blankPerson, setBlankPerson] =
     useState(false);
   const [saving, setSaving] = useState(false);
@@ -405,10 +413,10 @@ export function AffiliateForm({
   } | null>(null);
 
   const [employer, setEmployer] =
-    useState<EmployerData>(emptyEmployer);
+    useState<EmployerData>(initialEmployer || emptyEmployer);
 
   const [person, setPerson] =
-    useState<PersonData>(emptyPerson);
+    useState<PersonData>(initialPerson || emptyPerson);
 
   function selectCompany(value: string) {
     setCompanyId(value);
@@ -518,7 +526,7 @@ export function AffiliateForm({
 
     const textOrNull = (value: string) => value.trim() || null;
     const supabase = createClient();
-    const { error } = await supabase.from("afiliaciones").insert({
+    const applicationData = {
       estado: "pendiente_firma",
       empresa_id: companyId || null,
       razon_social: textOrNull(employer.razonSocial),
@@ -551,7 +559,11 @@ export function AffiliateForm({
       afiliado_otro_gremio: textOrNull(person.afiliadoOtroGremio),
       otro_gremio: textOrNull(person.otroGremio),
       observaciones: textOrNull(person.observaciones),
-    });
+    };
+
+    const { error } = applicationId
+      ? await supabase.from("afiliaciones").update(applicationData).eq("id", applicationId).eq("estado", "pendiente_firma")
+      : await supabase.from("afiliaciones").insert(applicationData);
 
     setSaving(false);
 
@@ -566,7 +578,9 @@ export function AffiliateForm({
     setSaved(true);
     setSaveMessage({
       type: "success",
-      text: "Solicitud guardada correctamente como pendiente de firma.",
+      text: applicationId
+        ? "Los cambios fueron guardados correctamente."
+        : "Solicitud guardada correctamente como pendiente de firma.",
     });
   }
 
