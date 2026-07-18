@@ -332,8 +332,14 @@ async function createOfficialPdf(employer: EmployerData, person: PersonData) {
   drawPdfValueOrLine(page, valueFont, formatDate(person.fechaIngreso), 462, 236, 562, 9.3);
 
   // Otros datos: mismo criterio, renglon limpio y casillas nuevas.
-  clearPdfRow(page, 170);
-  clearPdfRow(page, 144);
+  // Limpia completamente las casillas originales para evitar bordes dobles.
+  page.drawRectangle({
+    x: 26,
+    y: 132,
+    width: 537,
+    height: 58,
+    color: rgb(1, 1, 1),
+  });
 
   drawPdfLabel(page, font, "¿Fue afiliado a A.O.M.A.?", 27, 170);
   drawPdfLabel(page, font, "SI", 162, 170);
@@ -468,7 +474,7 @@ export function AffiliateForm({
       } else {
         const link = document.createElement("a");
         link.href = url;
-        link.download = "Ficha de afiliación AOMA.pdf";
+        link.download = getPdfFileName();
         link.click();
       }
 
@@ -483,6 +489,23 @@ export function AffiliateForm({
     }
   }
 
+  function getPdfFileName() {
+    const companyName = employer.razonSocial.trim();
+
+    if (!companyName) {
+      return "Ficha de afiliación AOMA.pdf";
+    }
+
+    const safeCompanyName = companyName
+      .replace(/[<>:"/\\|?*]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    return safeCompanyName
+      ? `Ficha de afiliación ${safeCompanyName}.pdf`
+      : "Ficha de afiliación AOMA.pdf";
+  }
+
   async function downloadForm() {
     try {
       const bytes = await createOfficialPdf(employer, person);
@@ -494,7 +517,7 @@ export function AffiliateForm({
       const link = document.createElement("a");
 
       link.href = url;
-      link.download = "Ficha de afiliación AOMA.pdf";
+      link.download = getPdfFileName();
       document.body.appendChild(link);
       link.click();
       link.remove();
