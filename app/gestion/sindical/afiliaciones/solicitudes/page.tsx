@@ -66,9 +66,15 @@ export default async function SolicitudesPage({
 
   const { data: applications, error } = await supabase
     .from("afiliaciones")
-    .select("id,estado,razon_social,apellido_nombres,tipo_documento,numero_documento,cuil,telefono,correo,creado_en,archivo_firmado_path,archivo_firmado_nombre")
+    .select("id,estado,razon_social,apellido_nombres,tipo_documento,numero_documento,cuil,telefono,correo,creado_en,creado_por,archivo_firmado_path,archivo_firmado_nombre")
     .order("creado_en", { ascending: false })
     .limit(250);
+
+  const creatorIds = [...new Set((applications || []).map((application) => application.creado_por).filter(Boolean))];
+  const { data: creators } = creatorIds.length
+    ? await supabase.from("usuarios").select("id,nombre,apellido").in("id", creatorIds)
+    : { data: [] };
+  const creatorNames = new Map((creators || []).map((creator) => [creator.id, [creator.nombre, creator.apellido].filter(Boolean).join(" ")]));
 
   const params = await searchParams;
   const query = String(params.q || "").trim().toLocaleLowerCase("es");
@@ -141,6 +147,7 @@ export default async function SolicitudesPage({
               <div className="application-summary">
                 <span><b>Documento</b>{[application.tipo_documento, application.numero_documento].filter(Boolean).join(" ") || "—"}</span>
                 <span><b>Fecha</b>{formatDate(application.creado_en)}</span>
+                <span><b>Cargada por</b>{creatorNames.get(application.creado_por) || "Usuario autorizado"}</span>
               </div>
               {application.estado === "pendiente_firma" && (
                 <div className="application-actions">
@@ -182,6 +189,7 @@ export default async function SolicitudesPage({
       `}</style>
       <style>{`
         .applications-message.success{border-color:#3c806b;background:#e6f5ef;color:#124f3e}
+        .application-summary{grid-template-columns:repeat(3,minmax(0,1fr))}
         .applications-search select{min-width:190px;padding:12px;border:1px solid #aebfc4;border-radius:8px;background:white;color:#173b49;font-size:15px}
         .application-actions{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 16px}
         .application-actions a{padding:10px 14px;border:1px solid #0b5264;border-radius:8px;color:#0b5264;font-size:14px;font-weight:900;text-decoration:none}
@@ -198,7 +206,7 @@ export default async function SolicitudesPage({
         :root[data-theme="dark"] .applications-search select{background:#0b222a;border-color:#5f7b84;color:#f5f8f9}
         :root[data-theme="dark"] .application-actions a{border-color:#8fd0de;color:#b8e6ef}
         :root[data-theme="dark"] .application-actions a.pdf{background:#8fd0de;color:#092a33}
-        @media(max-width:700px){.application-actions{display:grid}.application-actions a{text-align:center;min-height:44px}.application-status-form>div{display:grid}.application-status-form button{min-height:46px}}
+        @media(max-width:700px){.application-summary{grid-template-columns:1fr}.application-actions{display:grid}.application-actions a{text-align:center;min-height:44px}.application-status-form>div{display:grid}.application-status-form button{min-height:46px}}
       `}</style>
     </main>
   );
