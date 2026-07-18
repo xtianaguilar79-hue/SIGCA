@@ -67,11 +67,11 @@ export default async function AfiliacionesPage() {
             <small>DISPONIBLE</small>
           </Link>
 
-          <article className="module">
+          <Link className="module module-link" href="/gestion/sindical/afiliaciones/solicitudes">
             <span>⌕</span><h2>Seguimiento</h2>
             <p>Estado de presentación, observaciones, altas, bajas y traslados.</p>
-            <small>PRÓXIMA ETAPA</small>
-          </article>
+            <small>CONSULTAR ESTADOS</small>
+          </Link>
         </div>
       </section>
     </main>
