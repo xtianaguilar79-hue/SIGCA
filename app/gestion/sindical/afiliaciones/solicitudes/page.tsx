@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "@/components/sign-out-button";
+import { SignedAffiliationUpload } from "@/components/signed-affiliation-upload";
 
 const STATUS_LABELS: Record<string, string> = {
   pendiente_firma: "Pendiente de firma",
@@ -65,7 +66,7 @@ export default async function SolicitudesPage({
 
   const { data: applications, error } = await supabase
     .from("afiliaciones")
-    .select("id,estado,razon_social,apellido_nombres,tipo_documento,numero_documento,cuil,telefono,correo,creado_en")
+    .select("id,estado,razon_social,apellido_nombres,tipo_documento,numero_documento,cuil,telefono,correo,creado_en,archivo_firmado_path,archivo_firmado_nombre")
     .order("creado_en", { ascending: false })
     .limit(250);
 
@@ -167,6 +168,7 @@ export default async function SolicitudesPage({
                     </div>
                   </form>
                 )}
+                {application.estado === "pendiente_firma" && <SignedAffiliationUpload applicationId={application.id} initialPath={application.archivo_firmado_path} initialName={application.archivo_firmado_nombre}/>} 
               </details>
             </article>
           ))}
