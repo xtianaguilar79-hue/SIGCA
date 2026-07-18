@@ -9,7 +9,13 @@ function value(data: unknown) {
   return String(data || "");
 }
 
-export default async function EditarSolicitudPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditarSolicitudPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ accion?: string }>;
+}) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/acceso");
@@ -23,6 +29,7 @@ export default async function EditarSolicitudPage({ params }: { params: Promise<
   if (!profile || profile.activo === false || String(profile.estado).toLowerCase() !== "aprobado") redirect("/acceso");
 
   const { id } = await params;
+  const autoDownload = (await searchParams).accion === "descargar";
   const { data: application } = await supabase.from("afiliaciones").select("*").eq("id", id).maybeSingle();
   if (!application) notFound();
   if (application.estado !== "pendiente_firma") redirect("/gestion/sindical/afiliaciones/solicitudes");
@@ -83,7 +90,7 @@ export default async function EditarSolicitudPage({ params }: { params: Promise<
     <section className="main-area">
       <Link className="library-back" href="/gestion/sindical/afiliaciones/solicitudes">← Volver a solicitudes</Link>
       <header className="main-head"><div><p className="kicker">AFILIACIONES</p><h1>Modificar solicitud</h1><p>Corregí los datos pendientes y volvé a guardar o descargar la ficha.</p></div></header>
-      <AffiliateForm companies={companies || []} applicationId={id} initialCompanyId={value(application.empresa_id)} initialEmployer={initialEmployer} initialPerson={initialPerson}/>
+      <AffiliateForm companies={companies || []} applicationId={id} initialCompanyId={value(application.empresa_id)} initialEmployer={initialEmployer} initialPerson={initialPerson} autoDownload={autoDownload}/>
     </section>
   </main>;
 }
