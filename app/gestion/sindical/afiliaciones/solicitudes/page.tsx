@@ -135,7 +135,7 @@ export default async function SolicitudesPage({
               {application.estado === "pendiente_firma" && (
                 <div className="application-actions">
                   <Link href={`/gestion/sindical/afiliaciones/solicitudes/${application.id}/editar`}>Modificar datos</Link>
-                  <Link className="pdf" href={`/gestion/sindical/afiliaciones/solicitudes/${application.id}/editar`}>Abrir y descargar PDF</Link>
+                  <Link className="pdf" href={`/gestion/sindical/afiliaciones/solicitudes/${application.id}/editar?accion=descargar`}>Descargar PDF</Link>
                 </div>
               )}
               <details>
