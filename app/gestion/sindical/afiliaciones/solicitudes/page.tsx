@@ -132,6 +132,12 @@ export default async function SolicitudesPage({
                 <span><b>Documento</b>{[application.tipo_documento, application.numero_documento].filter(Boolean).join(" ") || "—"}</span>
                 <span><b>Fecha</b>{formatDate(application.creado_en)}</span>
               </div>
+              {application.estado === "pendiente_firma" && (
+                <div className="application-actions">
+                  <Link href={`/gestion/sindical/afiliaciones/solicitudes/${application.id}/editar`}>Modificar datos</Link>
+                  <Link className="pdf" href={`/gestion/sindical/afiliaciones/solicitudes/${application.id}/editar`}>Abrir y descargar PDF</Link>
+                </div>
+              )}
               <details>
                 <summary>Abrir datos</summary>
                 <dl>
@@ -165,6 +171,9 @@ export default async function SolicitudesPage({
       `}</style>
       <style>{`
         .applications-message.success{border-color:#3c806b;background:#e6f5ef;color:#124f3e}
+        .application-actions{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 16px}
+        .application-actions a{padding:10px 14px;border:1px solid #0b5264;border-radius:8px;color:#0b5264;font-size:14px;font-weight:900;text-decoration:none}
+        .application-actions a.pdf{background:#0b5264;color:white}
         .application-status-form{margin-top:17px;padding-top:15px;border-top:1px solid var(--linea)}
         .application-status-form label{display:block;margin-bottom:8px;font-weight:900}
         .application-status-form>div{display:flex;gap:10px}
@@ -174,7 +183,9 @@ export default async function SolicitudesPage({
         :root[data-theme="dark"] .application-status-form label{color:#f2f7f8}
         :root[data-theme="dark"] .application-status-form select{background:#0b222a;border-color:#5f7b84;color:#f5f8f9}
         :root[data-theme="dark"] .applications-message.success{border-color:#5c9e89;background:#173b32;color:#c6f3e1}
-        @media(max-width:700px){.application-status-form>div{display:grid}.application-status-form button{min-height:46px}}
+        :root[data-theme="dark"] .application-actions a{border-color:#8fd0de;color:#b8e6ef}
+        :root[data-theme="dark"] .application-actions a.pdf{background:#8fd0de;color:#092a33}
+        @media(max-width:700px){.application-actions{display:grid}.application-actions a{text-align:center;min-height:44px}.application-status-form>div{display:grid}.application-status-form button{min-height:46px}}
       `}</style>
     </main>
   );
