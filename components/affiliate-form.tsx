@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 import {
   PDFDocument,
   PDFFont,
@@ -396,6 +397,12 @@ export function AffiliateForm({
   const [companyId, setCompanyId] = useState("");
   const [blankPerson, setBlankPerson] =
     useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   const [employer, setEmployer] =
     useState<EmployerData>(emptyEmployer);
@@ -405,6 +412,8 @@ export function AffiliateForm({
 
   function selectCompany(value: string) {
     setCompanyId(value);
+    setSaved(false);
+    setSaveMessage(null);
 
     const selected = companies.find(
       (company) => String(company.id) === value
@@ -432,6 +441,8 @@ export function AffiliateForm({
     field: keyof EmployerData,
     value: string
   ) {
+    setSaved(false);
+    setSaveMessage(null);
     setEmployer((current) => ({
       ...current,
       [field]: value,
@@ -442,6 +453,8 @@ export function AffiliateForm({
     field: keyof PersonData,
     value: string
   ) {
+    setSaved(false);
+    setSaveMessage(null);
     setPerson((current) => ({
       ...current,
       [field]: value,
@@ -450,6 +463,8 @@ export function AffiliateForm({
 
   function changePersonMode(blank: boolean) {
     setBlankPerson(blank);
+    setSaved(false);
+    setSaveMessage(null);
 
     if (blank) {
       setPerson(emptyPerson);
@@ -487,6 +502,72 @@ export function AffiliateForm({
           : "No fue posible generar la ficha."
       );
     }
+  }
+
+  async function savePendingApplication() {
+    if (!person.apellidoNombres.trim() || !person.numeroDocumento.trim()) {
+      setSaveMessage({
+        type: "error",
+        text: "Para guardar la solicitud completá el nombre y el número de documento.",
+      });
+      return;
+    }
+
+    setSaving(true);
+    setSaveMessage(null);
+
+    const textOrNull = (value: string) => value.trim() || null;
+    const supabase = createClient();
+    const { error } = await supabase.from("afiliaciones").insert({
+      estado: "pendiente_firma",
+      empresa_id: companyId || null,
+      razon_social: textOrNull(employer.razonSocial),
+      rama: textOrNull(employer.rama),
+      empresa_domicilio: textOrNull(employer.domicilio),
+      empresa_localidad: textOrNull(employer.localidad),
+      empresa_provincia: textOrNull(employer.provincia),
+      empresa_codigo_postal: textOrNull(employer.codigoPostal),
+      empresa_cuit: textOrNull(employer.cuit),
+      empresa_correo: textOrNull(employer.correo),
+      empresa_telefono: textOrNull(employer.telefono),
+      apellido_nombres: textOrNull(person.apellidoNombres),
+      domicilio: textOrNull(person.domicilio),
+      provincia: textOrNull(person.provincia),
+      localidad: textOrNull(person.localidad),
+      codigo_postal: textOrNull(person.codigoPostal),
+      fecha_nacimiento: person.fechaNacimiento || null,
+      tipo_documento: textOrNull(person.tipoDocumento),
+      numero_documento: textOrNull(person.numeroDocumento),
+      cuil: textOrNull(formatCuil(person)),
+      nacionalidad: textOrNull(person.nacionalidad),
+      estado_civil: textOrNull(person.estadoCivil),
+      telefono: textOrNull(person.telefono),
+      correo: textOrNull(person.correo),
+      area_trabajo: textOrNull(person.areaTrabajo),
+      oficio: textOrNull(person.oficio),
+      fecha_ingreso: person.fechaIngreso || null,
+      afiliado_aoma: textOrNull(person.afiliadoAoma),
+      numero_afiliado: textOrNull(person.numeroAfiliado),
+      afiliado_otro_gremio: textOrNull(person.afiliadoOtroGremio),
+      otro_gremio: textOrNull(person.otroGremio),
+      observaciones: textOrNull(person.observaciones),
+    });
+
+    setSaving(false);
+
+    if (error) {
+      setSaveMessage({
+        type: "error",
+        text: `No se pudo guardar la solicitud: ${error.message}`,
+      });
+      return;
+    }
+
+    setSaved(true);
+    setSaveMessage({
+      type: "success",
+      text: "Solicitud guardada correctamente como pendiente de firma.",
+    });
   }
 
   function getPdfFileName() {
@@ -1057,6 +1138,18 @@ export function AffiliateForm({
         </fieldset>
 
         <div className="affiliation-actions">
+          <button
+            className="submit save-affiliation"
+            type="button"
+            onClick={savePendingApplication}
+            disabled={saving || saved}
+          >
+            {saving
+              ? "Guardando..."
+              : saved
+                ? "Solicitud guardada"
+                : "Guardar solicitud pendiente"}
+          </button>
           <button className="submit" type="submit">
             Ver o imprimir ficha
           </button>
@@ -1068,6 +1161,15 @@ export function AffiliateForm({
             Descargar ficha PDF
           </button>
         </div>
+
+        {saveMessage && (
+          <div
+            className={`affiliation-save-message ${saveMessage.type}`}
+            role="status"
+          >
+            {saveMessage.text}
+          </div>
+        )}
       </form>
 
       <article className="official-affiliation-print">
@@ -1363,13 +1465,56 @@ export function AffiliateForm({
 
         .affiliation-actions {
           display: grid;
-          grid-template-columns: 1fr 1fr;
+          grid-template-columns: repeat(3, 1fr);
           gap: 12px;
+        }
+
+        .save-affiliation {
+          background: #166b55;
+          color: white;
+        }
+
+        .save-affiliation:disabled {
+          cursor: not-allowed;
+          opacity: 0.72;
         }
 
         .download-affiliation {
           background: #0b5264;
           color: white;
+        }
+
+        .affiliation-save-message {
+          padding: 13px 15px;
+          border: 1px solid;
+          border-radius: 8px;
+          font-size: 15px;
+          font-weight: 700;
+          line-height: 1.45;
+        }
+
+        .affiliation-save-message.success {
+          border-color: #3c806b;
+          background: #e6f5ef;
+          color: #124f3e;
+        }
+
+        .affiliation-save-message.error {
+          border-color: #b45f52;
+          background: #fff0ed;
+          color: #812f24;
+        }
+
+        :root[data-theme="dark"] .affiliation-save-message.success {
+          border-color: #5c9e89;
+          background: #173b32;
+          color: #c6f3e1;
+        }
+
+        :root[data-theme="dark"] .affiliation-save-message.error {
+          border-color: #b87568;
+          background: #442821;
+          color: #ffd4c8;
         }
 
         @media (max-width: 700px) {
