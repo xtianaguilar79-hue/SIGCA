@@ -3,6 +3,7 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 import { PrintDocumentButton } from "@/components/print-document-button";
+import { ActaOriginalUpload } from "@/components/acta-original-upload";
 import { SignOutButton } from "@/components/sign-out-button";
 import { createClient } from "@/lib/supabase/server";
 
@@ -48,6 +49,7 @@ export default async function ActaDetallePage({ params }: { params: Promise<{ id
         <header><Image src="/logo-aoma.png" width={58} height={58} alt="AOMA"/><div><span>{String(document.tipo).toUpperCase()}</span><h1>{document.titulo}</h1><p>AOMA Seccional San Juan · SIGCA</p></div><b>{String(document.estado).toUpperCase()}</b></header>
         <dl className="minute-metadata"><div><dt>Fecha</dt><dd>{new Intl.DateTimeFormat("es-AR", { dateStyle: "long", timeStyle: "short" }).format(new Date(document.fecha))}</dd></div><div><dt>Lugar</dt><dd>{document.lugar || "No indicado"}</dd></div><div><dt>Empresa</dt><dd>{document.empresa_nombre || "No indicada"}</dd></div><div><dt>Responsable de carga</dt><dd>{creatorName}</dd></div></dl>
         <Section title="Asunto" content={document.asunto}/><Section title="Participantes" content={document.participantes}/><Section title="Desarrollo" content={document.desarrollo}/><Section title="Acuerdos alcanzados" content={document.acuerdos}/><Section title="Asuntos pendientes" content={document.asuntos_pendientes}/><Section title="Observaciones" content={document.observaciones}/>
+        <ActaOriginalUpload documentId={id} initialPath={document.archivo_original_path} initialName={document.archivo_original_nombre} canUpload={canEdit}/>
         {canEdit && <details className="finalize-document"><summary>Finalizar documento</summary><p>Al finalizarlo, el contenido quedará bloqueado para evitar modificaciones accidentales. Revisá toda la información antes de continuar.</p><form action={finalizeDocument}><input type="hidden" name="id" value={id}/><button type="submit">Confirmar finalización</button></form></details>}
         <footer><div>Firma y aclaración</div><div>Firma y aclaración</div></footer>
       </article>
