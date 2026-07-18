@@ -66,12 +66,6 @@ export default async function AfiliacionesPage() {
             <p>Consultá las solicitudes pendientes, sus empresas y datos principales.</p>
             <small>DISPONIBLE</small>
           </Link>
-
-          <Link className="module module-link" href="/gestion/sindical/afiliaciones/solicitudes">
-            <span>⌕</span><h2>Seguimiento</h2>
-            <p>Estado de presentación, observaciones, altas, bajas y traslados.</p>
-            <small>CONSULTAR ESTADOS</small>
-          </Link>
         </div>
       </section>
     </main>
