@@ -7,6 +7,7 @@ import { MobileSideMenu } from "@/components/mobile-side-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import "./theme.css";
 import "./library.css";
+import { NotificationBell } from "@/components/notification-bell";
 
 export const metadata: Metadata = {
   title: "SIGCA | AOMA Seccional San Juan",
