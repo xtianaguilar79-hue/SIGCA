@@ -73,6 +73,22 @@ const emptyEmployer: EmployerData = {
   telefono: "",
 };
 
+function normalizeEmployer(data: EmployerData): EmployerData {
+  const upper = (value: string) => value.toLocaleUpperCase("es-AR");
+
+  return {
+    razonSocial: upper(data.razonSocial),
+    rama: upper(data.rama),
+    domicilio: upper(data.domicilio),
+    localidad: upper(data.localidad),
+    provincia: upper(data.provincia),
+    codigoPostal: upper(data.codigoPostal),
+    cuit: upper(data.cuit),
+    correo: data.correo,
+    telefono: upper(data.telefono),
+  };
+}
+
 const emptyPerson: PersonData = {
   apellidoNombres: "",
   domicilio: "",
@@ -416,7 +432,7 @@ export function AffiliateForm({
   } | null>(null);
 
   const [employer, setEmployer] =
-    useState<EmployerData>(initialEmployer || emptyEmployer);
+    useState<EmployerData>(normalizeEmployer(initialEmployer || emptyEmployer));
 
   const [person, setPerson] =
     useState<PersonData>(initialPerson || emptyPerson);
@@ -463,7 +479,7 @@ export function AffiliateForm({
       return;
     }
 
-    setEmployer({
+    setEmployer(normalizeEmployer({
       razonSocial: selected.nombre || "",
       rama: selected.rama || "",
       domicilio: selected.domicilio || "",
@@ -473,7 +489,7 @@ export function AffiliateForm({
       cuit: selected.cuit || "",
       correo: selected.correo_electronico || "",
       telefono: selected.telefono || "",
-    });
+    }));
   }
 
   function updateEmployer(
@@ -484,7 +500,7 @@ export function AffiliateForm({
     setSaveMessage(null);
     setEmployer((current) => ({
       ...current,
-      [field]: value,
+      [field]: field === "correo" ? value : value.toLocaleUpperCase("es-AR"),
     }));
   }
 
