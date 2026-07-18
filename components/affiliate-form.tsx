@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import {
   PDFDocument,
@@ -395,13 +395,16 @@ export function AffiliateForm({
   initialCompanyId = "",
   initialEmployer,
   initialPerson,
+  autoDownload = false,
 }: {
   companies: EmpresaAfiliacion[];
   applicationId?: string;
   initialCompanyId?: string;
   initialEmployer?: EmployerData;
   initialPerson?: PersonData;
+  autoDownload?: boolean;
 }) {
+  const autoDownloadStarted = useRef(false);
   const [companyId, setCompanyId] = useState(initialCompanyId);
   const [blankPerson, setBlankPerson] =
     useState(false);
@@ -417,6 +420,34 @@ export function AffiliateForm({
 
   const [person, setPerson] =
     useState<PersonData>(initialPerson || emptyPerson);
+
+  useEffect(() => {
+    if (!autoDownload || autoDownloadStarted.current) return;
+    autoDownloadStarted.current = true;
+
+    async function downloadSavedPdf() {
+      try {
+        const bytes = await createOfficialPdf(employer, person);
+        const safeBytes = new Uint8Array(bytes);
+        const blob = new Blob([safeBytes.buffer as ArrayBuffer], { type: "application/pdf" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = getPdfFileName();
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+      } catch (error) {
+        setSaveMessage({
+          type: "error",
+          text: error instanceof Error ? error.message : "No fue posible descargar la ficha.",
+        });
+      }
+    }
+
+    void downloadSavedPdf();
+  }, [autoDownload]);
 
   function selectCompany(value: string) {
     setCompanyId(value);
