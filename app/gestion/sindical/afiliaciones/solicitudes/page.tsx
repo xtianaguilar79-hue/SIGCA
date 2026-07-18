@@ -47,7 +47,7 @@ function formatDate(value: string | null) {
 export default async function SolicitudesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; resultado?: string }>;
+  searchParams: Promise<{ q?: string; estado?: string; resultado?: string }>;
 }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -71,7 +71,9 @@ export default async function SolicitudesPage({
 
   const params = await searchParams;
   const query = String(params.q || "").trim().toLocaleLowerCase("es");
+  const statusFilter = VALID_STATUSES.includes(String(params.estado || "")) ? String(params.estado) : "";
   const filtered = (applications || []).filter((application) => {
+    if (statusFilter && application.estado !== statusFilter) return false;
     if (!query) return true;
     return [application.apellido_nombres, application.razon_social, application.numero_documento, application.cuil]
       .some((value) => String(value || "").toLocaleLowerCase("es").includes(query));
@@ -112,7 +114,14 @@ export default async function SolicitudesPage({
 
         <form className="applications-search" method="get">
           <label htmlFor="q">Buscar solicitud</label>
-          <div><input id="q" name="q" defaultValue={query} placeholder="Nombre, empresa, documento o CUIL" /><button type="submit">Buscar</button></div>
+          <div>
+            <input id="q" name="q" defaultValue={query} placeholder="Nombre, empresa, documento o CUIL" />
+            <select name="estado" defaultValue={statusFilter} aria-label="Filtrar por estado">
+              <option value="">Todos los estados</option>
+              {VALID_STATUSES.map((status) => <option key={status} value={status}>{STATUS_LABELS[status]}</option>)}
+            </select>
+            <button type="submit">Buscar</button>
+          </div>
         </form>
 
         {params.resultado === "actualizado" && <p className="applications-message success">Estado actualizado correctamente.</p>}
@@ -171,6 +180,7 @@ export default async function SolicitudesPage({
       `}</style>
       <style>{`
         .applications-message.success{border-color:#3c806b;background:#e6f5ef;color:#124f3e}
+        .applications-search select{min-width:190px;padding:12px;border:1px solid #aebfc4;border-radius:8px;background:white;color:#173b49;font-size:15px}
         .application-actions{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 16px}
         .application-actions a{padding:10px 14px;border:1px solid #0b5264;border-radius:8px;color:#0b5264;font-size:14px;font-weight:900;text-decoration:none}
         .application-actions a.pdf{background:#0b5264;color:white}
@@ -183,6 +193,7 @@ export default async function SolicitudesPage({
         :root[data-theme="dark"] .application-status-form label{color:#f2f7f8}
         :root[data-theme="dark"] .application-status-form select{background:#0b222a;border-color:#5f7b84;color:#f5f8f9}
         :root[data-theme="dark"] .applications-message.success{border-color:#5c9e89;background:#173b32;color:#c6f3e1}
+        :root[data-theme="dark"] .applications-search select{background:#0b222a;border-color:#5f7b84;color:#f5f8f9}
         :root[data-theme="dark"] .application-actions a{border-color:#8fd0de;color:#b8e6ef}
         :root[data-theme="dark"] .application-actions a.pdf{background:#8fd0de;color:#092a33}
         @media(max-width:700px){.application-actions{display:grid}.application-actions a{text-align:center;min-height:44px}.application-status-form>div{display:grid}.application-status-form button{min-height:46px}}
