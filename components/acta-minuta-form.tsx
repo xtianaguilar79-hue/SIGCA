@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { SpeechTextarea } from "@/components/speech-textarea";
 
 export function ActaMinutaForm() {
   const router = useRouter();
@@ -54,12 +55,12 @@ export function ActaMinutaForm() {
       <label>Lugar<input name="lugar" maxLength={180}/></label>
       <label>Empresa o establecimiento<input name="empresa_nombre" maxLength={220}/></label>
     </div>
-    <label>Asunto<textarea name="asunto" rows={2}/></label>
-    <label>Participantes<textarea name="participantes" rows={3} placeholder="Una persona por línea o separadas por comas"/></label>
-    <label>Desarrollo<textarea name="desarrollo" rows={6}/></label>
-    <label>Acuerdos alcanzados<textarea name="acuerdos" rows={4}/></label>
-    <label>Asuntos pendientes<textarea name="asuntos_pendientes" rows={4}/></label>
-    <label>Observaciones<textarea name="observaciones" rows={3}/></label>
+    <SpeechTextarea label="Asunto" name="asunto" rows={2}/>
+    <SpeechTextarea label="Participantes" name="participantes" rows={3} placeholder="Una persona por línea o separadas por comas"/>
+    <SpeechTextarea label="Desarrollo" name="desarrollo" rows={6}/>
+    <SpeechTextarea label="Acuerdos alcanzados" name="acuerdos" rows={4}/>
+    <SpeechTextarea label="Asuntos pendientes" name="asuntos_pendientes" rows={4}/>
+    <SpeechTextarea label="Observaciones" name="observaciones" rows={3}/>
     <button className="minutes-save" type="submit" disabled={saving}>{saving ? "Guardando..." : "Guardar borrador"}</button>
     {message && <p className={`minutes-message ${message.type}`} role="status">{message.text}</p>}
     <style jsx>{`
