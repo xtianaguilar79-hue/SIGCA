@@ -30,25 +30,27 @@ export function SpeechTextarea({
   name,
   rows,
   placeholder,
+  initialValue = "",
 }: {
   label: string;
   name: string;
   rows: number;
   placeholder?: string;
+  initialValue?: string;
 }) {
   const textarea = useRef<HTMLTextAreaElement>(null);
   const recognition = useRef<Recognition | null>(null);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(initialValue);
   const [recording, setRecording] = useState(false);
   const [supported, setSupported] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const form = textarea.current?.form;
-    const reset = () => setValue("");
+    const reset = () => setValue(initialValue);
     form?.addEventListener("reset", reset);
     return () => form?.removeEventListener("reset", reset);
-  }, []);
+  }, [initialValue]);
 
   useEffect(() => () => recognition.current?.stop(), []);
 
