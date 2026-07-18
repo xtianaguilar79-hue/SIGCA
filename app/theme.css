@@ -5,3 +5,61 @@
 @media(max-width:850px){.access-brand,.form-brand{padding-right:55px}.access-panel{padding-top:105px}}
 @media(max-width:850px){.form-page{padding-top:82px}}
 .consent-field{display:flex!important;align-items:flex-start;gap:.7rem;line-height:1.45}.consent-field input{width:1.15rem!important;height:1.15rem;margin-top:.15rem;flex:0 0 auto}.consent-field span{font-size:.95rem}:root[data-theme="dark"] .consent-field span{color:#e1ecef}
+/* Contraste: Administración de usuarios */
+:root[data-theme="dark"] .admin-summary article strong,
+:root[data-theme="dark"] .admin-summary article b {
+  color: #f2c14e !important;
+}
+
+:root[data-theme="dark"] .admin-summary article span,
+:root[data-theme="dark"] .admin-summary article p {
+  color: #e1ecef !important;
+}
+
+:root[data-theme="dark"] .user-card h2,
+:root[data-theme="dark"] .user-card h3 {
+  color: #f4f8f9 !important;
+}
+
+:root[data-theme="dark"] .user-card > p,
+:root[data-theme="dark"] .user-card header p {
+  color: #d4e2e5 !important;
+}
+
+:root[data-theme="dark"] .admin-toolbar label {
+  color: #f2f7f8 !important;
+}
+
+:root[data-theme="dark"] .admin-toolbar input {
+  background: #0b222a !important;
+  border-color: #5f7b84 !important;
+  color: #f5f8f9 !important;
+}
+
+:root[data-theme="dark"] .admin-toolbar input::placeholder {
+  color: #aebfc4 !important;
+  opacity: 1;
+}
+
+:root[data-theme="dark"] .admin-toolbar button {
+  background: #244752 !important;
+  border: 1px solid #66808a !important;
+  color: #f2f7f8 !important;
+}
+
+:root[data-theme="dark"] .admin-toolbar button.active,
+:root[data-theme="dark"] .admin-toolbar button[aria-pressed="true"] {
+  background: #efb93f !important;
+  border-color: #efb93f !important;
+  color: #10272f !important;
+}
+
+:root[data-theme="dark"] .user-edit-form label {
+  color: #e4eef0 !important;
+}
+
+:root[data-theme="dark"] .user-edit-form select {
+  background: #0b222a !important;
+  border-color: #5f7b84 !important;
+  color: #f5f8f9 !important;
+}
