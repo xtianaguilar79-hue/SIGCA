@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: "SIGCA",
     description:
       "Sistema Integral de Gestión, Capacitación y Administración Sindical.",
-    start_url: "/acceso",
+    start_url: "/gestion",
     scope: "/",
     display: "standalone",
     background_color: "#f2f7f7",
