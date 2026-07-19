@@ -19,7 +19,7 @@ export default async function GestionSindicalPage() {
       <div className="cards">
         <Link className="module module-link" href="/gestion/sindical/afiliaciones"><span>▤</span><h2>Afiliaciones</h2><p>Solicitudes, fichas oficiales, altas, bajas, traslados y seguimiento por empresa.</p><small>DISPONIBLE</small></Link>
         <Link className="module module-link" href="/gestion/sindical/actas"><span>▧</span><h2>Actas y minutas</h2><p>Registro de reuniones, decisiones, participantes y asuntos pendientes.</p><small>DISPONIBLE</small></Link>
-        <article className="module"><span>!</span><h2>Reclamos</h2><p>Registro, documentación, responsables, estado y seguimiento de cada reclamo.</p><small>EN PREPARACIÓN</small></article>
+        <Link className="module module-link" href="/gestion/sindical/reclamos"><span>!</span><h2>Reclamos</h2><p>Registro, documentación, responsables, estado y seguimiento de cada reclamo.</p><small>DISPONIBLE</small></Link>
         <article className="module"><span>⌖</span><h2>Visitas e inspecciones</h2><p>Constancias de recorridas, observaciones, hallazgos y acciones necesarias.</p><small>EN PREPARACIÓN</small></article>
         <article className="module"><span>✓</span><h2>Compromisos</h2><p>Acuerdos asumidos, responsables, plazos y comprobación de cumplimiento.</p><small>EN PREPARACIÓN</small></article>
         <article className="module"><span>▣</span><h2>Expedientes</h2><p>Documentación relacionada, antecedentes, actuaciones y memoria institucional.</p><small>EN PREPARACIÓN</small></article>
