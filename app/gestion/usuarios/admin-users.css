@@ -1,0 +1,128 @@
+.admin-users-page {
+  --admin-card: #ffffff;
+  --admin-text: #073746;
+  --admin-muted: #546f78;
+  --admin-border: #cad9dd;
+  --admin-input: #ffffff;
+}
+
+.admin-summary strong {
+  color: #07566a;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1;
+}
+
+.admin-summary span,
+.admin-toolbar span,
+.user-edit-form label > span {
+  color: var(--admin-text);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.admin-toolbar input,
+.user-edit-form select {
+  min-height: 48px;
+  background: var(--admin-input);
+  border: 1px solid var(--admin-border);
+  color: var(--admin-text);
+  font-size: 1rem;
+}
+
+.status-filters button,
+.save-user,
+.approve-user,
+.reject-user,
+.delete-user {
+  min-height: 44px;
+  padding: 0.75rem 1rem;
+  font-size: 0.98rem;
+  font-weight: 800;
+}
+
+.user-card {
+  background: var(--admin-card);
+  border: 1px solid var(--admin-border);
+}
+
+.user-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.user-identity h2 {
+  margin: 0 0 0.45rem;
+  color: var(--admin-text);
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
+  line-height: 1.2;
+}
+
+.user-email {
+  margin: 0;
+  color: var(--admin-text);
+  font-size: 1.05rem;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.user-document {
+  margin: 0.35rem 0 0;
+  color: var(--admin-muted);
+  font-size: 0.98rem;
+}
+
+.user-state {
+  flex: 0 0 auto;
+  font-size: 0.83rem;
+  font-weight: 900;
+}
+
+:root[data-theme="dark"] .admin-users-page {
+  --admin-card: #18343e;
+  --admin-text: #f1f7f8;
+  --admin-muted: #c1d1d5;
+  --admin-border: #55717a;
+  --admin-input: #0e2831;
+}
+
+:root[data-theme="dark"] .admin-summary strong {
+  color: #8ed9e8;
+}
+
+:root[data-theme="dark"] .status-filters button:not(.active) {
+  background: #e9f1f3;
+  color: #153b46;
+}
+
+:root[data-theme="dark"] .status-filters button.active,
+:root[data-theme="dark"] .save-user {
+  background: #08758a;
+  color: #ffffff;
+}
+
+@media (max-width: 700px) {
+  .user-card-header {
+    flex-direction: column;
+  }
+
+  .user-state {
+    align-self: flex-start;
+  }
+
+  .status-filters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .status-filters button,
+  .save-user,
+  .approve-user,
+  .reject-user,
+  .delete-user {
+    width: 100%;
+  }
+}
+
