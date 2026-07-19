@@ -157,6 +157,7 @@ export default function RegistrationPage() {
               <option value="">Seleccionar</option>
               <option>Dirigente</option>
               <option>Delegado</option>
+              <option>Otro</option>
             </select>
           </div>
           <div className="field">
@@ -187,7 +188,7 @@ export default function RegistrationPage() {
               id="password"
               name="password"
               type="password"
-              minLength={8}
+              minLength={6}
               required
             />
           </div>
