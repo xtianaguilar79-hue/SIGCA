@@ -10,9 +10,11 @@ export default async function PadronAfiliadosPage({
   searchParams,
 }: {
   searchParams: Promise<{
-    buscar?: string;
-    pagina?: string;
-  }>;
+  buscar?: string;
+  estado?: string;
+  empresa?: string;
+  pagina?: string;
+}>;
 }) {
   const supabase = await createClient();
 
@@ -46,6 +48,31 @@ export default async function PadronAfiliadosPage({
   }
 
   const params = await searchParams;
+  const estadoSeleccionado = String(
+  params.estado || "",
+).trim();
+
+const empresaSeleccionada = String(
+  params.empresa || "",
+).trim();
+
+const [estadosResult, empresasResult] =
+  await Promise.all([
+    supabase
+      .from("estados_afiliado")
+      .select("nombre")
+      .eq("habilitado", true)
+      .order("orden"),
+
+    supabase
+      .from("empresas")
+      .select("id,nombre")
+      .eq("activa", true)
+      .order("nombre"),
+  ]);
+
+const estados = estadosResult.data || [];
+const empresas = empresasResult.data || [];
 
   const buscar = String(params.buscar || "")
     .trim()
@@ -91,7 +118,22 @@ export default async function PadronAfiliadosPage({
       ].join(","),
     );
   }
+if (estadoSeleccionado) {
+  consulta = consulta.eq(
+    "estado",
+    estadoSeleccionado,
+  );
+}
 
+if (
+  empresaSeleccionada &&
+  /^\d+$/.test(empresaSeleccionada)
+) {
+  consulta = consulta.eq(
+    "empresa_id",
+    Number(empresaSeleccionada),
+  );
+}
   const { data: afiliados, count, error } = await consulta;
 
   const total = count || 0;
@@ -113,7 +155,13 @@ export default async function PadronAfiliadosPage({
     if (buscar) {
       query.set("buscar", buscar);
     }
+if (estadoSeleccionado) {
+  query.set("estado", estadoSeleccionado);
+}
 
+if (empresaSeleccionada) {
+  query.set("empresa", empresaSeleccionada);
+}
     query.set("pagina", String(numero));
 
     return `/gestion/sistema/afiliados?${query.toString()}`;
@@ -204,33 +252,84 @@ export default async function PadronAfiliadosPage({
         </header>
 
         <form
-          className="affiliate-search"
-          method="get"
-        >
-          <label htmlFor="buscar">
-            Buscar en el padrón
-          </label>
+  className="affiliate-search"
+  method="get"
+>
+  <label htmlFor="buscar">
+    Buscar en el padrón
+  </label>
 
-          <div>
-            <input
-              id="buscar"
-              name="buscar"
-              type="search"
-              defaultValue={buscar}
-              placeholder="Nombre, DNI, CUIL o número AOMA"
-            />
+  <div className="affiliate-search-row">
+    <input
+      id="buscar"
+      name="buscar"
+      type="search"
+      defaultValue={buscar}
+      placeholder="Nombre, DNI, CUIL o número AOMA"
+    />
 
-            <button type="submit">
-              🔍 Buscar
-            </button>
+    <button type="submit">
+      🔍 Buscar
+    </button>
+  </div>
 
-            {buscar && (
-              <Link href="/gestion/sistema/afiliados">
-                Limpiar
-              </Link>
-            )}
-          </div>
-        </form>
+  <div className="affiliate-filter-row">
+    <label>
+      <span>Estado</span>
+
+      <select
+        name="estado"
+        defaultValue={estadoSeleccionado}
+      >
+        <option value="">
+          Todos los estados
+        </option>
+
+        {estados.map((estado) => (
+          <option
+            key={estado.nombre}
+            value={estado.nombre}
+          >
+            {estado.nombre}
+          </option>
+        ))}
+      </select>
+    </label>
+
+    <label>
+      <span>Empresa</span>
+
+      <select
+        name="empresa"
+        defaultValue={empresaSeleccionada}
+      >
+        <option value="">
+          Todas las empresas activas
+        </option>
+
+        {empresas.map((empresa) => (
+          <option
+            key={empresa.id}
+            value={String(empresa.id)}
+          >
+            {empresa.nombre}
+          </option>
+        ))}
+      </select>
+    </label>
+  </div>
+
+  {(buscar ||
+    estadoSeleccionado ||
+    empresaSeleccionada) && (
+    <Link
+      className="affiliate-clear"
+      href="/gestion/sistema/afiliados"
+    >
+      Limpiar búsqueda y filtros
+    </Link>
+  )}
+</form>
 
         {error ? (
           <div className="form-message error">
