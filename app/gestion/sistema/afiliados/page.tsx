@@ -1,3 +1,4 @@
+import { AffiliateFilters } from "@/components/affiliate-filters";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -125,13 +126,15 @@ if (estadoSeleccionado) {
   );
 }
 
-if (
-  empresaSeleccionada &&
-  /^\d+$/.test(empresaSeleccionada)
-) {
+const empresaEncontrada = empresas.find(
+  (empresa) =>
+    empresa.nombre === empresaSeleccionada,
+);
+
+if (empresaEncontrada) {
   consulta = consulta.eq(
     "empresa_id",
-    Number(empresaSeleccionada),
+    empresaEncontrada.id,
   );
 }
   const { data: afiliados, count, error } = await consulta;
@@ -251,10 +254,13 @@ if (empresaSeleccionada) {
           </span>
         </header>
 
-        <form
-  className="affiliate-search"
-  method="get"
->
+        <AffiliateFilters
+  buscar={buscar}
+  estadoSeleccionado={estadoSeleccionado}
+  empresaSeleccionada={empresaSeleccionada}
+  estados={estados}
+  empresas={empresas}
+/>
   <label htmlFor="buscar">
     Buscar en el padrón
   </label>
@@ -349,15 +355,21 @@ if (empresaSeleccionada) {
                         {afiliado.apellido_nombres}
                       </h2>
 
-                      <p>
-                        DNI{" "}
-                        {afiliado.documento_numero ||
-                          "sin informar"}
-                        {" · "}
-                        AOMA{" "}
-                        {afiliado.numero_aoma ||
-                          "sin informar"}
-                      </p>
+                      <div className="affiliate-identity">
+  <p>
+    DNI{" "}
+    {afiliado.documento_numero ||
+      "sin informar"}
+  </p>
+
+  <div className="affiliate-number">
+    <span>NÚMERO DE AFILIADO</span>
+    <strong>
+      {afiliado.numero_aoma ||
+        "SIN INFORMAR"}
+    </strong>
+  </div>
+</div>
                     </div>
 
                     <span className="affiliate-state">
