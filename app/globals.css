@@ -384,3 +384,43 @@ button { cursor:pointer; }
     width: 100%;
   }
 }
+.affiliate-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 20px 16px;
+}
+
+.affiliate-card-actions a {
+  padding: 9px 14px;
+  border-radius: 8px;
+  background: #e5f1f3;
+  color: var(--petroleo);
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.affiliate-card-actions a:hover {
+  background: var(--petroleo);
+  color: #fff;
+}
+
+:root[data-theme="dark"]
+  .affiliate-card-actions a {
+  background: #244752;
+  color: #dff2f5;
+}
+
+@media (max-width: 700px) {
+  .affiliate-card-actions {
+    padding: 0 16px 16px;
+  }
+
+  .affiliate-card-actions a {
+    width: 100%;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
