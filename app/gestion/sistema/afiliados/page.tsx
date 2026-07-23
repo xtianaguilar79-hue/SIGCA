@@ -1,9 +1,9 @@
-import { AffiliateFilters } from "@/components/affiliate-filters";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { AffiliateFilters } from "@/components/affiliate-filters";
 import { SignOutButton } from "@/components/sign-out-button";
+import { createClient } from "@/lib/supabase/server";
 
 const REGISTROS_POR_PAGINA = 25;
 
@@ -11,11 +11,11 @@ export default async function PadronAfiliadosPage({
   searchParams,
 }: {
   searchParams: Promise<{
-  buscar?: string;
-  estado?: string;
-  empresa?: string;
-  pagina?: string;
-}>;
+    buscar?: string;
+    estado?: string;
+    empresa?: string;
+    pagina?: string;
+  }>;
 }) {
   const supabase = await createClient();
 
@@ -49,43 +49,43 @@ export default async function PadronAfiliadosPage({
   }
 
   const params = await searchParams;
-  const estadoSeleccionado = String(
-  params.estado || "",
-).trim();
-
-const empresaSeleccionada = String(
-  params.empresa || "",
-).trim();
-
-const [estadosResult, empresasResult] =
-  await Promise.all([
-    supabase
-      .from("estados_afiliado")
-      .select("nombre")
-      .eq("habilitado", true)
-      .order("orden"),
-
-    supabase
-      .from("empresas")
-      .select("id,nombre")
-      .eq("activa", true)
-      .order("nombre"),
-  ]);
-
-const estados = estadosResult.data || [];
-const empresas = empresasResult.data || [];
 
   const buscar = String(params.buscar || "")
     .trim()
     .replace(/[,%()_*]/g, " ")
     .slice(0, 80);
 
-  const paginaSolicitada = Number(params.pagina || "1");
+  const estadoSeleccionado = String(
+    params.estado || "",
+  ).trim();
 
+  const empresaSeleccionada = String(
+    params.empresa || "",
+  ).trim();
+
+  const paginaSolicitada = Number(params.pagina || "1");
   const pagina =
     Number.isInteger(paginaSolicitada) && paginaSolicitada > 0
       ? paginaSolicitada
       : 1;
+
+  const [estadosResult, empresasResult] =
+    await Promise.all([
+      supabase
+        .from("estados_afiliado")
+        .select("nombre")
+        .eq("habilitado", true)
+        .order("orden"),
+
+      supabase
+        .from("empresas")
+        .select("id,nombre")
+        .eq("activa", true)
+        .order("nombre"),
+    ]);
+
+  const estados = estadosResult.data || [];
+  const empresas = empresasResult.data || [];
 
   const desde = (pagina - 1) * REGISTROS_POR_PAGINA;
   const hasta = desde + REGISTROS_POR_PAGINA - 1;
@@ -119,24 +119,22 @@ const empresas = empresasResult.data || [];
       ].join(","),
     );
   }
-if (estadoSeleccionado) {
-  consulta = consulta.eq(
-    "estado",
-    estadoSeleccionado,
-  );
-}
 
-const empresaEncontrada = empresas.find(
-  (empresa) =>
-    empresa.nombre === empresaSeleccionada,
-);
+  if (estadoSeleccionado) {
+    consulta = consulta.eq("estado", estadoSeleccionado);
+  }
 
-if (empresaEncontrada) {
-  consulta = consulta.eq(
-    "empresa_id",
-    empresaEncontrada.id,
+  const empresaEncontrada = empresas.find(
+    (empresa) => empresa.nombre === empresaSeleccionada,
   );
-}
+
+  if (empresaEncontrada) {
+    consulta = consulta.eq(
+      "empresa_id",
+      empresaEncontrada.id,
+    );
+  }
+
   const { data: afiliados, count, error } = await consulta;
 
   const total = count || 0;
@@ -158,13 +156,15 @@ if (empresaEncontrada) {
     if (buscar) {
       query.set("buscar", buscar);
     }
-if (estadoSeleccionado) {
-  query.set("estado", estadoSeleccionado);
-}
 
-if (empresaSeleccionada) {
-  query.set("empresa", empresaSeleccionada);
-}
+    if (estadoSeleccionado) {
+      query.set("estado", estadoSeleccionado);
+    }
+
+    if (empresaSeleccionada) {
+      query.set("empresa", empresaSeleccionada);
+    }
+
     query.set("pagina", String(numero));
 
     return `/gestion/sistema/afiliados?${query.toString()}`;
@@ -188,33 +188,14 @@ if (empresaSeleccionada) {
         </Link>
 
         <nav>
-          <Link href="/gestion">
-            Inicio institucional
-          </Link>
-
-          <Link href="/gestion/sindical">
-            Gestión sindical
-          </Link>
-
-          <Link href="/gestion/formacion">
-            Formación Sindical
-          </Link>
-
-          <Link href="/gestion/biblioteca">
-            Biblioteca
-          </Link>
-
-          <Link href="/gestion/perfil">
-            Mi perfil
-          </Link>
-
-          <Link
-            className="active"
-            href="/gestion/sistema"
-          >
+          <Link href="/gestion">Inicio institucional</Link>
+          <Link href="/gestion/sindical">Gestión sindical</Link>
+          <Link href="/gestion/formacion">Formación Sindical</Link>
+          <Link href="/gestion/biblioteca">Biblioteca</Link>
+          <Link href="/gestion/perfil">Mi perfil</Link>
+          <Link className="active" href="/gestion/sistema">
             Sistema
           </Link>
-
           <Link href="/gestion/usuarios">
             Administración de usuarios
           </Link>
@@ -237,12 +218,8 @@ if (empresaSeleccionada) {
 
         <header className="main-head">
           <div>
-            <p className="kicker">
-              SISTEMA · AFILIADOS
-            </p>
-
+            <p className="kicker">SISTEMA · AFILIADOS</p>
             <h1>Consulta del padrón</h1>
-
             <p>
               Buscá afiliados por nombre, DNI, CUIL o
               número AOMA.
@@ -255,87 +232,12 @@ if (empresaSeleccionada) {
         </header>
 
         <AffiliateFilters
-  buscar={buscar}
-  estadoSeleccionado={estadoSeleccionado}
-  empresaSeleccionada={empresaSeleccionada}
-  estados={estados}
-  empresas={empresas}
-/>
-  <label htmlFor="buscar">
-    Buscar en el padrón
-  </label>
-
-  <div className="affiliate-search-row">
-    <input
-      id="buscar"
-      name="buscar"
-      type="search"
-      defaultValue={buscar}
-      placeholder="Nombre, DNI, CUIL o número AOMA"
-    />
-
-    <button type="submit">
-      🔍 Buscar
-    </button>
-  </div>
-
-  <div className="affiliate-filter-row">
-    <label>
-      <span>Estado</span>
-
-      <select
-        name="estado"
-        defaultValue={estadoSeleccionado}
-      >
-        <option value="">
-          Todos los estados
-        </option>
-
-        {estados.map((estado) => (
-          <option
-            key={estado.nombre}
-            value={estado.nombre}
-          >
-            {estado.nombre}
-          </option>
-        ))}
-      </select>
-    </label>
-
-    <label>
-      <span>Empresa</span>
-
-      <select
-        name="empresa"
-        defaultValue={empresaSeleccionada}
-      >
-        <option value="">
-          Todas las empresas activas
-        </option>
-
-        {empresas.map((empresa) => (
-          <option
-            key={empresa.id}
-            value={String(empresa.id)}
-          >
-            {empresa.nombre}
-          </option>
-        ))}
-      </select>
-    </label>
-  </div>
-
-  {(buscar ||
-    estadoSeleccionado ||
-    empresaSeleccionada) && (
-    <Link
-      className="affiliate-clear"
-      href="/gestion/sistema/afiliados"
-    >
-      Limpiar búsqueda y filtros
-    </Link>
-  )}
-</form>
+          buscar={buscar}
+          estadoSeleccionado={estadoSeleccionado}
+          empresaSeleccionada={empresaSeleccionada}
+          estados={estados}
+          empresas={empresas}
+        />
 
         {error ? (
           <div className="form-message error">
@@ -350,31 +252,25 @@ if (empresaSeleccionada) {
                   key={afiliado.id}
                 >
                   <header>
-                    <div>
-                      <h2>
-                        {afiliado.apellido_nombres}
-                      </h2>
+                    <div className="affiliate-person">
+                      <h2>{afiliado.apellido_nombres}</h2>
+                      <p>
+                        DNI{" "}
+                        {afiliado.documento_numero ||
+                          "sin informar"}
+                      </p>
+                    </div>
 
-                      <div className="affiliate-identity">
-  <p>
-    DNI{" "}
-    {afiliado.documento_numero ||
-      "sin informar"}
-  </p>
-
-  <div className="affiliate-number">
-    <span>NÚMERO DE AFILIADO</span>
-    <strong>
-      {afiliado.numero_aoma ||
-        "SIN INFORMAR"}
-    </strong>
-  </div>
-</div>
+                    <div className="affiliate-number">
+                      <span>NÚMERO DE AFILIADO</span>
+                      <strong>
+                        {afiliado.numero_aoma ||
+                          "SIN INFORMAR"}
+                      </strong>
                     </div>
 
                     <span className="affiliate-state">
-                      {afiliado.estado ||
-                        "SIN ESTADO"}
+                      {afiliado.estado || "SIN ESTADO"}
                     </span>
                   </header>
 
@@ -389,10 +285,7 @@ if (empresaSeleccionada) {
 
                     <div>
                       <dt>CUIL</dt>
-                      <dd>
-                        {afiliado.cuil ||
-                          "Sin informar"}
-                      </dd>
+                      <dd>{afiliado.cuil || "Sin informar"}</dd>
                     </div>
 
                     <div>
@@ -405,21 +298,18 @@ if (empresaSeleccionada) {
 
                     <div>
                       <dt>Correo electrónico</dt>
-                      <dd>
-                        {afiliado.email ||
-                          "Sin informar"}
-                      </dd>
+                      <dd>{afiliado.email || "Sin informar"}</dd>
                     </div>
                   </dl>
 
-<div className="affiliate-card-actions">
-  <Link
-    href={`/gestion/sistema/afiliados/${afiliado.id}`}
-  >
-    Ver ficha completa →
-  </Link>
-</div>
-</article>
+                  <div className="affiliate-card-actions">
+                    <Link
+                      href={`/gestion/sistema/afiliados/${afiliado.id}`}
+                    >
+                      Ver ficha completa →
+                    </Link>
+                  </div>
+                </article>
               ))}
 
               {!afiliados?.length && (
