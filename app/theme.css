@@ -76,3 +76,34 @@
     height: 48px !important;
   }
 }
+/* Controles compactos del encabezado */
+.theme-toggle {
+  width: 52px !important;
+  height: 52px !important;
+  padding: 0 !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+}
+
+.theme-toggle b {
+  display: none !important;
+}
+
+.theme-toggle span {
+  font-size: 24px !important;
+  line-height: 1 !important;
+}
+
+/* Campana a la izquierda del selector de tema */
+@media (min-width: 851px) {
+  .notification-shell {
+    left: auto !important;
+    right: 88px !important;
+    top: 18px !important;
+  }
+
+  .notification-bell {
+    width: 52px !important;
+    height: 52px !important;
+  }
+}
