@@ -126,9 +126,18 @@ export default async function SistemaPage() {
             <small>EN PREPARACIÓN</small>
           </article>
 
-          <article className="module">
-            <span>⚙</span>
-            <h2>Configuración</h2>
+          <Link
+  className="module module-link"
+  href="/gestion/sistema/afiliados"
+>
+  <span>◎</span>
+  <h2>Afiliados</h2>
+  <p>
+    Consulta del padrón, actualización de datos,
+    estados, familiares y comunicaciones.
+  </p>
+  <small>INGRESAR</small>
+</Link>
             <p>
               Provincias, departamentos, estados del afiliado y futuras
               configuraciones.
