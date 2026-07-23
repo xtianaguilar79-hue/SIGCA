@@ -6,11 +6,14 @@ import { createClient } from "@/lib/supabase/server";
 
 export default async function SistemaPage() {
   const supabase = await createClient();
+
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) redirect("/acceso");
+  if (!user) {
+    redirect("/acceso");
+  }
 
   const { data: profile } = await supabase
     .from("usuarios")
@@ -29,7 +32,9 @@ export default async function SistemaPage() {
   const isAdmin =
     String(profile.rol).toLowerCase() === "administrador";
 
-  if (!isAdmin) redirect("/gestion");
+  if (!isAdmin) {
+    redirect("/gestion");
+  }
 
   const name = [profile.nombre, profile.apellido]
     .filter(Boolean)
@@ -45,6 +50,7 @@ export default async function SistemaPage() {
             height={39}
             alt="AOMA"
           />
+
           <div>
             <strong>SIGCA</strong>
             <span>SECCIONAL SAN JUAN</span>
@@ -52,14 +58,33 @@ export default async function SistemaPage() {
         </Link>
 
         <nav>
-          <Link href="/gestion">Inicio institucional</Link>
-          <Link href="/gestion/sindical">Gestión sindical</Link>
-          <Link href="/gestion/formacion">Formación Sindical</Link>
-          <Link href="/gestion/biblioteca">Biblioteca</Link>
-          <Link className="active" href="/gestion/sistema">
+          <Link href="/gestion">
+            Inicio institucional
+          </Link>
+
+          <Link href="/gestion/sindical">
+            Gestión sindical
+          </Link>
+
+          <Link href="/gestion/formacion">
+            Formación Sindical
+          </Link>
+
+          <Link href="/gestion/biblioteca">
+            Biblioteca
+          </Link>
+
+          <Link
+            className="active"
+            href="/gestion/sistema"
+          >
             Sistema
           </Link>
-          <Link href="/gestion/perfil">Mi perfil</Link>
+
+          <Link href="/gestion/perfil">
+            Mi perfil
+          </Link>
+
           <Link href="/gestion/usuarios">
             Administración de usuarios
           </Link>
@@ -75,73 +100,90 @@ export default async function SistemaPage() {
       <section className="main-area">
         <header className="main-head">
           <div>
-            <p className="kicker">ADMINISTRACIÓN INSTITUCIONAL</p>
+            <p className="kicker">
+              ADMINISTRACIÓN INSTITUCIONAL
+            </p>
+
             <h1>Sistema</h1>
+
             <p>
-              Administración del padrón, beneficios, empresas, reportes y
-              parámetros institucionales.
+              Administración del padrón, beneficios,
+              empresas, reportes y parámetros
+              institucionales.
             </p>
           </div>
-          <span className="secure">● ACCESO ADMINISTRATIVO</span>
+
+          <span className="secure">
+            ● ACCESO ADMINISTRATIVO
+          </span>
         </header>
 
         <div className="cards">
-          <article className="module">
+          <Link
+            className="module module-link"
+            href="/gestion/sistema/afiliados"
+          >
             <span>◎</span>
+
             <h2>Afiliados</h2>
+
             <p>
-              Consulta del padrón, actualización de datos, estados,
-              familiares y comunicaciones.
+              Consulta del padrón, actualización de datos,
+              estados, familiares y comunicaciones.
             </p>
-            <small>PRÓXIMA ETAPA</small>
-          </article>
+
+            <small>INGRESAR</small>
+          </Link>
 
           <article className="module">
             <span>◇</span>
+
             <h2>Beneficios</h2>
+
             <p>
-              Administración de beneficios y registro de entregas a
-              afiliados.
+              Administración de beneficios y registro de
+              entregas a afiliados.
             </p>
+
             <small>EN PREPARACIÓN</small>
           </article>
 
           <article className="module">
             <span>▥</span>
+
             <h2>Reportes</h2>
+
             <p>
-              Información general del padrón, correos electrónicos y
-              empresas.
+              Información general del padrón, correos
+              electrónicos y empresas.
             </p>
+
             <small>EN PREPARACIÓN</small>
           </article>
 
           <article className="module">
             <span>▣</span>
+
             <h2>Empresas</h2>
+
             <p>
-              Alta, edición, activación y administración de empresas y sus
-              datos institucionales.
+              Alta, edición, activación y administración
+              de empresas y sus datos institucionales.
             </p>
+
             <small>EN PREPARACIÓN</small>
           </article>
 
-          <Link
-  className="module module-link"
-  href="/gestion/sistema/afiliados"
->
-  <span>◎</span>
-  <h2>Afiliados</h2>
-  <p>
-    Consulta del padrón, actualización de datos,
-    estados, familiares y comunicaciones.
-  </p>
-  <small>INGRESAR</small>
-</Link>
+          <article className="module">
+            <span>⚙</span>
+
+            <h2>Configuración</h2>
+
             <p>
-              Provincias, departamentos, estados del afiliado y futuras
-              configuraciones.
+              Provincias, departamentos, estados del
+              afiliado y futuras configuraciones.
             </p>
+
             <small>EN PREPARACIÓN</small>
           </article>
         </div>
