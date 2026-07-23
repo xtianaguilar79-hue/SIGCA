@@ -399,7 +399,15 @@ if (empresaSeleccionada) {
                       </dd>
                     </div>
                   </dl>
-                </article>
+
+<div className="affiliate-card-actions">
+  <Link
+    href={`/gestion/sistema/afiliados/${afiliado.id}`}
+  >
+    Ver ficha completa →
+  </Link>
+</div>
+</article>
               ))}
 
               {!afiliados?.length && (
