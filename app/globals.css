@@ -511,3 +511,37 @@ button { cursor:pointer; }
     width: 100%;
   }
 }
+/* Alineación definitiva de la cabecera del afiliado */
+.affiliate-card > header {
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+}
+
+.affiliate-person {
+  justify-self: start;
+}
+
+.affiliate-number {
+  justify-self: center;
+}
+
+.affiliate-state {
+  justify-self: end;
+}
+
+@media (max-width: 700px) {
+  .affiliate-card > header {
+    grid-template-columns: 1fr;
+    gap: 13px;
+  }
+
+  .affiliate-person,
+  .affiliate-number,
+  .affiliate-state {
+    justify-self: stretch;
+  }
+
+  .affiliate-state {
+    width: fit-content;
+  }
+}
