@@ -162,9 +162,12 @@ export default async function FichaAfiliadoPage({
             <strong>{mostrar(afiliado.numero_aoma)}</strong>
           </div>
 
-          <span className="affiliate-state">
-            {mostrar(afiliado.estado)}
-          </span>
+          <span
+  className="affiliate-state"
+  data-state={afiliado.estado || "SIN ESTADO"}
+>
+  {afiliado.estado || "SIN ESTADO"}
+</span>
         </header>
 
         <section className="affiliate-detail-section">
