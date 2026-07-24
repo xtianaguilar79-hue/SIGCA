@@ -1706,11 +1706,14 @@ body:has(.print-report-page) .notification-bell,body:has(.print-report-page) .th
 :root[data-theme="dark"] .company-report-table tbody tr:nth-child(even){background:#21424d}
 @media(max-width:850px){.company-report-builder{padding:17px}.company-report-filters{grid-template-columns:1fr}.company-report-fields>div{grid-template-columns:1fr 1fr}.company-report-actions{display:grid}.company-report-result strong{font-size:20px}}
 @media(max-width:520px){.company-report-fields>div{grid-template-columns:1fr}.company-report-table{font-size:14px}}
+
 .benefits-page{max-width:1500px;width:100%}
 .benefits-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:20px 0}
 .benefits-summary article{display:grid;gap:7px;padding:22px;border:1px solid #d5e0e3;border-radius:15px;background:white}
 .benefits-summary strong{color:var(--petroleo);font-size:34px;line-height:1}
 .benefits-summary span{color:#61777e;font-weight:750}
+.benefits-primary-actions{display:flex;justify-content:flex-end;margin:0 0 20px}
+.benefits-primary-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:0 19px;border-radius:10px;background:var(--dorado);color:var(--petroleo-oscuro);font-weight:900;text-decoration:none}
 .benefit-create{margin:20px 0;border-radius:15px;background:var(--petroleo);overflow:hidden}
 .benefit-create summary{padding:19px 22px;color:white;font-size:18px;font-weight:900;cursor:pointer}
 .benefit-create form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;padding:22px;background:white;border:1px solid #d5e0e3;border-top:0}
@@ -1744,4 +1747,38 @@ body:has(.print-report-page) .notification-bell,body:has(.print-report-page) .th
 :root[data-theme="dark"] .benefit-create input,:root[data-theme="dark"] .benefit-create textarea{background:#10272f;border-color:#49636c;color:#edf5f6}
 :root[data-theme="dark"] .delivery-places span,:root[data-theme="dark"] .benefit-card dl div{background:#21424d;color:#d5ebef}
 :root[data-theme="dark"] .benefit-card form button{background:#17343e;border-color:#49636c;color:#d7edf2}
-@media(max-width:850px){.benefits-summary{grid-template-columns:1fr}.benefit-create form{grid-template-columns:1fr}.benefit-description{grid-column:auto}.delivery-places{align-items:flex-start;flex-direction:column}.delivery-places>div:last-child{justify-content:flex-start}.benefit-list{grid-template-columns:1fr}}
+@media(max-width:850px){.benefits-summary{grid-template-columns:1fr}.benefits-primary-actions a{width:100%}.benefit-create form{grid-template-columns:1fr}.benefit-description{grid-column:auto}.delivery-places{align-items:flex-start;flex-direction:column}.delivery-places>div:last-child{justify-content:flex-start}.benefit-list{grid-template-columns:1fr}}
+
+.benefit-delivery-page{max-width:1450px;width:100%}
+.delivery-step{display:grid;grid-template-columns:48px 1fr;gap:17px;margin:18px 0;padding:22px;border:1px solid #d5e0e3;border-radius:16px;background:white}
+.delivery-step-number{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--petroleo);color:white;font-size:18px;font-weight:900}
+.delivery-step-content{min-width:0}
+.delivery-step-content h2{margin:5px 0 17px;color:var(--petroleo);font-size:22px}
+.delivery-location-buttons{display:flex;flex-wrap:wrap;gap:10px}
+.delivery-location-buttons a{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 16px;border:1px solid #b9cbd0;border-radius:10px;color:var(--petroleo);font-weight:850;text-decoration:none}
+.delivery-location-buttons a.active{border-color:var(--dorado);background:var(--dorado);color:var(--petroleo-oscuro)}
+.delivery-search{display:grid;grid-template-columns:1fr auto;gap:10px}
+.delivery-search input,.delivery-fields input,.delivery-fields select,.delivery-fields textarea{width:100%;padding:12px 14px;border:1px solid #b9cbd0;border-radius:9px;background:white;color:var(--tinta);font-size:16px}
+.delivery-search button,.delivery-submit{min-height:48px;padding:0 20px;border:0;border-radius:9px;background:var(--petroleo);color:white;font-weight:900;cursor:pointer}
+.delivery-affiliate-list{display:grid;gap:10px}
+.delivery-affiliate-list label{display:flex;align-items:flex-start;gap:12px;padding:15px;border:1px solid #d5e0e3;border-radius:11px;cursor:pointer}
+.delivery-affiliate-list label:has(input:checked){border-color:var(--dorado);background:#fff8e8;box-shadow:0 0 0 2px #d6a33e35}
+.delivery-affiliate-list input{width:20px;height:20px;flex:0 0 auto;accent-color:var(--petroleo)}
+.delivery-affiliate-list label>div{display:grid;gap:4px}
+.delivery-affiliate-list strong{color:var(--petroleo);font-size:17px}
+.delivery-affiliate-list span{color:#5f747b;font-size:14px}
+.delivery-empty{margin:0;padding:20px;border:1px dashed #9fb3b8;border-radius:10px;color:#61777e;text-align:center}
+.delivery-fields{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+.delivery-fields label{display:grid;gap:7px}
+.delivery-fields label>span{color:var(--petroleo);font-weight:850}
+.delivery-observations{grid-column:1/-1}
+.delivery-submit{margin-top:16px}
+.delivery-submit:disabled{background:#92a5aa;cursor:not-allowed}
+.delivery-warning{margin:9px 0 0;color:#8a5a16;font-weight:750}
+:root[data-theme="dark"] .delivery-step{background:#18343e;border-color:#49636c}
+:root[data-theme="dark"] .delivery-step-content h2,:root[data-theme="dark"] .delivery-affiliate-list strong,:root[data-theme="dark"] .delivery-fields label>span{color:#f0f6f7}
+:root[data-theme="dark"] .delivery-location-buttons a,:root[data-theme="dark"] .delivery-affiliate-list label{border-color:#49636c;color:#d7edf2}
+:root[data-theme="dark"] .delivery-affiliate-list label:has(input:checked){background:#3b3321;border-color:#d6a33e}
+:root[data-theme="dark"] .delivery-affiliate-list span{color:#b8cbd0}
+:root[data-theme="dark"] .delivery-search input,:root[data-theme="dark"] .delivery-fields input,:root[data-theme="dark"] .delivery-fields select,:root[data-theme="dark"] .delivery-fields textarea{background:#10272f;border-color:#49636c;color:#edf5f6}
+@media(max-width:700px){.delivery-step{grid-template-columns:38px 1fr;padding:16px;gap:11px}.delivery-step-number{width:36px;height:36px}.delivery-step-content h2{font-size:19px}.delivery-location-buttons{display:grid;grid-template-columns:1fr 1fr}.delivery-search{grid-template-columns:1fr}.delivery-fields{grid-template-columns:1fr}.delivery-observations{grid-column:auto}.delivery-submit{width:100%}}
