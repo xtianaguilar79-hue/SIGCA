@@ -1,3 +1,4 @@
+
 "use server";
 
 import { revalidatePath } from "next/cache";
@@ -95,5 +96,74 @@ export async function crearEmpresa(formData: FormData) {
 
   redirect(
     "/gestion/sistema/empresas?empresa_creada=1",
+  );
+}
+
+export async function actualizarEmpresa(
+  formData: FormData,
+) {
+  const supabase = await verificarAdministrador();
+
+  const id = String(formData.get("id") || "");
+  const nombre = String(formData.get("nombre") || "")
+    .trim()
+    .toUpperCase();
+
+  if (!/^\d+$/.test(id)) {
+    redirect("/gestion/sistema/empresas");
+  }
+
+  if (nombre.length < 2) {
+    redirect(
+      `/gestion/sistema/empresas/${id}/editar?error=nombre`,
+    );
+  }
+
+  const { data: duplicada } = await supabase
+    .from("empresas")
+    .select("id")
+    .eq("nombre", nombre)
+    .neq("id", Number(id))
+    .maybeSingle();
+
+  if (duplicada) {
+    redirect(
+      `/gestion/sistema/empresas/${id}/editar?error=duplicada`,
+    );
+  }
+
+  const { error } = await supabase
+    .from("empresas")
+    .update({
+      nombre,
+      razon_social: texto(formData, "razon_social"),
+      rama: texto(formData, "rama"),
+      domicilio: texto(formData, "domicilio"),
+      localidad: texto(formData, "localidad"),
+      provincia: texto(formData, "provincia"),
+      codigo_postal: texto(formData, "codigo_postal"),
+      cuit: texto(formData, "cuit"),
+      correo_electronico: texto(
+        formData,
+        "correo_electronico",
+      ),
+      telefono: texto(formData, "telefono"),
+      activa: formData.get("activa") === "on",
+    })
+    .eq("id", Number(id));
+
+  if (error) {
+    redirect(
+      `/gestion/sistema/empresas/${id}/editar?error=guardado`,
+    );
+  }
+
+  revalidatePath("/gestion/sistema/empresas");
+  revalidatePath(
+    "/gestion/sindical/afiliaciones/nueva",
+  );
+
+  redirect(
+    "/gestion/sistema/empresas?empresa_actualizada=1",
   );
 }
