@@ -177,6 +177,24 @@ export default async function ReporteEmpresasPage({
           <div className="company-report-actions">
             <button type="submit">Aplicar filtros y campos</button>
             <Link href="/gestion/sistema/reportes/empresas">Limpiar</Link>
+            {camposSeleccionados.length > 0 && (
+              <>
+                <button
+                  className="company-report-export"
+                  type="submit"
+                  formAction="/api/reportes/empresas"
+                >
+                  Descargar CSV
+                </button>
+                <button
+                  className="company-report-export company-report-export-pdf"
+                  type="submit"
+                  formAction="/gestion/sistema/reportes/empresas/imprimir"
+                >
+                  Generar PDF
+                </button>
+              </>
+            )}
           </div>
         </form>
 
