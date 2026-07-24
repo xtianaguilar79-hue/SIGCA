@@ -106,15 +106,18 @@ export default async function SistemaPage() {
   <small>INGRESAR</small>
 </Link>
 
-          <article className="module">
-            <span>◇</span>
-            <h2>Beneficios</h2>
-            <p>
-              Administración de beneficios y registro de
-              entregas a afiliados.
-            </p>
-            <small>EN PREPARACIÓN</small>
-          </article>
+          <Link
+  className="module module-link"
+  href="/gestion/sistema/beneficios"
+>
+  <span>◇</span>
+  <h2>Beneficios</h2>
+  <p>
+    Administración de beneficios y registro de
+    entregas a afiliados.
+  </p>
+  <small>INGRESAR</small>
+</Link>
 
           <Link
             className="module module-link"
