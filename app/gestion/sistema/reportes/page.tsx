@@ -147,15 +147,18 @@ export default async function ReportesPage() {
             <small>PRÓXIMA ETAPA</small>
           </article>
 
-          <article className="module">
-            <span>▣</span>
-            <h2>Empresas</h2>
-            <p>
-              Información consolidada de empresas activas, históricas y padrón
-              vinculado.
-            </p>
-            <small>PRÓXIMA ETAPA</small>
-          </article>
+          <Link
+  className="module module-link"
+  href="/gestion/sistema/reportes/empresas"
+>
+  <span>▣</span>
+  <h2>Empresas</h2>
+  <p>
+    Información consolidada de empresas activas,
+    históricas y padrón vinculado.
+  </p>
+  <small>INGRESAR</small>
+</Link>
         </div>
       </section>
     </main>
