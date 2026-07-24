@@ -100,13 +100,14 @@ export async function GET(request: Request) {
   }
 
   const registros: Record<string, unknown>[] = [];
-  const columnas = camposSeleccionados.map((campo) => campo.clave).join(",");
   let desde = 0;
 
   while (true) {
     let consulta = supabase
       .from("afiliados")
-      .select(columnas)
+      .select(
+        "numero_aoma,apellido_nombres,documento_numero,cuil,empresa_original,estado,fecha_nacimiento,fecha_ingreso,direccion,codigo_postal,provincia,departamento,telefono_fijo,telefono_movil,email,edad_original,antiguedad_original,baja_original,etiquetas,origen",
+      )
       .order("apellido_nombres", { ascending: true })
       .range(desde, desde + TAMANO_LOTE - 1);
 
@@ -121,7 +122,11 @@ export async function GET(request: Request) {
       });
     }
 
-    registros.push(...((data || []) as Record<string, unknown>[]));
+    for (const registro of data || []) {
+      registros.push(
+        registro as unknown as Record<string, unknown>,
+      );
+    }
     if (!data || data.length < TAMANO_LOTE) break;
     desde += TAMANO_LOTE;
   }
