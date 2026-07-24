@@ -90,8 +90,10 @@ export default async function EmpresasPage({
   }
 
   if (estado === "inactivas") {
-    consulta = consulta.eq("activa", false);
-  }
+  consulta = consulta.or(
+    "activa.eq.false,activa.is.null",
+  );
+}
 
   if (buscar) {
     consulta = consulta.or(
