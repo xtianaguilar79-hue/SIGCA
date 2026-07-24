@@ -119,6 +119,12 @@ export default async function BeneficiosPage({
           </article>
         </div>
 
+        <div className="benefits-primary-actions">
+          <Link href="/gestion/sistema/beneficios/entregar">
+            Entregar un beneficio
+          </Link>
+        </div>
+
         <details className="benefit-create">
           <summary>＋ Crear nuevo beneficio</summary>
           <form action={crearBeneficio}>
