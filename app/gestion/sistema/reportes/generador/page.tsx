@@ -210,13 +210,20 @@ export default async function GeneradorReporteAfiliadosPage({
               {CAMPOS.map((campo) => (
                 <label key={campo.clave}>
                   <input
-                    type="checkbox"
-                    name="campo"
-                    value={campo.clave}
-                    defaultChecked={camposSeleccionados.some(
-                      (seleccionado) => seleccionado.clave === campo.clave,
-                    )}
-                  />
+  key={`${campo.clave}-${
+    camposSeleccionados.some(
+      (seleccionado) => seleccionado.clave === campo.clave,
+    )
+      ? "seleccionado"
+      : "vacio"
+  }`}
+  type="checkbox"
+  name="campo"
+  value={campo.clave}
+  defaultChecked={camposSeleccionados.some(
+    (seleccionado) => seleccionado.clave === campo.clave,
+  )}
+/>
                   <span>{campo.etiqueta}</span>
                 </label>
               ))}
