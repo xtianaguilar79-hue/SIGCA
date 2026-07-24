@@ -683,30 +683,22 @@ export function AffiliateForm({
       >
         <section className="affiliation-options">
           <div className="field">
-            <label htmlFor="modo-persona">
-              Modalidad
-            </label>
-
-            <select
-              id="modo-persona"
-              value={
-                blankPerson ? "blanco" : "completar"
-              }
-              onChange={(event) =>
-                changePersonMode(
-                  event.target.value === "blanco"
-                )
-              }
-            >
-              <option value="completar">
-                Completar datos antes de imprimir
-              </option>
-
-              <option value="blanco">
-                Datos personales en blanco
-              </option>
-            </select>
-          </div>
+  <CompanyCombobox
+    empresas={companies}
+    defaultValue={
+      companies.find(
+        (company) =>
+          String(company.id) === companyId,
+      )?.nombre || ""
+    }
+    placeholder="Escribí para buscar una empresa"
+    onCompanySelect={(company) =>
+      selectCompany(
+        company ? String(company.id) : "",
+      )
+    }
+  />
+</div>
 
           <div className="field">
             <label htmlFor="empresa">
