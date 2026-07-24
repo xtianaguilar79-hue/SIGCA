@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { AffiliateStatusForm } from "./status-form";
+import { AffiliateStatusHistory } from "./status-history";
 import { SignOutButton } from "@/components/sign-out-button";
 import { createClient } from "@/lib/supabase/server";
 
@@ -66,7 +67,11 @@ export default async function FichaAfiliadoPage({
   const { id } = await params;
   const resultado = await searchParams;
 
-  const [afiliadoResult, estadosResult] = await Promise.all([
+  const [
+    afiliadoResult,
+    estadosResult,
+    historialResult,
+  ] = await Promise.all([
     supabase
       .from("afiliados")
       .select(
@@ -106,11 +111,43 @@ export default async function FichaAfiliadoPage({
       .select("nombre")
       .eq("habilitado", true)
       .order("orden"),
+
+    supabase
+      .from("afiliados_historial_estado")
+      .select(
+        `
+          id,
+          estado_anterior,
+          estado_nuevo,
+          observacion,
+          cambiado_por,
+          cambiado_at
+        `,
+      )
+      .eq("afiliado_id", id)
+      .order("cambiado_at", { ascending: false }),
   ]);
 
   const afiliado = afiliadoResult.data;
   const error = afiliadoResult.error;
   const estados = estadosResult.data || [];
+  const cambiosEstado = historialResult.data || [];
+
+  const responsablesIds = [
+    ...new Set(
+      cambiosEstado
+        .map((cambio) => cambio.cambiado_por)
+        .filter((valor): valor is string => Boolean(valor)),
+    ),
+  ];
+
+  const { data: responsables } =
+    responsablesIds.length > 0
+      ? await supabase
+          .from("usuarios")
+          .select("id,nombre,apellido")
+          .in("id", responsablesIds)
+      : { data: [] };
 
   if (error || !afiliado) {
     notFound();
@@ -299,6 +336,11 @@ export default async function FichaAfiliadoPage({
           estadoActual={afiliado.estado}
           estados={estados}
           resultado={resultado}
+        />
+
+        <AffiliateStatusHistory
+          cambios={cambiosEstado}
+          responsables={responsables || []}
         />
 
         <div className="affiliate-card-actions">
