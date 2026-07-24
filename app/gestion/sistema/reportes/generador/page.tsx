@@ -236,9 +236,16 @@ export default async function GeneradorReporteAfiliadosPage({
             </span>
           </div>
           {camposSeleccionados.length > 0 ? (
-            <a href={`/api/reportes/afiliados/csv?${exportParams.toString()}`}>
-              Descargar CSV
-            </a>
+            <div className="report-export-actions">
+              <a href={`/api/reportes/afiliados/csv?${exportParams.toString()}`}>
+                Descargar CSV
+              </a>
+              <Link
+                href={`/gestion/sistema/reportes/imprimir?${exportParams.toString()}`}
+              >
+                Generar PDF
+              </Link>
+            </div>
           ) : (
             <span className="report-export-disabled">
               Seleccioná al menos un dato
