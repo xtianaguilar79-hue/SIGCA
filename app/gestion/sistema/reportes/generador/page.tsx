@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CompanyCombobox } from "@/components/company-combobox";
+import { StatusCombobox } from "@/components/status-combobox";
 import { SignOutButton } from "@/components/sign-out-button";
 import { createClient } from "@/lib/supabase/server";
 
@@ -320,27 +321,11 @@ export default async function GeneradorReporteAfiliadosPage({
           />
 
           <div className="report-generator-filters">
-            <label>
-              <span>Estado afiliatorio</span>
-
-              <select
-                name="estado"
-                defaultValue={estadoSeleccionado}
-              >
-                <option value="">
-                  Todos los estados
-                </option>
-
-                {(estados || []).map((estado) => (
-                  <option
-                    key={estado.nombre}
-                    value={estado.nombre}
-                  >
-                    {estado.nombre}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <StatusCombobox
+              estados={estados || []}
+              defaultValue={estadoSeleccionado}
+              autoSubmit
+            />
 
             <CompanyCombobox
               empresas={empresas || []}
