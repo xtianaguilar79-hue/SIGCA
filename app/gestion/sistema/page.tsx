@@ -120,20 +120,20 @@ export default async function SistemaPage() {
 
         <div className="cards">
           <Link
-            className="module module-link"
-            href="/gestion/sistema/afiliados"
-          >
-            <span>◎</span>
+  className="module module-link"
+  href="/gestion/sistema/empresas"
+>
+  <span>▣</span>
 
-            <h2>Afiliados</h2>
+  <h2>Empresas</h2>
 
-            <p>
-              Consulta del padrón, actualización de datos,
-              estados, familiares y comunicaciones.
-            </p>
+  <p>
+    Alta, edición, activación y administración
+    de empresas y sus datos institucionales.
+  </p>
 
-            <small>INGRESAR</small>
-          </Link>
+  <small>INGRESAR</small>
+</Link>
 
           <article className="module">
             <span>◇</span>
