@@ -123,9 +123,18 @@ export default async function SistemaPage() {
             <small>EN PREPARACIÓN</small>
           </article>
 
-          <article className="module">
-            <span>▥</span>
-            <h2>Reportes</h2>
+          <Link
+  className="module module-link"
+  href="/gestion/sistema/reportes"
+>
+  <span>▥</span>
+  <h2>Reportes</h2>
+  <p>
+    Información general del padrón, correos electrónicos
+    y empresas.
+  </p>
+  <small>INGRESAR</small>
+</Link>
             <p>
               Información general del padrón, correos
               electrónicos y empresas.
