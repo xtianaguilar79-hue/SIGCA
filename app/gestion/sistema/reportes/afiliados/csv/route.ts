@@ -2,13 +2,42 @@ import { createClient } from "@/lib/supabase/server";
 
 const TAMANO_LOTE = 1000;
 
+const CAMPOS = [
+  { clave: "numero_aoma", etiqueta: "Número AOMA" },
+  { clave: "apellido_nombres", etiqueta: "Apellido y nombres" },
+  { clave: "documento_numero", etiqueta: "DNI" },
+  { clave: "cuil", etiqueta: "CUIL" },
+  { clave: "empresa_original", etiqueta: "Empresa" },
+  { clave: "estado", etiqueta: "Estado" },
+  { clave: "fecha_nacimiento", etiqueta: "Fecha de nacimiento", fecha: true },
+  { clave: "fecha_ingreso", etiqueta: "Fecha de ingreso", fecha: true },
+  { clave: "direccion", etiqueta: "Domicilio" },
+  { clave: "codigo_postal", etiqueta: "Código postal" },
+  { clave: "provincia", etiqueta: "Provincia" },
+  { clave: "departamento", etiqueta: "Departamento" },
+  { clave: "telefono_fijo", etiqueta: "Teléfono fijo" },
+  { clave: "telefono_movil", etiqueta: "Teléfono móvil" },
+  { clave: "email", etiqueta: "Correo electrónico" },
+  { clave: "edad_original", etiqueta: "Edad del registro original" },
+  { clave: "antiguedad_original", etiqueta: "Antigüedad del registro original" },
+  { clave: "baja_original", etiqueta: "Información de baja original" },
+  { clave: "etiquetas", etiqueta: "Etiquetas" },
+  { clave: "origen", etiqueta: "Origen del registro" },
+] as const;
+
 function celda(valor: unknown) {
-  let texto = valor === null || valor === undefined ? "" : String(valor);
+  let texto =
+    Array.isArray(valor)
+      ? valor.join(", ")
+      : valor === null || valor === undefined
+        ? ""
+        : String(valor);
+
   if (/^[=+\-@]/.test(texto)) texto = `'${texto}`;
   return `"${texto.replaceAll('"', '""')}"`;
 }
 
-function fecha(valor: unknown) {
+function mostrarFecha(valor: unknown) {
   if (!valor) return "";
   const partes = String(valor).slice(0, 10).split("-");
   return partes.length === 3
@@ -22,9 +51,7 @@ export async function GET(request: Request) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    return new Response("Acceso no autorizado", { status: 401 });
-  }
+  if (!user) return new Response("Acceso no autorizado", { status: 401 });
 
   const { data: profile } = await supabase
     .from("usuarios")
@@ -44,6 +71,14 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const estado = String(url.searchParams.get("estado") || "").trim();
   const empresa = String(url.searchParams.get("empresa") || "").trim();
+  const solicitados = new Set(url.searchParams.getAll("campo"));
+
+  const camposSeleccionados = CAMPOS.filter(
+    (campo) =>
+      campo.clave === "numero_aoma" ||
+      campo.clave === "apellido_nombres" ||
+      solicitados.has(campo.clave),
+  );
 
   let empresaId: number | null = null;
 
@@ -62,14 +97,13 @@ export async function GET(request: Request) {
   }
 
   const registros: Record<string, unknown>[] = [];
+  const columnas = camposSeleccionados.map((campo) => campo.clave).join(",");
   let desde = 0;
 
   while (true) {
     let consulta = supabase
       .from("afiliados")
-      .select(
-        "numero_aoma,apellido_nombres,documento_numero,cuil,empresa_original,estado,fecha_nacimiento,fecha_ingreso,telefono_fijo,telefono_movil,email",
-      )
+      .select(columnas)
       .order("apellido_nombres", { ascending: true })
       .range(desde, desde + TAMANO_LOTE - 1);
 
@@ -84,50 +118,29 @@ export async function GET(request: Request) {
       });
     }
 
-    registros.push(...(data || []));
-
+    registros.push(...((data || []) as Record<string, unknown>[]));
     if (!data || data.length < TAMANO_LOTE) break;
     desde += TAMANO_LOTE;
   }
 
-  const encabezados = [
-    "Número AOMA",
-    "Apellido y nombres",
-    "DNI",
-    "CUIL",
-    "Empresa",
-    "Estado",
-    "Fecha de nacimiento",
-    "Fecha de ingreso",
-    "Teléfono fijo",
-    "Teléfono móvil",
-    "Correo electrónico",
-  ];
-
-  const filas = registros.map((item) =>
-    [
-      item.numero_aoma,
-      item.apellido_nombres,
-      item.documento_numero,
-      item.cuil,
-      item.empresa_original,
-      item.estado,
-      fecha(item.fecha_nacimiento),
-      fecha(item.fecha_ingreso),
-      item.telefono_fijo,
-      item.telefono_movil,
-      item.email,
-    ]
-      .map(celda)
+  const filas = registros.map((registro) =>
+    camposSeleccionados
+      .map((campo) =>
+        celda(
+          "fecha" in campo && campo.fecha
+            ? mostrarFecha(registro[campo.clave])
+            : registro[campo.clave],
+        ),
+      )
       .join(";"),
   );
 
   const contenido = `\uFEFF${[
-    encabezados.map(celda).join(";"),
+    camposSeleccionados.map((campo) => celda(campo.etiqueta)).join(";"),
     ...filas,
   ].join("\r\n")}`;
 
-  const partesNombre = [
+  const nombre = [
     "reporte-afiliados",
     estado || "todos-los-estados",
     empresa || "todas-las-empresas",
@@ -142,7 +155,7 @@ export async function GET(request: Request) {
   return new Response(contenido, {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="${partesNombre}.csv"`,
+      "Content-Disposition": `attachment; filename="${nombre}.csv"`,
       "Cache-Control": "no-store",
     },
   });
