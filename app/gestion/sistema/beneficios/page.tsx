@@ -123,6 +123,12 @@ export default async function BeneficiosPage({
           <Link href="/gestion/sistema/beneficios/entregar">
             Entregar un beneficio
           </Link>
+          <Link
+            className="benefits-secondary-action"
+            href="/gestion/sistema/beneficios/historial"
+          >
+            Historial de entregas
+          </Link>
         </div>
 
         <details className="benefit-create">
