@@ -14,6 +14,8 @@ export default async function EmpresasPage({
     buscar?: string;
     estado?: string;
     pagina?: string;
+    empresa_creada?: string;
+    empresa_actualizada?: string;
   }>;
 }) {
   const supabase = await createClient();
@@ -187,11 +189,24 @@ export default async function EmpresasPage({
         </header>
 
         <CompanyFilters buscar={buscar} estado={estado} />
+
+        {params.empresa_creada === "1" && (
+          <div className="form-message success">
+            La empresa fue creada correctamente.
+          </div>
+        )}
+
+        {params.empresa_actualizada === "1" && (
+          <div className="form-message success">
+            Los datos de la empresa fueron actualizados.
+          </div>
+        )}
+
         <div className="company-page-actions">
-  <Link href="/gestion/sistema/empresas/nueva">
-    ＋ Nueva empresa
-  </Link>
-</div>
+          <Link href="/gestion/sistema/empresas/nueva">
+            ＋ Nueva empresa
+          </Link>
+        </div>
 
         {error ? (
           <div className="form-message error">
@@ -256,6 +271,14 @@ export default async function EmpresasPage({
                       </dd>
                     </div>
                   </dl>
+
+                  <div className="company-card-actions">
+                    <Link
+                      href={`/gestion/sistema/empresas/${empresa.id}/editar`}
+                    >
+                      Editar empresa
+                    </Link>
+                  </div>
                 </article>
               ))}
 
