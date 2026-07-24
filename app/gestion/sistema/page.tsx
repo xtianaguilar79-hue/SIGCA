@@ -94,17 +94,17 @@ export default async function SistemaPage() {
 
         <div className="cards">
           <Link
-            className="module module-link"
-            href="/gestion/sistema/afiliados"
-          >
-            <span>◎</span>
-            <h2>Afiliados</h2>
-            <p>
-              Consulta del padrón, actualización de datos,
-              estados, familiares y comunicaciones.
-            </p>
-            <small>INGRESAR</small>
-          </Link>
+  className="module module-link"
+  href="/gestion/sistema/beneficios"
+>
+  <span>◇</span>
+  <h2>Beneficios</h2>
+  <p>
+    Administración de beneficios y registro de
+    entregas a afiliados.
+  </p>
+  <small>INGRESAR</small>
+</Link>
 
           <article className="module">
             <span>◇</span>
