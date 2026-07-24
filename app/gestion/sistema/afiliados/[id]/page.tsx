@@ -272,6 +272,13 @@ export default async function FichaAfiliadoPage({
           </dl>
         </section>
 
+        <div className="affiliate-card-actions">
+  <Link
+    href={`/gestion/sistema/afiliados/${afiliado.id}/editar`}
+  >
+    Editar datos personales
+  </Link>
+</div>
         <p className="affiliate-readonly-note">
           Esta ficha se encuentra en modo de consulta. Los datos
           originales del padrón no fueron modificados.
