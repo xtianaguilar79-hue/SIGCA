@@ -208,7 +208,12 @@ export default async function ImprimirReporteAfiliadosPage({
         <thead>
           <tr>
             {seleccionados.map((campo) => (
-              <th key={campo.clave}>{campo.etiqueta}</th>
+              <th
+                className={`report-field-${campo.clave}`}
+                key={campo.clave}
+              >
+                {campo.etiqueta}
+              </th>
             ))}
           </tr>
         </thead>
@@ -217,7 +222,10 @@ export default async function ImprimirReporteAfiliadosPage({
           {registros.map((registro, indice) => (
             <tr key={indice}>
               {seleccionados.map((campo) => (
-                <td key={campo.clave}>
+                <td
+                  className={`report-field-${campo.clave}`}
+                  key={campo.clave}
+                >
                   {mostrar(
                     registro[campo.clave],
                     "fecha" in campo && campo.fecha,
