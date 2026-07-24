@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { AffiliateStatusForm } from "./status-form";
 import { SignOutButton } from "@/components/sign-out-button";
 import { createClient } from "@/lib/supabase/server";
 
@@ -23,8 +24,13 @@ function mostrarFecha(valor: string | null) {
 
 export default async function FichaAfiliadoPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{
+    estado_actualizado?: string;
+    estado_error?: string;
+  }>;
 }) {
   const supabase = await createClient();
 
@@ -58,11 +64,13 @@ export default async function FichaAfiliadoPage({
   }
 
   const { id } = await params;
+  const resultado = await searchParams;
 
-  const { data: afiliado, error } = await supabase
-    .from("afiliados")
-    .select(
-      `
+  const [afiliadoResult, estadosResult] = await Promise.all([
+    supabase
+      .from("afiliados")
+      .select(
+        `
         id,
         numero_aoma,
         apellido_nombres,
@@ -89,9 +97,20 @@ export default async function FichaAfiliadoPage({
         created_at,
         updated_at
       `,
-    )
-    .eq("id", id)
-    .maybeSingle();
+      )
+      .eq("id", id)
+      .maybeSingle(),
+
+    supabase
+      .from("estados_afiliado")
+      .select("nombre")
+      .eq("habilitado", true)
+      .order("orden"),
+  ]);
+
+  const afiliado = afiliadoResult.data;
+  const error = afiliadoResult.error;
+  const estados = estadosResult.data || [];
 
   if (error || !afiliado) {
     notFound();
@@ -163,11 +182,11 @@ export default async function FichaAfiliadoPage({
           </div>
 
           <span
-  className="affiliate-state"
-  data-state={afiliado.estado || "SIN ESTADO"}
->
-  {afiliado.estado || "SIN ESTADO"}
-</span>
+            className="affiliate-state"
+            data-state={afiliado.estado || "SIN ESTADO"}
+          >
+            {mostrar(afiliado.estado)}
+          </span>
         </header>
 
         <section className="affiliate-detail-section">
@@ -275,13 +294,21 @@ export default async function FichaAfiliadoPage({
           </dl>
         </section>
 
+        <AffiliateStatusForm
+          afiliadoId={afiliado.id}
+          estadoActual={afiliado.estado}
+          estados={estados}
+          resultado={resultado}
+        />
+
         <div className="affiliate-card-actions">
-  <Link
-    href={`/gestion/sistema/afiliados/${afiliado.id}/editar`}
-  >
-    Editar datos personales
-  </Link>
-</div>
+          <Link
+            href={`/gestion/sistema/afiliados/${afiliado.id}/editar`}
+          >
+            Editar datos personales
+          </Link>
+        </div>
+
         <p className="affiliate-readonly-note">
           Esta ficha se encuentra en modo de consulta. Los datos
           originales del padrón no fueron modificados.
