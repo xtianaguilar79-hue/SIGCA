@@ -275,12 +275,14 @@ export default async function EmpresasPage({
                   </dl>
 
                   <div className="company-card-actions">
-                    <Link
-                      href={`/gestion/sistema/empresas/${empresa.id}/editar`}
-                    >
-                      Editar empresa
-                    </Link>
-                  </div>
+  <Link href={`/gestion/sistema/empresas/${empresa.id}`}>
+    Ver ficha
+  </Link>
+
+  <Link href={`/gestion/sistema/empresas/${empresa.id}/editar`}>
+    Editar empresa
+  </Link>
+</div>
                 </article>
               ))}
 
