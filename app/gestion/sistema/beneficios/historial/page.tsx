@@ -276,6 +276,22 @@ export default async function HistorialBeneficiosPage({
         <div className="benefit-history-total">
           <strong>{total.toLocaleString("es-AR")} entregas</strong>
           <span>Página {pagina} de {paginas}</span>
+          <Link
+  className="benefit-history-download"
+  href={`/api/beneficios/historial-csv?${new URLSearchParams({
+    ...(buscar ? { buscar } : {}),
+    ...(beneficioId > 0
+      ? { beneficio: String(beneficioId) }
+      : {}),
+    ...(lugarId > 0
+      ? { lugar: String(lugarId) }
+      : {}),
+    ...(desdeFecha ? { desde: desdeFecha } : {}),
+    ...(hastaFecha ? { hasta: hastaFecha } : {}),
+  }).toString()}`}
+>
+  Descargar CSV
+</Link>
         </div>
 
         {error ? (
