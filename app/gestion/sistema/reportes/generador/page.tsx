@@ -194,7 +194,9 @@ export default async function GeneradorReporteAfiliadosPage({
 
             <div className="report-generator-buttons">
               <button type="submit">Aplicar selección</button>
-              <Link href="/gestion/sistema/reportes/generador">Limpiar</Link>
+              <a href="/gestion/sistema/reportes/generador">
+  Limpiar y destildar todo
+</a>
             </div>
           </div>
 
