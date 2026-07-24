@@ -32,10 +32,14 @@ const CAMPOS = [
 function mostrar(valor: unknown, esFecha = false) {
   if (valor === null || valor === undefined || valor === "") return "—";
   if (Array.isArray(valor)) return valor.join(", ") || "—";
+
   if (esFecha) {
     const partes = String(valor).slice(0, 10).split("-");
-    if (partes.length === 3) return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    if (partes.length === 3) {
+      return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    }
   }
+
   return String(valor);
 }
 
@@ -78,6 +82,7 @@ export default async function ImprimirReporteAfiliadosPage({
     : params.campo
       ? [params.campo]
       : [];
+
   const seleccionados = CAMPOS.filter((campo) =>
     recibidos.includes(campo.clave),
   );
@@ -141,8 +146,27 @@ export default async function ImprimirReporteAfiliadosPage({
     timeZone: "America/Argentina/Buenos_Aires",
   }).format(new Date());
 
+  const orientacion = seleccionados.length <= 6 ? "portrait" : "landscape";
+  const densidad =
+    seleccionados.length <= 5
+      ? "print-columns-comfortable"
+      : seleccionados.length <= 9
+        ? "print-columns-compact"
+        : "print-columns-dense";
+
   return (
-    <main className="print-report-page">
+    <main
+      className={`print-report-page print-${orientacion} ${densidad}`}
+    >
+      <style>{`
+        @media print {
+          @page {
+            size: A4 ${orientacion};
+            margin: 14mm 12mm 15mm;
+          }
+        }
+      `}</style>
+
       <div className="print-report-toolbar">
         <Link href="/gestion/sistema/reportes/generador">
           ← Volver al generador
@@ -151,13 +175,26 @@ export default async function ImprimirReporteAfiliadosPage({
       </div>
 
       <header className="print-report-header">
-        <Image src="/logo-aoma.png" width={58} height={58} alt="AOMA" />
-        <div>
+        <div className="print-report-logo">
+          <Image
+            src="/logo-aoma.png"
+            width={64}
+            height={64}
+            alt="AOMA"
+            priority
+          />
+        </div>
+
+        <div className="print-report-title">
           <strong>SIGCA · AOMA SECCIONAL SAN JUAN</strong>
           <h1>Reporte de afiliados</h1>
           <p>
             Estado: {estado || "Todos"} · Empresa: {empresa || "Todas"}
           </p>
+        </div>
+
+        <div className="print-report-mark" aria-hidden="true">
+          AOMA
         </div>
       </header>
 
@@ -175,6 +212,7 @@ export default async function ImprimirReporteAfiliadosPage({
             ))}
           </tr>
         </thead>
+
         <tbody>
           {registros.map((registro, indice) => (
             <tr key={indice}>
@@ -192,7 +230,8 @@ export default async function ImprimirReporteAfiliadosPage({
       </table>
 
       <footer className="print-report-footer">
-        Documento institucional generado por SIGCA.
+        <span>Documento institucional generado por SIGCA.</span>
+        <span className="print-page-number">Página</span>
       </footer>
     </main>
   );
