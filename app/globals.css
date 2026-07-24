@@ -1594,6 +1594,8 @@ button { cursor:pointer; }
 .print-report-header p{margin:0;font-size:13px;line-height:1.4;color:#405f67}
 .print-report-mark{align-self:stretch;display:grid;place-items:center;min-width:92px;padding:0 15px;border-radius:8px;background:#edf4f5;color:#0b5264;font-size:17px;font-weight:950;letter-spacing:.12em}
 .print-report-meta{display:flex;justify-content:center;flex-wrap:wrap;gap:8px 24px;width:100%;max-width:1500px;margin:12px auto;padding:9px 12px;border:1px solid #d5e1e3;border-radius:6px;background:#edf4f5;font-size:11px;font-weight:750;text-align:center}
+.print-report-mobile-help{display:none}
+.print-report-table-scroll{width:100%;max-width:1500px;margin:0 auto}
 .print-report-table{width:100%;max-width:1500px;margin:0 auto;border-collapse:collapse;table-layout:auto;font-size:10px}
 .print-report-table th,.print-report-table td{padding:6px 7px;border:1px solid #9fb3b8;text-align:left;vertical-align:top;overflow-wrap:anywhere}
 .print-report-table .report-field-documento_numero{min-width:76px;white-space:nowrap;overflow-wrap:normal;word-break:normal}
@@ -1608,11 +1610,38 @@ button { cursor:pointer; }
 .print-columns-dense .print-report-table th,.print-columns-dense .print-report-table td{padding:4px}
 .print-report-footer{display:flex;justify-content:space-between;gap:20px;width:100%;max-width:1500px;margin:13px auto 0;padding-top:8px;border-top:1px solid #9fb3b8;font-size:9px;color:#60757b}
 .print-page-number::after{content:" " counter(page)}
-@media(max-width:700px){.report-export-actions{display:grid}.report-export-actions>a{width:100%}.print-report-page{padding:14px}.print-report-toolbar{margin-bottom:18px}.print-report-header{grid-template-columns:auto 1fr}.print-report-mark{display:none}.print-report-logo{width:58px;height:58px}.print-report-header h1{font-size:22px}.print-report-table{font-size:8px}.print-report-table th,.print-report-table td{padding:4px}}
+@media(max-width:700px){
+  body:has(.print-report-page) .notification-bell,body:has(.print-report-page) .theme-toggle,body:has(.print-report-page) .mobile-menu-button,body:has(.print-report-page) .home-brand-link{display:none!important}
+  .report-export-actions{display:grid}
+  .report-export-actions>a{width:100%}
+  .print-report-page{padding:14px 12px 24px}
+  .print-report-toolbar{margin-bottom:18px}
+  .print-report-header{grid-template-columns:58px minmax(0,1fr);gap:11px}
+  .print-report-mark{display:none}
+  .print-report-logo{width:58px;height:58px}
+  .print-report-header strong{font-size:10px;line-height:1.25}
+  .print-report-header h1{font-size:21px;overflow-wrap:normal}
+  .print-report-header p{font-size:12px}
+  .print-report-meta{display:grid;gap:5px;margin:10px 0;text-align:left}
+  .print-report-mobile-help{display:block;margin:10px 0 7px;padding:8px 10px;border-radius:7px;background:#edf4f5;color:#315964;font-size:12px;font-weight:800}
+  .print-report-table-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch;border:1px solid #9fb3b8;border-radius:7px}
+  .print-report-table{width:max-content;min-width:920px;margin:0;font-size:10px}
+  .print-columns-comfortable .print-report-table{min-width:680px;font-size:10px}
+  .print-columns-compact .print-report-table{min-width:920px;font-size:9.5px}
+  .print-columns-dense .print-report-table{min-width:1320px;font-size:9px}
+  .print-report-table th,.print-report-table td{padding:6px;white-space:normal}
+  .print-report-table .report-field-documento_numero{min-width:82px;white-space:nowrap}
+  .print-report-table .report-field-cuil{min-width:112px;white-space:nowrap}
+  .print-report-table .report-field-apellido_nombres{min-width:180px}
+  .print-report-table .report-field-empresa_original{min-width:190px}
+  .print-report-table .report-field-estado{min-width:150px}
+}
 @media print{
   .mobile-menu-button,.mobile-menu-backdrop,.theme-toggle,.notification-bell,.home-brand-link,.print-report-toolbar{display:none!important}
   html,body{margin:0!important;background:#fff!important;color:#111!important}
   .print-report-page{width:100%;min-height:auto;margin:0;padding:0}
+  .print-report-mobile-help{display:none!important}
+  .print-report-table-scroll{max-width:none;overflow:visible;border:0}
   .print-report-header{max-width:none;break-after:avoid}
   .print-report-logo{width:18mm;height:18mm}
   .print-report-header h1{font-size:18pt}
