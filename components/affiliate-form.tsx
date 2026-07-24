@@ -1,5 +1,6 @@
 "use client";
 
+import { CompanyCombobox } from "@/components/company-combobox";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import {
