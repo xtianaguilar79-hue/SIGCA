@@ -545,3 +545,161 @@ button { cursor:pointer; }
     width: fit-content;
   }
 }
+/* SIGCA | Ficha individual del padrón */
+.affiliate-detail-page {
+  width: 100%;
+  max-width: 1450px;
+}
+
+.affiliate-detail-header {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 24px;
+  margin: 24px 0;
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--petroleo);
+  color: #fff;
+}
+
+.affiliate-detail-header h1 {
+  margin: 5px 0 7px;
+  font: 700 clamp(25px, 3vw, 36px) Georgia, serif;
+}
+
+.affiliate-detail-header p {
+  margin: 0;
+  color: #d4e4e7;
+}
+
+.affiliate-detail-number {
+  min-width: 190px;
+  padding: 12px 20px;
+  border: 2px solid var(--dorado);
+  border-radius: 12px;
+  background: #fff7df;
+  color: var(--petroleo);
+  text-align: center;
+}
+
+.affiliate-detail-number span {
+  display: block;
+  color: #796019;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .07em;
+}
+
+.affiliate-detail-number strong {
+  display: block;
+  margin-top: 3px;
+  font-size: 29px;
+}
+
+.affiliate-detail-section {
+  margin-top: 16px;
+  padding: 22px;
+  border: 1px solid var(--linea);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.affiliate-detail-section h2 {
+  margin: 0 0 18px;
+  color: var(--petroleo);
+  font: 700 21px Georgia, serif;
+}
+
+.affiliate-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin: 0;
+}
+
+.affiliate-detail-grid div {
+  min-width: 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5edef;
+}
+
+.affiliate-detail-grid dt {
+  margin-bottom: 6px;
+  color: var(--gris);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.affiliate-detail-grid dd {
+  margin: 0;
+  color: var(--tinta);
+  font-size: 16px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.affiliate-readonly-note {
+  margin: 18px 0 0;
+  padding: 14px 17px;
+  border-left: 4px solid var(--dorado);
+  border-radius: 7px;
+  background: #fff7df;
+  color: #66521d;
+  font-size: 14px;
+}
+
+:root[data-theme="dark"] .affiliate-detail-section {
+  background: #18343e;
+  border-color: #49636c;
+}
+
+:root[data-theme="dark"] .affiliate-detail-section h2,
+:root[data-theme="dark"] .affiliate-detail-grid dd {
+  color: #f1f7f8;
+}
+
+:root[data-theme="dark"] .affiliate-detail-grid dt {
+  color: #b8cbd0;
+}
+
+:root[data-theme="dark"] .affiliate-detail-grid div {
+  border-color: #49636c;
+}
+
+:root[data-theme="dark"] .affiliate-readonly-note {
+  background: #453b20;
+  color: #f1d88d;
+}
+
+@media (max-width: 850px) {
+  .affiliate-detail-header {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    padding: 20px;
+  }
+
+  .affiliate-detail-number {
+    width: 100%;
+  }
+
+  .affiliate-detail-header .affiliate-state {
+    width: fit-content;
+  }
+
+  .affiliate-detail-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .affiliate-detail-section {
+    padding: 18px 16px;
+  }
+
+  .affiliate-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
