@@ -58,33 +58,14 @@ export default async function SistemaPage() {
         </Link>
 
         <nav>
-          <Link href="/gestion">
-            Inicio institucional
-          </Link>
-
-          <Link href="/gestion/sindical">
-            Gestión sindical
-          </Link>
-
-          <Link href="/gestion/formacion">
-            Formación Sindical
-          </Link>
-
-          <Link href="/gestion/biblioteca">
-            Biblioteca
-          </Link>
-
-          <Link
-            className="active"
-            href="/gestion/sistema"
-          >
+          <Link href="/gestion">Inicio institucional</Link>
+          <Link href="/gestion/sindical">Gestión sindical</Link>
+          <Link href="/gestion/formacion">Formación Sindical</Link>
+          <Link href="/gestion/biblioteca">Biblioteca</Link>
+          <Link className="active" href="/gestion/sistema">
             Sistema
           </Link>
-
-          <Link href="/gestion/perfil">
-            Mi perfil
-          </Link>
-
+          <Link href="/gestion/perfil">Mi perfil</Link>
           <Link href="/gestion/usuarios">
             Administración de usuarios
           </Link>
@@ -120,70 +101,58 @@ export default async function SistemaPage() {
 
         <div className="cards">
           <Link
-  className="module module-link"
-  href="/gestion/sistema/empresas"
->
-  <span>▣</span>
-
-  <h2>Empresas</h2>
-
-  <p>
-    Alta, edición, activación y administración
-    de empresas y sus datos institucionales.
-  </p>
-
-  <small>INGRESAR</small>
-</Link>
+            className="module module-link"
+            href="/gestion/sistema/afiliados"
+          >
+            <span>◎</span>
+            <h2>Afiliados</h2>
+            <p>
+              Consulta del padrón, actualización de datos,
+              estados, familiares y comunicaciones.
+            </p>
+            <small>INGRESAR</small>
+          </Link>
 
           <article className="module">
             <span>◇</span>
-
             <h2>Beneficios</h2>
-
             <p>
               Administración de beneficios y registro de
               entregas a afiliados.
             </p>
-
             <small>EN PREPARACIÓN</small>
           </article>
 
           <article className="module">
             <span>▥</span>
-
             <h2>Reportes</h2>
-
             <p>
               Información general del padrón, correos
               electrónicos y empresas.
             </p>
-
             <small>EN PREPARACIÓN</small>
           </article>
 
-          <article className="module">
+          <Link
+            className="module module-link"
+            href="/gestion/sistema/empresas"
+          >
             <span>▣</span>
-
             <h2>Empresas</h2>
-
             <p>
               Alta, edición, activación y administración
               de empresas y sus datos institucionales.
             </p>
-
-            <small>EN PREPARACIÓN</small>
-          </article>
+            <small>INGRESAR</small>
+          </Link>
 
           <article className="module">
             <span>⚙</span>
-
             <h2>Configuración</h2>
-
             <p>
               Provincias, departamentos, estados del
               afiliado y futuras configuraciones.
             </p>
-
             <small>EN PREPARACIÓN</small>
           </article>
         </div>
