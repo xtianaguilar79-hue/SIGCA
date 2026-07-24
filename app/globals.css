@@ -984,3 +984,100 @@ button { cursor:pointer; }
   color: #f5d09a;
   border-color: #806039;
 }
+/* SIGCA | Cambio controlado de estado */
+.affiliate-status-panel {
+  margin-top: 16px;
+  padding: 22px;
+  border: 1px solid var(--linea);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.affiliate-status-panel h2 {
+  margin: 0 0 6px;
+  color: var(--petroleo);
+  font: 700 21px Georgia, serif;
+}
+
+.affiliate-status-panel > p {
+  margin: 0 0 18px;
+  color: var(--gris);
+  font-size: 14px;
+}
+
+.affiliate-status-panel form {
+  display: grid;
+  grid-template-columns: minmax(250px, .8fr) 1.6fr auto;
+  align-items: end;
+  gap: 14px;
+}
+
+.affiliate-status-panel label {
+  display: grid;
+  gap: 7px;
+}
+
+.affiliate-status-panel label span {
+  color: var(--tinta);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.affiliate-status-panel select,
+.affiliate-status-panel textarea {
+  width: 100%;
+  border: 1px solid #aebfc4;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--tinta);
+  font-size: 15px;
+}
+
+.affiliate-status-panel select {
+  height: 48px;
+  padding: 0 12px;
+}
+
+.affiliate-status-panel textarea {
+  min-height: 76px;
+  padding: 11px 12px;
+  resize: vertical;
+}
+
+.affiliate-status-panel button {
+  min-height: 48px;
+  padding: 0 17px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--petroleo);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+:root[data-theme="dark"] .affiliate-status-panel {
+  background: #18343e;
+  border-color: #49636c;
+}
+
+:root[data-theme="dark"] .affiliate-status-panel h2,
+:root[data-theme="dark"] .affiliate-status-panel label span {
+  color: #f1f7f8;
+}
+
+:root[data-theme="dark"] .affiliate-status-panel > p {
+  color: #b8cbd0;
+}
+
+:root[data-theme="dark"] .affiliate-status-panel select,
+:root[data-theme="dark"] .affiliate-status-panel textarea {
+  background: #0b222a;
+  border-color: #58717a;
+  color: #f5f8f9;
+}
+
+@media (max-width: 900px) {
+  .affiliate-status-panel form {
+    grid-template-columns: 1fr;
+  }
+}
