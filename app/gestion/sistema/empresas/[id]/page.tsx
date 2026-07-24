@@ -4,6 +4,29 @@ import { notFound, redirect } from "next/navigation";
 import { SignOutButton } from "@/components/sign-out-button";
 import { createClient } from "@/lib/supabase/server";
 
+const etiquetas: Record<string, string> = {
+  nombre: "Nombre",
+  razon_social: "Razón social",
+  activa: "Estado",
+  rama: "Rama",
+  domicilio: "Domicilio",
+  localidad: "Localidad",
+  provincia: "Provincia",
+  codigo_postal: "Código postal",
+  cuit: "CUIT",
+  correo_electronico: "Correo electrónico",
+  email: "Correo electrónico",
+  telefono: "Teléfono",
+  cantidad_afiliados_activos_original: "Afiliados activos según registro original",
+  notas: "Notas",
+};
+
+function mostrarValor(campo: string, valor: unknown) {
+  if (campo === "activa") return valor === true ? "Activa" : "Inactiva";
+  if (valor === null || valor === undefined || valor === "") return "Sin informar";
+  return String(valor);
+}
+
 export default async function EmpresaDetallePage({
   params,
 }: {
@@ -43,6 +66,41 @@ export default async function EmpresaDetallePage({
     .maybeSingle();
 
   if (!empresa) notFound();
+
+  const { data: historial } = await supabase
+    .from("empresas_historial_cambios")
+    .select(
+      "id,accion,datos_anteriores,datos_nuevos,modificado_por,modificado_at",
+    )
+    .eq("empresa_id", id)
+    .order("modificado_at", { ascending: false })
+    .limit(50);
+
+  const responsablesIds = [
+    ...new Set(
+      (historial || [])
+        .map((item) => item.modificado_por)
+        .filter(Boolean),
+    ),
+  ];
+
+  const { data: responsables } = responsablesIds.length
+    ? await supabase
+        .from("usuarios")
+        .select("id,nombre,apellido,mail")
+        .in("id", responsablesIds)
+    : { data: [] };
+
+  const responsablesPorId = new Map(
+    (responsables || []).map((responsable) => [
+      responsable.id,
+      [responsable.nombre, responsable.apellido]
+        .filter(Boolean)
+        .join(" ") ||
+        responsable.mail ||
+        "Usuario institucional",
+    ]),
+  );
 
   const nombreUsuario = [profile.nombre, profile.apellido]
     .filter(Boolean)
@@ -130,6 +188,82 @@ export default async function EmpresaDetallePage({
             </Link>
           </div>
         </article>
+
+        <section className="company-history">
+          <div className="company-history-heading">
+            <div>
+              <p className="kicker">MEMORIA INSTITUCIONAL</p>
+              <h2>Historial de modificaciones</h2>
+            </div>
+            <span>{historial?.length || 0} REGISTROS</span>
+          </div>
+
+          {historial?.length ? (
+            <div className="company-history-list">
+              {historial.map((registro) => {
+                const anteriores =
+                  (registro.datos_anteriores as Record<string, unknown>) || {};
+                const nuevos =
+                  (registro.datos_nuevos as Record<string, unknown>) || {};
+
+                const camposCambiados = Object.keys(etiquetas).filter(
+                  (campo) =>
+                    JSON.stringify(anteriores[campo]) !==
+                    JSON.stringify(nuevos[campo]),
+                );
+
+                return (
+                  <article className="company-history-item" key={registro.id}>
+                    <header>
+                      <div>
+                        <strong>
+                          {String(registro.accion).toLowerCase() === "insert"
+                            ? "Empresa incorporada"
+                            : "Datos actualizados"}
+                        </strong>
+                        <span>
+                          {new Intl.DateTimeFormat("es-AR", {
+                            dateStyle: "long",
+                            timeStyle: "short",
+                            timeZone: "America/Argentina/Buenos_Aires",
+                          }).format(new Date(registro.modificado_at))}
+                        </span>
+                      </div>
+                      <p>
+                        Responsable:{" "}
+                        {responsablesPorId.get(registro.modificado_por) ||
+                          "Proceso institucional"}
+                      </p>
+                    </header>
+
+                    {camposCambiados.length > 0 ? (
+                      <dl>
+                        {camposCambiados.map((campo) => (
+                          <div key={campo}>
+                            <dt>{etiquetas[campo]}</dt>
+                            <dd>
+                              <span>{mostrarValor(campo, anteriores[campo])}</span>
+                              <b aria-hidden="true">→</b>
+                              <strong>{mostrarValor(campo, nuevos[campo])}</strong>
+                            </dd>
+                          </div>
+                        ))}
+                      </dl>
+                    ) : (
+                      <p className="company-history-empty-change">
+                        Registro institucional sin diferencias visibles.
+                      </p>
+                    )}
+                  </article>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="empty-users">
+              Esta empresa todavía no registra modificaciones posteriores.
+            </div>
+          )}
+        </section>
       </section>
     </main>
   );
