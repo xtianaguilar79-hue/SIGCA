@@ -204,38 +204,44 @@ export default async function ImprimirReporteAfiliadosPage({
         <span>Responsable: {generadoPor}</span>
       </div>
 
-      <table className="print-report-table">
-        <thead>
-          <tr>
-            {seleccionados.map((campo) => (
-              <th
-                className={`report-field-${campo.clave}`}
-                key={campo.clave}
-              >
-                {campo.etiqueta}
-              </th>
-            ))}
-          </tr>
-        </thead>
+      <p className="print-report-mobile-help">
+        Deslizá la tabla hacia los costados para consultar todas las columnas.
+      </p>
 
-        <tbody>
-          {registros.map((registro, indice) => (
-            <tr key={indice}>
+      <div className="print-report-table-scroll">
+        <table className="print-report-table">
+          <thead>
+            <tr>
               {seleccionados.map((campo) => (
-                <td
+                <th
                   className={`report-field-${campo.clave}`}
                   key={campo.clave}
                 >
-                  {mostrar(
-                    registro[campo.clave],
-                    "fecha" in campo && campo.fecha,
-                  )}
-                </td>
+                  {campo.etiqueta}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {registros.map((registro, indice) => (
+              <tr key={indice}>
+                {seleccionados.map((campo) => (
+                  <td
+                    className={`report-field-${campo.clave}`}
+                    key={campo.clave}
+                  >
+                    {mostrar(
+                      registro[campo.clave],
+                      "fecha" in campo && campo.fecha,
+                    )}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <footer className="print-report-footer">
         <span>Documento institucional generado por SIGCA.</span>
