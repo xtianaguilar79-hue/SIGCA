@@ -137,16 +137,6 @@ export default async function ReportesPage() {
             <small>INGRESAR</small>
           </Link>
 
-          <article className="module">
-            <span>✉</span>
-            <h2>Correos electrónicos</h2>
-            <p>
-              Consulta de afiliados con correo informado y registros pendientes
-              de completar.
-            </p>
-            <small>PRÓXIMA ETAPA</small>
-          </article>
-
           <Link
   className="module module-link"
   href="/gestion/sistema/reportes/empresas"
