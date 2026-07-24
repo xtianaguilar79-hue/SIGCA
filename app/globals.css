@@ -1181,3 +1181,217 @@ button { cursor:pointer; }
     gap: 5px;
   }
 }
+/* SIGCA | Sistema de empresas */
+.companies-page {
+  width: 100%;
+  max-width: 1450px;
+}
+
+.company-search {
+  display: grid;
+  grid-template-columns: 1.5fr .7fr auto;
+  align-items: end;
+  gap: 14px;
+  margin: 24px 0;
+  padding: 20px;
+  border: 1px solid var(--linea);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.company-search label {
+  display: grid;
+  gap: 7px;
+}
+
+.company-search label > span {
+  color: var(--tinta);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.company-search label > div {
+  display: flex;
+  gap: 9px;
+}
+
+.company-search input,
+.company-search select {
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  padding: 0 13px;
+  border: 1px solid #aebfc4;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--tinta);
+  font-size: 15px;
+}
+
+.company-search button,
+.company-search > a {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 17px;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.company-search button {
+  border: 0;
+  background: var(--petroleo);
+  color: #fff;
+}
+
+.company-search > a {
+  border: 1px solid #aebfc4;
+  color: var(--petroleo);
+}
+
+.companies-list {
+  display: grid;
+  gap: 12px;
+}
+
+.company-card {
+  overflow: hidden;
+  border: 1px solid var(--linea);
+  border-radius: 13px;
+  background: #fff;
+}
+
+.company-card header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--linea);
+}
+
+.company-card h2 {
+  margin: 0 0 5px;
+  color: var(--petroleo);
+  font-size: 19px;
+}
+
+.company-card header p {
+  margin: 0;
+  color: var(--gris);
+  font-size: 14px;
+}
+
+.company-state {
+  height: fit-content;
+  padding: 7px 11px;
+  border-radius: 18px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.company-state.active {
+  background: #dff3e8;
+  color: #176342;
+}
+
+.company-state.inactive {
+  background: #fde5df;
+  color: #8b351f;
+}
+
+.company-card dl {
+  display: grid;
+  grid-template-columns: .7fr 1.5fr 1fr 1fr 1.3fr;
+  gap: 17px;
+  margin: 0;
+  padding: 16px 20px 18px;
+}
+
+.company-card dt {
+  margin-bottom: 5px;
+  color: var(--gris);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.company-card dd {
+  margin: 0;
+  color: var(--tinta);
+  font-size: 14px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+:root[data-theme="dark"] .company-search,
+:root[data-theme="dark"] .company-card {
+  background: #18343e;
+  border-color: #49636c;
+}
+
+:root[data-theme="dark"] .company-search label > span,
+:root[data-theme="dark"] .company-card h2,
+:root[data-theme="dark"] .company-card dd {
+  color: #f1f7f8;
+}
+
+:root[data-theme="dark"] .company-search input,
+:root[data-theme="dark"] .company-search select {
+  background: #0b222a;
+  border-color: #58717a;
+  color: #f5f8f9;
+}
+
+:root[data-theme="dark"] .company-card header {
+  border-color: #49636c;
+}
+
+:root[data-theme="dark"] .company-card header p,
+:root[data-theme="dark"] .company-card dt {
+  color: #b8cbd0;
+}
+
+@media (max-width: 850px) {
+  .company-search {
+    grid-template-columns: 1fr;
+  }
+
+  .company-card dl {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .company-search {
+    padding: 16px;
+  }
+
+  .company-search label > div {
+    display: grid;
+    grid-template-columns: 1fr auto;
+  }
+
+  .company-search button {
+    width: 52px;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .company-search button::after {
+    content: "🔍";
+    font-size: 19px;
+  }
+
+  .company-card header {
+    display: grid;
+    padding: 16px;
+  }
+
+  .company-card dl {
+    grid-template-columns: 1fr;
+    padding: 15px 16px 18px;
+  }
+}
