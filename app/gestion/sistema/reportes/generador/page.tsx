@@ -7,8 +7,8 @@ import { createClient } from "@/lib/supabase/server";
 const VISTA_PREVIA = 50;
 
 const CAMPOS = [
-  { clave: "numero_aoma", etiqueta: "N.º AOMA", obligatorio: true },
-  { clave: "apellido_nombres", etiqueta: "Apellido y nombres", obligatorio: true },
+  { clave: "numero_aoma", etiqueta: "N.º AOMA" },
+  { clave: "apellido_nombres", etiqueta: "Apellido y nombres" },
   { clave: "documento_numero", etiqueta: "DNI" },
   { clave: "cuil", etiqueta: "CUIL" },
   { clave: "empresa_original", etiqueta: "Empresa" },
@@ -80,9 +80,7 @@ export default async function GeneradorReporteAfiliadosPage({
       ? [params.campo]
       : [];
   const camposSeleccionados = CAMPOS.filter(
-    (campo) =>
-      ("obligatorio" in campo && campo.obligatorio) ||
-      recibidos.includes(campo.clave),
+    (campo) => recibidos.includes(campo.clave),
   );
 
   const [{ data: estados }, { data: empresas }] = await Promise.all([
@@ -120,9 +118,6 @@ export default async function GeneradorReporteAfiliadosPage({
   if (estadoSeleccionado) exportParams.set("estado", estadoSeleccionado);
   if (empresaSeleccionada) exportParams.set("empresa", empresaSeleccionada);
   camposSeleccionados
-    .filter(
-      (campo) => !("obligatorio" in campo && campo.obligatorio),
-    )
     .forEach((campo) => exportParams.append("campo", campo.clave));
 
   const name = [profile.nombre, profile.apellido].filter(Boolean).join(" ");
@@ -206,31 +201,23 @@ export default async function GeneradorReporteAfiliadosPage({
           <fieldset className="report-field-selector">
             <legend>Datos que incluirá el reporte</legend>
             <p>
-              N.º AOMA y Apellido y nombres se incluyen siempre. Marcá o
-              desmarcá los demás datos.
+              Inicialmente no hay datos seleccionados. Marcá únicamente las
+              columnas que necesites y tocá Aplicar selección.
             </p>
             <div>
-              {CAMPOS.map((campo) =>
-                "obligatorio" in campo && campo.obligatorio ? (
-                  <label className="mandatory" key={campo.clave}>
-                    <input type="checkbox" checked disabled />
-                    <span>{campo.etiqueta}</span>
-                    <small>Siempre incluido</small>
-                  </label>
-                ) : (
-                  <label key={campo.clave}>
-                    <input
-                      type="checkbox"
-                      name="campo"
-                      value={campo.clave}
-                      defaultChecked={camposSeleccionados.some(
-                        (seleccionado) => seleccionado.clave === campo.clave,
-                      )}
-                    />
-                    <span>{campo.etiqueta}</span>
-                  </label>
-                ),
-              )}
+              {CAMPOS.map((campo) => (
+                <label key={campo.clave}>
+                  <input
+                    type="checkbox"
+                    name="campo"
+                    value={campo.clave}
+                    defaultChecked={camposSeleccionados.some(
+                      (seleccionado) => seleccionado.clave === campo.clave,
+                    )}
+                  />
+                  <span>{campo.etiqueta}</span>
+                </label>
+              ))}
             </div>
           </fieldset>
         </form>
@@ -243,13 +230,24 @@ export default async function GeneradorReporteAfiliadosPage({
               muestra 50; el CSV incluye todas.
             </span>
           </div>
-          <a href={`/api/reportes/afiliados/csv?${exportParams.toString()}`}>
-            Descargar CSV
-          </a>
+          {camposSeleccionados.length > 0 ? (
+            <a href={`/api/reportes/afiliados/csv?${exportParams.toString()}`}>
+              Descargar CSV
+            </a>
+          ) : (
+            <span className="report-export-disabled">
+              Seleccioná al menos un dato
+            </span>
+          )}
         </div>
 
         {error ? (
           <div className="form-message error">No fue posible consultar el padrón.</div>
+        ) : camposSeleccionados.length === 0 ? (
+          <div className="empty-users">
+            Marcá los datos que querés incluir y tocá Aplicar selección para
+            generar la vista previa.
+          </div>
         ) : (
           <div className="report-preview">
             <table>
