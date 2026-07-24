@@ -1712,8 +1712,9 @@ body:has(.print-report-page) .notification-bell,body:has(.print-report-page) .th
 .benefits-summary article{display:grid;gap:7px;padding:22px;border:1px solid #d5e0e3;border-radius:15px;background:white}
 .benefits-summary strong{color:var(--petroleo);font-size:34px;line-height:1}
 .benefits-summary span{color:#61777e;font-weight:750}
-.benefits-primary-actions{display:flex;justify-content:flex-end;margin:0 0 20px}
+.benefits-primary-actions{display:flex;justify-content:flex-end;gap:10px;margin:0 0 20px}
 .benefits-primary-actions a{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:0 19px;border-radius:10px;background:var(--dorado);color:var(--petroleo-oscuro);font-weight:900;text-decoration:none}
+.benefits-primary-actions a.benefits-secondary-action{border:1px solid var(--petroleo);background:white;color:var(--petroleo)}
 .benefit-create{margin:20px 0;border-radius:15px;background:var(--petroleo);overflow:hidden}
 .benefit-create summary{padding:19px 22px;color:white;font-size:18px;font-weight:900;cursor:pointer}
 .benefit-create form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;padding:22px;background:white;border:1px solid #d5e0e3;border-top:0}
@@ -1747,6 +1748,7 @@ body:has(.print-report-page) .notification-bell,body:has(.print-report-page) .th
 :root[data-theme="dark"] .benefit-create input,:root[data-theme="dark"] .benefit-create textarea{background:#10272f;border-color:#49636c;color:#edf5f6}
 :root[data-theme="dark"] .delivery-places span,:root[data-theme="dark"] .benefit-card dl div{background:#21424d;color:#d5ebef}
 :root[data-theme="dark"] .benefit-card form button{background:#17343e;border-color:#49636c;color:#d7edf2}
+:root[data-theme="dark"] .benefits-primary-actions a.benefits-secondary-action{background:#18343e;border-color:#49636c;color:#d7edf2}
 @media(max-width:850px){.benefits-summary{grid-template-columns:1fr}.benefits-primary-actions a{width:100%}.benefit-create form{grid-template-columns:1fr}.benefit-description{grid-column:auto}.delivery-places{align-items:flex-start;flex-direction:column}.delivery-places>div:last-child{justify-content:flex-start}.benefit-list{grid-template-columns:1fr}}
 
 .benefit-delivery-page{max-width:1450px;width:100%}
@@ -1782,3 +1784,40 @@ body:has(.print-report-page) .notification-bell,body:has(.print-report-page) .th
 :root[data-theme="dark"] .delivery-affiliate-list span{color:#b8cbd0}
 :root[data-theme="dark"] .delivery-search input,:root[data-theme="dark"] .delivery-fields input,:root[data-theme="dark"] .delivery-fields select,:root[data-theme="dark"] .delivery-fields textarea{background:#10272f;border-color:#49636c;color:#edf5f6}
 @media(max-width:700px){.delivery-step{grid-template-columns:38px 1fr;padding:16px;gap:11px}.delivery-step-number{width:36px;height:36px}.delivery-step-content h2{font-size:19px}.delivery-location-buttons{display:grid;grid-template-columns:1fr 1fr}.delivery-search{grid-template-columns:1fr}.delivery-fields{grid-template-columns:1fr}.delivery-observations{grid-column:auto}.delivery-submit{width:100%}}
+
+.benefit-history-page{max-width:1500px;width:100%}
+.benefit-history-filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;align-items:end;gap:12px;margin:20px 0;padding:20px;border:1px solid #d5e0e3;border-radius:15px;background:white}
+.benefit-history-filters label{display:grid;gap:7px}
+.benefit-history-filters label>span{color:var(--petroleo);font-size:13px;font-weight:900}
+.benefit-history-filters input,.benefit-history-filters select{width:100%;min-height:48px;padding:0 12px;border:1px solid #b9cbd0;border-radius:9px;background:white;color:var(--tinta);font-size:15px}
+.benefit-history-filters>div{grid-column:1/-1;display:flex;justify-content:flex-end;gap:10px}
+.benefit-history-filters button,.benefit-history-filters a{display:inline-flex;align-items:center;justify-content:center;min-height:45px;padding:0 16px;border:1px solid var(--petroleo);border-radius:9px;font-weight:850;text-decoration:none}
+.benefit-history-filters button{background:var(--petroleo);color:white;cursor:pointer}
+.benefit-history-filters a{color:var(--petroleo)}
+.benefit-history-total{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:18px 0;padding:15px 18px;border-radius:12px;background:#e8f3f5}
+.benefit-history-total strong{color:var(--petroleo);font-size:20px}
+.benefit-history-total span{color:#60767d;font-weight:750}
+.benefit-history-list{display:grid;gap:14px}
+.benefit-history-list>article{padding:20px;border:1px solid #d5e0e3;border-radius:15px;background:white}
+.benefit-history-list article>header{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding-bottom:14px;border-bottom:1px solid #dce6e8}
+.benefit-history-list article>header div{display:grid;gap:4px}
+.benefit-history-list article>header strong{color:var(--petroleo);font-size:19px}
+.benefit-history-list article>header span{color:#60767d}
+.benefit-history-list article>header b{padding:8px 11px;border-radius:999px;background:#e7f2f3;color:var(--petroleo);white-space:nowrap}
+.benefit-history-person{display:grid;gap:4px;padding:15px 0}
+.benefit-history-person strong{color:var(--petroleo);font-size:17px}
+.benefit-history-person span{color:#60767d;font-size:14px}
+.benefit-history-list article>footer{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding-top:13px;border-top:1px solid #dce6e8}
+.benefit-history-list article>footer span{color:#60767d;font-size:13px;font-weight:750}
+.benefit-history-list article>footer p{max-width:60%;margin:0;color:#405960;font-style:italic}
+.benefit-history-pagination{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:22px}
+.benefit-history-pagination a{padding:11px 15px;border-radius:9px;background:var(--petroleo);color:white;font-weight:850;text-decoration:none}
+.benefit-history-pagination span{font-weight:850;color:var(--petroleo)}
+:root[data-theme="dark"] .benefit-history-filters,:root[data-theme="dark"] .benefit-history-list>article{background:#18343e;border-color:#49636c}
+:root[data-theme="dark"] .benefit-history-filters label>span,:root[data-theme="dark"] .benefit-history-total strong,:root[data-theme="dark"] .benefit-history-list article>header strong,:root[data-theme="dark"] .benefit-history-person strong,:root[data-theme="dark"] .benefit-history-pagination span{color:#f0f6f7}
+:root[data-theme="dark"] .benefit-history-filters input,:root[data-theme="dark"] .benefit-history-filters select{background:#10272f;border-color:#49636c;color:#edf5f6}
+:root[data-theme="dark"] .benefit-history-total{background:#173b46}
+:root[data-theme="dark"] .benefit-history-list article>header,:root[data-theme="dark"] .benefit-history-list article>footer{border-color:#49636c}
+:root[data-theme="dark"] .benefit-history-list article>header span,:root[data-theme="dark"] .benefit-history-person span,:root[data-theme="dark"] .benefit-history-list article>footer span,:root[data-theme="dark"] .benefit-history-list article>footer p{color:#b8cbd0}
+@media(max-width:1050px){.benefit-history-filters{grid-template-columns:1fr 1fr}.benefit-history-filters label:first-child{grid-column:1/-1}}
+@media(max-width:650px){.benefit-history-filters{grid-template-columns:1fr}.benefit-history-filters label:first-child{grid-column:auto}.benefit-history-filters>div{display:grid;grid-column:auto}.benefit-history-list article>header,.benefit-history-list article>footer{flex-direction:column}.benefit-history-list article>footer p{max-width:none}.benefit-history-pagination{justify-content:space-between}}
