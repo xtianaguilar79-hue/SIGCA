@@ -67,6 +67,20 @@ export default async function EmpresaDetallePage({
 
   if (!empresa) notFound();
 
+  const [{ count: totalAfiliados }, { data: afiliadosRecientes }] =
+    await Promise.all([
+      supabase
+        .from("afiliados")
+        .select("id", { count: "exact", head: true })
+        .eq("empresa_id", id),
+      supabase
+        .from("afiliados")
+        .select("id,numero_aoma,apellido_nombres,documento_numero,estado")
+        .eq("empresa_id", id)
+        .order("apellido_nombres", { ascending: true })
+        .limit(5),
+    ]);
+
   const { data: historial } = await supabase
     .from("empresas_historial_cambios")
     .select(
@@ -188,6 +202,51 @@ export default async function EmpresaDetallePage({
             </Link>
           </div>
         </article>
+
+        <section className="company-affiliates">
+          <div className="company-affiliates-heading">
+            <div>
+              <p className="kicker">PADRÓN VINCULADO</p>
+              <h2>Afiliados de la empresa</h2>
+            </div>
+            <strong>{(totalAfiliados || 0).toLocaleString("es-AR")}</strong>
+          </div>
+
+          {afiliadosRecientes?.length ? (
+            <>
+              <div className="company-affiliates-list">
+                {afiliadosRecientes.map((afiliado) => (
+                  <Link
+                    href={`/gestion/sistema/afiliados/${afiliado.id}`}
+                    key={afiliado.id}
+                  >
+                    <div>
+                      <strong>{afiliado.apellido_nombres}</strong>
+                      <span>
+                        DNI {afiliado.documento_numero || "sin informar"} · AOMA{" "}
+                        {afiliado.numero_aoma || "sin informar"}
+                      </span>
+                    </div>
+                    <b>{afiliado.estado || "Estado sin informar"}</b>
+                  </Link>
+                ))}
+              </div>
+
+              <Link
+                className="company-affiliates-all"
+                href={`/gestion/sistema/afiliados?empresa=${encodeURIComponent(
+                  empresa.nombre,
+                )}`}
+              >
+                Ver padrón completo de esta empresa →
+              </Link>
+            </>
+          ) : (
+            <div className="empty-users">
+              No hay afiliados vinculados a esta empresa.
+            </div>
+          )}
+        </section>
 
         <section className="company-history">
           <div className="company-history-heading">
