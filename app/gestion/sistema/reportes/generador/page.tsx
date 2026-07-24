@@ -194,9 +194,12 @@ export default async function GeneradorReporteAfiliadosPage({
 
             <div className="report-generator-buttons">
               <button type="submit">Aplicar selección</button>
-              <a href="/gestion/sistema/reportes/generador">
-  Limpiar y destildar todo
-</a>
+              <Link
+                href="/gestion/sistema/reportes/generador?limpiar=1"
+                prefetch={false}
+              >
+                Limpiar y destildar todo
+              </Link>
             </div>
           </div>
 
@@ -210,20 +213,13 @@ export default async function GeneradorReporteAfiliadosPage({
               {CAMPOS.map((campo) => (
                 <label key={campo.clave}>
                   <input
-  key={`${campo.clave}-${
-    camposSeleccionados.some(
-      (seleccionado) => seleccionado.clave === campo.clave,
-    )
-      ? "seleccionado"
-      : "vacio"
-  }`}
-  type="checkbox"
-  name="campo"
-  value={campo.clave}
-  defaultChecked={camposSeleccionados.some(
-    (seleccionado) => seleccionado.clave === campo.clave,
-  )}
-/>
+                    type="checkbox"
+                    name="campo"
+                    value={campo.clave}
+                    defaultChecked={camposSeleccionados.some(
+                      (seleccionado) => seleccionado.clave === campo.clave,
+                    )}
+                  />
                   <span>{campo.etiqueta}</span>
                 </label>
               ))}
@@ -268,7 +264,12 @@ export default async function GeneradorReporteAfiliadosPage({
                 </tr>
               </thead>
               <tbody>
-                {((afiliados || []) as Record<string, unknown>[]).map(
+                {(
+                  (afiliados || []) as unknown as Record<
+                    string,
+                    unknown
+                  >[]
+                ).map(
                   (afiliado, indice) => (
                     <tr key={String(afiliado.id || indice)}>
                       {camposSeleccionados.map((campo) => (
