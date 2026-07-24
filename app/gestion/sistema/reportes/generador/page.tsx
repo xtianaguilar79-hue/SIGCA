@@ -79,12 +79,10 @@ export default async function GeneradorReporteAfiliadosPage({
     : params.campo
       ? [params.campo]
       : [];
-  const seleccionInicial = params.seleccion !== "1";
-
   const camposSeleccionados = CAMPOS.filter(
     (campo) =>
       ("obligatorio" in campo && campo.obligatorio) ||
-      (seleccionInicial ? true : recibidos.includes(campo.clave)),
+      recibidos.includes(campo.clave),
   );
 
   const [{ data: estados }, { data: empresas }] = await Promise.all([
