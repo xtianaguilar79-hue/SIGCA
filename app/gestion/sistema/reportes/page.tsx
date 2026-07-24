@@ -124,15 +124,18 @@ export default async function ReportesPage() {
         </div>
 
         <div className="cards">
-          <article className="module">
+          <Link
+            className="module module-link"
+            href="/gestion/sistema/reportes/afiliados"
+          >
             <span>◎</span>
             <h2>General de afiliados</h2>
             <p>
               Estado general del padrón, distribución por empresa y situación
               afiliatoria.
             </p>
-            <small>PRÓXIMA ETAPA</small>
-          </article>
+            <small>INGRESAR</small>
+          </Link>
 
           <article className="module">
             <span>✉</span>
