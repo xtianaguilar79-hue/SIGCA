@@ -11,9 +11,7 @@ export default async function SistemaPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/acceso");
-  }
+  if (!user) redirect("/acceso");
 
   const { data: profile } = await supabase
     .from("usuarios")
@@ -32,9 +30,7 @@ export default async function SistemaPage() {
   const isAdmin =
     String(profile.rol).toLowerCase() === "administrador";
 
-  if (!isAdmin) {
-    redirect("/gestion");
-  }
+  if (!isAdmin) redirect("/gestion");
 
   const name = [profile.nombre, profile.apellido]
     .filter(Boolean)
@@ -50,7 +46,6 @@ export default async function SistemaPage() {
             height={39}
             alt="AOMA"
           />
-
           <div>
             <strong>SIGCA</strong>
             <span>SECCIONAL SAN JUAN</span>
@@ -84,9 +79,7 @@ export default async function SistemaPage() {
             <p className="kicker">
               ADMINISTRACIÓN INSTITUCIONAL
             </p>
-
             <h1>Sistema</h1>
-
             <p>
               Administración del padrón, beneficios,
               empresas, reportes y parámetros
@@ -124,23 +117,17 @@ export default async function SistemaPage() {
           </article>
 
           <Link
-  className="module module-link"
-  href="/gestion/sistema/reportes"
->
-  <span>▥</span>
-  <h2>Reportes</h2>
-  <p>
-    Información general del padrón, correos electrónicos
-    y empresas.
-  </p>
-  <small>INGRESAR</small>
-</Link>
+            className="module module-link"
+            href="/gestion/sistema/reportes"
+          >
+            <span>▥</span>
+            <h2>Reportes</h2>
             <p>
               Información general del padrón, correos
               electrónicos y empresas.
             </p>
-            <small>EN PREPARACIÓN</small>
-          </article>
+            <small>INGRESAR</small>
+          </Link>
 
           <Link
             className="module module-link"
