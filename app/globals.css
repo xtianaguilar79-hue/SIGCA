@@ -1081,3 +1081,103 @@ button { cursor:pointer; }
     grid-template-columns: 1fr;
   }
 }
+/* SIGCA | Historial de estados */
+.affiliate-history {
+  margin-top: 16px;
+  padding: 22px;
+  border: 1px solid var(--linea);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.affiliate-history h2 {
+  margin: 0 0 6px;
+  color: var(--petroleo);
+  font: 700 21px Georgia, serif;
+}
+
+.affiliate-history > p {
+  margin: 0 0 18px;
+  color: var(--gris);
+  font-size: 14px;
+}
+
+.affiliate-history-list {
+  display: grid;
+  gap: 11px;
+}
+
+.affiliate-history-list article {
+  padding: 16px;
+  border: 1px solid #dce6e9;
+  border-radius: 11px;
+  background: #f8fbfb;
+}
+
+.affiliate-history-states {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.affiliate-history-states b {
+  color: var(--gris);
+}
+
+.affiliate-history-list article > p {
+  margin: 13px 0;
+  color: var(--tinta);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.affiliate-history-list footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  color: var(--gris);
+  font-size: 12px;
+}
+
+.affiliate-history-empty {
+  padding: 18px;
+  border: 1px dashed #b8c8cc;
+  border-radius: 10px;
+  color: var(--gris);
+  text-align: center;
+}
+
+:root[data-theme="dark"] .affiliate-history {
+  background: #18343e;
+  border-color: #49636c;
+}
+
+:root[data-theme="dark"] .affiliate-history h2,
+:root[data-theme="dark"]
+  .affiliate-history-list article > p {
+  color: #f1f7f8;
+}
+
+:root[data-theme="dark"] .affiliate-history > p,
+:root[data-theme="dark"] .affiliate-history-list footer,
+:root[data-theme="dark"] .affiliate-history-empty {
+  color: #b8cbd0;
+}
+
+:root[data-theme="dark"]
+  .affiliate-history-list article {
+  background: #10272f;
+  border-color: #49636c;
+}
+
+@media (max-width: 600px) {
+  .affiliate-history {
+    padding: 18px 15px;
+  }
+
+  .affiliate-history-list footer {
+    display: grid;
+    gap: 5px;
+  }
+}
