@@ -269,9 +269,12 @@ export default async function PadronAfiliadosPage({
                       </strong>
                     </div>
 
-                    <span className="affiliate-state">
-                      {afiliado.estado || "SIN ESTADO"}
-                    </span>
+                    <span
+  className="affiliate-state"
+  data-state={afiliado.estado || "SIN ESTADO"}
+>
+  {afiliado.estado || "SIN ESTADO"}
+</span>
                   </header>
 
                   <dl>
