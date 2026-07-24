@@ -3,10 +3,20 @@
 import { useMemo, useRef, useState } from "react";
 
 type Empresa = {
-  id: number;
+  id: string | number;
   nombre: string;
   activa?: boolean | null;
 };
+
+function normalizar(valor: string) {
+  return valor
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("es-AR")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+}
 
 export function CompanyCombobox({
   empresas,
@@ -15,6 +25,7 @@ export function CompanyCombobox({
   label = "Empresa",
   placeholder = "Escribí para buscar una empresa",
   autoSubmit = false,
+  onCompanySelect,
 }: {
   empresas: Empresa[];
   defaultValue?: string;
@@ -22,6 +33,7 @@ export function CompanyCombobox({
   label?: string;
   placeholder?: string;
   autoSubmit?: boolean;
+  onCompanySelect?: (empresa: Empresa | null) => void;
 }) {
   const contenedorRef = useRef<HTMLDivElement>(null);
   const [texto, setTexto] = useState(defaultValue);
@@ -29,16 +41,19 @@ export function CompanyCombobox({
   const [abierto, setAbierto] = useState(false);
 
   const coincidencias = useMemo(() => {
-    const busqueda = texto
-      .trim()
-      .toLocaleLowerCase("es-AR");
+    const busqueda = normalizar(texto);
+    const busquedaCompacta = busqueda.replaceAll(" ", "");
 
     const resultado = busqueda
-      ? empresas.filter((empresa) =>
-          empresa.nombre
-            .toLocaleLowerCase("es-AR")
-            .includes(busqueda),
-        )
+      ? empresas.filter((empresa) => {
+          const nombre = normalizar(empresa.nombre);
+          const nombreCompacto = nombre.replaceAll(" ", "");
+
+          return (
+            nombre.includes(busqueda) ||
+            nombreCompacto.includes(busquedaCompacta)
+          );
+        })
       : empresas;
 
     return resultado.slice(0, 60);
@@ -48,6 +63,7 @@ export function CompanyCombobox({
     setTexto(empresa.nombre);
     setValor(empresa.nombre);
     setAbierto(false);
+    onCompanySelect?.(empresa);
 
     if (autoSubmit) {
       window.setTimeout(() => {
@@ -64,6 +80,7 @@ export function CompanyCombobox({
 
     if (!nuevoTexto.trim()) {
       setValor("");
+      onCompanySelect?.(null);
 
       if (autoSubmit) {
         window.setTimeout(() => {
