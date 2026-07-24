@@ -865,3 +865,122 @@ button { cursor:pointer; }
     grid-template-columns: 1fr 1fr;
   }
 }
+/* Colores institucionales de los estados del afiliado */
+
+/* Estado desconocido o sin clasificar */
+.affiliate-state {
+  background: #e5eaec;
+  color: #40555d;
+  border: 1px solid #c8d2d5;
+}
+
+/* Afiliación vigente o en proceso normal */
+.affiliate-state[data-state*="AFILIADO OK" i],
+.affiliate-state[data-state*="AFILIADO EN TRAMITE" i],
+.affiliate-state[data-state*="BECARIA" i],
+.affiliate-state[data-state*="BECARIO" i] {
+  background: #dff3e8;
+  color: #176342;
+  border-color: #abd9c0;
+}
+
+/* Estado pendiente de averiguación */
+.affiliate-state[data-state*="AVERIGUACION" i] {
+  background: #fff2cd;
+  color: #785710;
+  border-color: #e5ca7b;
+}
+
+/* Dirigentes y delegados */
+.affiliate-state[data-state*="DIRIGENTE" i],
+.affiliate-state[data-state*="DELEGADO" i] {
+  background: #ddecf8;
+  color: #16577a;
+  border-color: #a9cde2;
+}
+
+/* Bajas administrativas, laborales o personales */
+.affiliate-state[data-state*="BAJA" i] {
+  background: #fde5df;
+  color: #8b351f;
+  border-color: #efb9aa;
+}
+
+/* Renuncia expresa al sindicato */
+.affiliate-state[data-state*="DESAFILIADO" i],
+.affiliate-state[data-state*="RENUNCIO A GREMIO" i] {
+  background: #f6c9c9;
+  color: #791d1d;
+  border-color: #df8f8f;
+}
+
+/* Registros que requieren corrección */
+.affiliate-state[data-state*="ERROR" i],
+.affiliate-state[data-state*="MIGRACION" i] {
+  background: #f4e0c8;
+  color: #764711;
+  border-color: #d9b27e;
+}
+
+/* Contrastes para modo oscuro */
+
+:root[data-theme="dark"]
+  .affiliate-state {
+  background: #344951;
+  color: #e6eff1;
+  border-color: #58717a;
+}
+
+:root[data-theme="dark"]
+  .affiliate-state[data-state*="AFILIADO OK" i],
+:root[data-theme="dark"]
+  .affiliate-state[data-state*="AFILIADO EN TRAMITE" i],
+:root[data-theme="dark"]
+  .affiliate-state[data-state*="BECARIA" i],
+:root[data-theme="dark"]
+  .affiliate-state[data-state*="BECARIO" i] {
+  background: #214b3b;
+  color: #bcebd5;
+  border-color: #39745b;
+}
+
+:root[data-theme="dark"]
+  .affiliate-state[data-state*="AVERIGUACION" i] {
+  background: #55471f;
+  color: #f5dc8d;
+  border-color: #79652d;
+}
+
+:root[data-theme="dark"]
+  .affiliate-state[data-state*="DIRIGENTE" i],
+:root[data-theme="dark"]
+  .affiliate-state[data-state*="DELEGADO" i] {
+  background: #244a60;
+  color: #b9e3f5;
+  border-color: #40748e;
+}
+
+:root[data-theme="dark"]
+  .affiliate-state[data-state*="BAJA" i] {
+  background: #5b3028;
+  color: #ffc9bc;
+  border-color: #815043;
+}
+
+:root[data-theme="dark"]
+  .affiliate-state[data-state*="DESAFILIADO" i],
+:root[data-theme="dark"]
+  .affiliate-state[data-state*="RENUNCIO A GREMIO" i] {
+  background: #681f25;
+  color: #ffd0d3;
+  border-color: #99414a;
+}
+
+:root[data-theme="dark"]
+  .affiliate-state[data-state*="ERROR" i],
+:root[data-theme="dark"]
+  .affiliate-state[data-state*="MIGRACION" i] {
+  background: #594020;
+  color: #f5d09a;
+  border-color: #806039;
+}
