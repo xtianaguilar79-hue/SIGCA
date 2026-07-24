@@ -92,8 +92,7 @@ export default async function ReportesPage() {
             <p className="kicker">SISTEMA · INFORMACIÓN INSTITUCIONAL</p>
             <h1>Reportes</h1>
             <p>
-              Consultas consolidadas del padrón, los datos de contacto y las
-              empresas.
+              Consultas consolidadas del padrón de afiliados y las empresas.
             </p>
           </div>
           <span className="secure">● ACCESO ADMINISTRATIVO</span>
