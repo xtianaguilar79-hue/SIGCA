@@ -1,7 +1,8 @@
 "use client";
 
-import { FormEvent, useRef } from "react";
+import { useRef } from "react";
 import Link from "next/link";
+import { CompanyCombobox } from "@/components/company-combobox";
 
 type Estado = {
   nombre: string;
@@ -10,6 +11,7 @@ type Estado = {
 type Empresa = {
   id: number;
   nombre: string;
+  activa?: boolean | null;
 };
 
 export function AffiliateFilters({
@@ -29,20 +31,6 @@ export function AffiliateFilters({
 
   function aplicarFiltros() {
     formRef.current?.requestSubmit();
-  }
-
-  function cambiarEmpresa(
-    event: FormEvent<HTMLInputElement>,
-  ) {
-    const valor = event.currentTarget.value.trim();
-
-    const existe = empresas.some(
-      (empresa) => empresa.nombre === valor,
-    );
-
-    if (!valor || existe) {
-      aplicarFiltros();
-    }
   }
 
   const hayFiltros =
@@ -98,28 +86,11 @@ export function AffiliateFilters({
           </select>
         </label>
 
-        <label>
-          <span>Empresa</span>
-
-          <input
-            name="empresa"
-            type="search"
-            list="empresas-activas"
-            defaultValue={empresaSeleccionada}
-            placeholder="Escribí para buscar una empresa"
-            autoComplete="off"
-            onInput={cambiarEmpresa}
-          />
-
-          <datalist id="empresas-activas">
-            {empresas.map((empresa) => (
-              <option
-                key={empresa.id}
-                value={empresa.nombre}
-              />
-            ))}
-          </datalist>
-        </label>
+        <CompanyCombobox
+          empresas={empresas}
+          defaultValue={empresaSeleccionada}
+          autoSubmit
+        />
       </div>
 
       {hayFiltros && (
