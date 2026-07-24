@@ -1687,10 +1687,15 @@ button { cursor:pointer; }
 .company-report-table{width:100%;min-width:850px;border-collapse:collapse;background:white}
 .company-report-table th,.company-report-table td{padding:12px;border-bottom:1px solid #d5e1e3;text-align:left;vertical-align:top}
 .company-report-table th{background:#0b5264;color:white;font-size:13px;text-transform:uppercase}
+.company-report-table th,.print-report-table th{white-space:nowrap!important;overflow-wrap:normal!important;word-break:normal!important}
 .company-report-table tbody tr:nth-child(even){background:#f2f6f7}
 .print-report-table .report-field-cuit{min-width:105px;white-space:nowrap;overflow-wrap:normal;word-break:normal}
 .print-report-table .report-field-activa{min-width:72px;white-space:nowrap;overflow-wrap:normal;word-break:normal}
 .print-report-table .report-field-localidad{min-width:112px;white-space:normal;overflow-wrap:normal;word-break:normal}
+.print-report-table .report-field-provincia{min-width:82px}
+.print-report-table .report-field-codigo_postal{min-width:92px}
+.print-report-table .report-field-correo_electronico{min-width:122px}
+.print-report-table .report-field-telefono{min-width:92px;white-space:nowrap}
 body:has(.print-report-page) .notification-bell,body:has(.print-report-page) .theme-toggle,body:has(.print-report-page) .mobile-menu-button,body:has(.print-report-page) .mobile-menu-backdrop,body:has(.print-report-page) .home-brand-link{display:none!important}
 :root[data-theme="dark"] .company-report-builder,:root[data-theme="dark"] .company-report-table{background:#18343e;border-color:#49636c}
 :root[data-theme="dark"] .company-report-filters input,:root[data-theme="dark"] .company-report-filters select{background:#10272f;border-color:#49636c;color:#edf5f6}
