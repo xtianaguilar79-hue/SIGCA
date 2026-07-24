@@ -187,6 +187,11 @@ export default async function EmpresasPage({
         </header>
 
         <CompanyFilters buscar={buscar} estado={estado} />
+        <div className="company-page-actions">
+  <Link href="/gestion/sistema/empresas/nueva">
+    ＋ Nueva empresa
+  </Link>
+</div>
 
         {error ? (
           <div className="form-message error">
