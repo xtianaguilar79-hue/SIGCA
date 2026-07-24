@@ -1395,3 +1395,122 @@ button { cursor:pointer; }
     padding: 15px 16px 18px;
   }
 }
+/* SIGCA | Alta y edición de empresas */
+.company-form-page {
+  width: 100%;
+  max-width: 1100px;
+}
+
+.company-page-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: -8px 0 18px;
+}
+
+.company-page-actions a {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  border-radius: 9px;
+  background: var(--petroleo);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.company-form {
+  padding: 24px;
+  border: 1px solid var(--linea);
+  border-radius: 15px;
+  background: #fff;
+}
+
+.company-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.company-form-grid label {
+  display: grid;
+  gap: 7px;
+}
+
+.company-form-grid .full {
+  grid-column: 1 / -1;
+}
+
+.company-form-grid label > span {
+  color: var(--tinta);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.company-form-grid input,
+.company-form-grid select {
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+  padding: 0 13px;
+  border: 1px solid #aebfc4;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--tinta);
+  font-size: 16px;
+}
+
+.company-active-field {
+  display: flex !important;
+  align-items: center;
+  grid-template-columns: auto 1fr;
+  padding: 13px;
+  border-radius: 9px;
+  background: #e9f3ef;
+}
+
+.company-active-field input {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 auto;
+}
+
+:root[data-theme="dark"] .company-form {
+  background: #18343e;
+  border-color: #49636c;
+}
+
+:root[data-theme="dark"] .company-form-grid label > span {
+  color: #f1f7f8;
+}
+
+:root[data-theme="dark"] .company-form-grid input,
+:root[data-theme="dark"] .company-form-grid select {
+  background: #0b222a;
+  border-color: #58717a;
+  color: #f5f8f9;
+}
+
+:root[data-theme="dark"] .company-active-field {
+  background: #21483e;
+}
+
+@media (max-width: 650px) {
+  .company-page-actions a {
+    width: 100%;
+  }
+
+  .company-form {
+    padding: 18px 15px;
+  }
+
+  .company-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .company-form-grid .full {
+    grid-column: auto;
+  }
+}
