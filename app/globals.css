@@ -1514,3 +1514,38 @@ button { cursor:pointer; }
     grid-column: auto;
   }
 }
+.company-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 20px 17px;
+}
+
+.company-card-actions a {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 15px;
+  border-radius: 8px;
+  background: #e5f1f3;
+  color: var(--petroleo);
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+:root[data-theme="dark"]
+  .company-card-actions a {
+  background: #244752;
+  color: #e5f2f4;
+}
+
+@media (max-width: 650px) {
+  .company-card-actions {
+    padding: 0 16px 16px;
+  }
+
+  .company-card-actions a {
+    width: 100%;
+  }
+}
