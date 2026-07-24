@@ -1706,3 +1706,42 @@ body:has(.print-report-page) .notification-bell,body:has(.print-report-page) .th
 :root[data-theme="dark"] .company-report-table tbody tr:nth-child(even){background:#21424d}
 @media(max-width:850px){.company-report-builder{padding:17px}.company-report-filters{grid-template-columns:1fr}.company-report-fields>div{grid-template-columns:1fr 1fr}.company-report-actions{display:grid}.company-report-result strong{font-size:20px}}
 @media(max-width:520px){.company-report-fields>div{grid-template-columns:1fr}.company-report-table{font-size:14px}}
+.benefits-page{max-width:1500px;width:100%}
+.benefits-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:20px 0}
+.benefits-summary article{display:grid;gap:7px;padding:22px;border:1px solid #d5e0e3;border-radius:15px;background:white}
+.benefits-summary strong{color:var(--petroleo);font-size:34px;line-height:1}
+.benefits-summary span{color:#61777e;font-weight:750}
+.benefit-create{margin:20px 0;border-radius:15px;background:var(--petroleo);overflow:hidden}
+.benefit-create summary{padding:19px 22px;color:white;font-size:18px;font-weight:900;cursor:pointer}
+.benefit-create form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;padding:22px;background:white;border:1px solid #d5e0e3;border-top:0}
+.benefit-create label{display:grid;gap:7px}
+.benefit-create label>span{color:var(--petroleo);font-weight:850}
+.benefit-create input,.benefit-create textarea{width:100%;padding:12px 13px;border:1px solid #b9cbd0;border-radius:9px;background:white;color:var(--tinta);font-size:16px}
+.benefit-create textarea{resize:vertical}
+.benefit-description{grid-column:span 2}
+.benefit-create button{align-self:end;min-height:48px;border:0;border-radius:9px;background:var(--dorado);color:var(--petroleo-oscuro);font-weight:900;cursor:pointer}
+.delivery-places{display:flex;align-items:center;justify-content:space-between;gap:25px;margin:24px 0;padding:22px;border:1px solid #d5e0e3;border-radius:16px;background:white}
+.delivery-places h2{margin:3px 0 0;color:var(--petroleo)}
+.delivery-places>div:last-child{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:9px}
+.delivery-places span{padding:9px 12px;border-radius:999px;background:#e7f2f3;color:var(--petroleo);font-size:13px;font-weight:850}
+.benefit-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.benefit-card{padding:22px;border:1px solid #d5e0e3;border-radius:16px;background:white}
+.benefit-card header>div{display:flex;align-items:flex-start;justify-content:space-between;gap:15px}
+.benefit-card h3{margin:0;color:var(--petroleo);font-size:21px}
+.benefit-card header span{padding:7px 10px;border-radius:999px;font-size:11px;font-weight:900}
+.benefit-card header span.active{background:#dff1e9;color:#176452}
+.benefit-card header span.inactive{background:#f5dfdc;color:#8b3f36}
+.benefit-card header p{min-height:46px;color:#5e747b;line-height:1.5}
+.benefit-card dl{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+.benefit-card dl div{padding:12px;border-radius:9px;background:#f1f6f7}
+.benefit-card dt{color:#60767d;font-size:11px;font-weight:900;text-transform:uppercase}
+.benefit-card dd{margin:5px 0 0;color:var(--petroleo);font-weight:850}
+.benefit-card form button{width:100%;min-height:43px;border:1px solid #b9cbd0;border-radius:9px;background:white;color:var(--petroleo);font-weight:850;cursor:pointer}
+.benefits-empty{grid-column:1/-1;padding:35px;border:1px dashed #9fb3b8;border-radius:14px;text-align:center;color:#657980}
+:root[data-theme="dark"] .benefits-summary article,:root[data-theme="dark"] .benefit-create form,:root[data-theme="dark"] .delivery-places,:root[data-theme="dark"] .benefit-card{background:#18343e;border-color:#49636c}
+:root[data-theme="dark"] .benefits-summary strong,:root[data-theme="dark"] .benefit-create label>span,:root[data-theme="dark"] .delivery-places h2,:root[data-theme="dark"] .benefit-card h3,:root[data-theme="dark"] .benefit-card dd{color:#f0f6f7}
+:root[data-theme="dark"] .benefits-summary span,:root[data-theme="dark"] .benefit-card header p{color:#b8cbd0}
+:root[data-theme="dark"] .benefit-create input,:root[data-theme="dark"] .benefit-create textarea{background:#10272f;border-color:#49636c;color:#edf5f6}
+:root[data-theme="dark"] .delivery-places span,:root[data-theme="dark"] .benefit-card dl div{background:#21424d;color:#d5ebef}
+:root[data-theme="dark"] .benefit-card form button{background:#17343e;border-color:#49636c;color:#d7edf2}
+@media(max-width:850px){.benefits-summary{grid-template-columns:1fr}.benefit-create form{grid-template-columns:1fr}.benefit-description{grid-column:auto}.delivery-places{align-items:flex-start;flex-direction:column}.delivery-places>div:last-child{justify-content:flex-start}.benefit-list{grid-template-columns:1fr}}
