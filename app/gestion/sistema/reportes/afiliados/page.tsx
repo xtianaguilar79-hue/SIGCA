@@ -143,6 +143,18 @@ export default async function ReporteGeneralAfiliadosPage() {
           </article>
         </div>
 
+        <div className="report-builder-access">
+          <div>
+            <strong>Generar un listado personalizado</strong>
+            <span>
+              Seleccioná un estado, una empresa o combiná ambos filtros.
+            </span>
+          </div>
+          <Link href="/gestion/sistema/reportes/generador">
+            Preparar reporte →
+          </Link>
+        </div>
+
         <section className="affiliate-state-report">
           <div className="affiliate-state-report-heading">
             <div>
