@@ -119,15 +119,18 @@ export default async function ConfiguracionPage() {
             <small>INGRESAR</small>
           </Link>
 
-          <article className="module">
+          <Link
+            className="module module-link"
+            href="/gestion/sistema/configuracion/departamentos"
+          >
             <span>⌖</span>
             <h2>Departamentos</h2>
             <p>
               Departamentos y localidades relacionados
               con cada provincia.
             </p>
-            <small>PRÓXIMA ETAPA</small>
-          </article>
+            <small>INGRESAR</small>
+          </Link>
         </div>
       </section>
     </main>
