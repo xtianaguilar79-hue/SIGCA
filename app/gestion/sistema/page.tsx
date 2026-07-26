@@ -196,7 +196,7 @@ export default async function SistemaPage() {
 
           <Link
             className="module module-link"
-            href="/gestion/sistema/configuracion/estados-afiliatorios"
+            href="/gestion/sistema/configuracion"
           >
             <span>⚙</span>
 
