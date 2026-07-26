@@ -131,6 +131,19 @@ export default async function ConfiguracionPage() {
             </p>
             <small>INGRESAR</small>
           </Link>
+
+          <Link
+            className="module module-link"
+            href="/gestion/sistema/configuracion/localidades"
+          >
+            <span>⌖</span>
+            <h2>Localidades</h2>
+            <p>
+              Localidades y códigos postales relacionados
+              con cada departamento y provincia.
+            </p>
+            <small>INGRESAR</small>
+          </Link>
         </div>
       </section>
     </main>
