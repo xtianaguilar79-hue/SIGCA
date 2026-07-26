@@ -296,6 +296,13 @@ export default async function HistorialBeneficiosPage({
           >
             Descargar CSV
           </a>
+
+          <Link
+            className="benefit-history-download benefit-history-pdf"
+            href={`/gestion/sistema/beneficios/historial/imprimir?${exportParams.toString()}`}
+          >
+            Generar PDF
+          </Link>
         </div>
 
         {error ? (
