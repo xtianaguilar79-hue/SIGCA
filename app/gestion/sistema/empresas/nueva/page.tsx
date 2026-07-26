@@ -4,33 +4,7 @@ import { redirect } from "next/navigation";
 import { SignOutButton } from "@/components/sign-out-button";
 import { createClient } from "@/lib/supabase/server";
 import { crearEmpresa } from "../actions";
-
-const PROVINCIAS = [
-  "BUENOS AIRES",
-  "CATAMARCA",
-  "CHACO",
-  "CHUBUT",
-  "CIUDAD AUTÓNOMA DE BUENOS AIRES",
-  "CÓRDOBA",
-  "CORRIENTES",
-  "ENTRE RÍOS",
-  "FORMOSA",
-  "JUJUY",
-  "LA PAMPA",
-  "LA RIOJA",
-  "MENDOZA",
-  "MISIONES",
-  "NEUQUÉN",
-  "RÍO NEGRO",
-  "SALTA",
-  "SAN JUAN",
-  "SAN LUIS",
-  "SANTA CRUZ",
-  "SANTA FE",
-  "SANTIAGO DEL ESTERO",
-  "TIERRA DEL FUEGO",
-  "TUCUMÁN",
-];
+import { TerritoryFields } from "@/components/territory-fields";
 
 export default async function NuevaEmpresaPage({
   searchParams,
@@ -61,6 +35,11 @@ export default async function NuevaEmpresaPage({
   }
 
   const query = await searchParams;
+  const [{data:provincias},{data:departamentos},{data:localidades}]=await Promise.all([
+    supabase.from("provincias").select("id,nombre").eq("habilitada",true).order("orden"),
+    supabase.from("departamentos").select("id,nombre,provincia_id").eq("habilitado",true).order("orden"),
+    supabase.from("localidades").select("id,nombre,codigo_postal,departamento_id").eq("habilitada",true).order("orden"),
+  ]);
   const nombreUsuario = [
     profile.nombre,
     profile.apellido,
@@ -172,32 +151,7 @@ export default async function NuevaEmpresaPage({
               <input name="domicilio" />
             </label>
 
-            <label>
-              <span>Provincia</span>
-              <select
-                name="provincia"
-                defaultValue="SAN JUAN"
-              >
-                {PROVINCIAS.map((provincia) => (
-                  <option
-                    key={provincia}
-                    value={provincia}
-                  >
-                    {provincia}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label>
-              <span>Localidad</span>
-              <input name="localidad" />
-            </label>
-
-            <label>
-              <span>Código postal</span>
-              <input name="codigo_postal" />
-            </label>
+            <TerritoryFields provincias={provincias||[]} departamentos={departamentos||[]} localidades={localidades||[]}/>
 
             <label>
               <span>Teléfono</span>
