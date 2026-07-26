@@ -1,4 +1,3 @@
-
 "use server";
 
 import { revalidatePath } from "next/cache";
@@ -8,6 +7,11 @@ import { createClient } from "@/lib/supabase/server";
 function texto(formData: FormData, campo: string) {
   const valor = String(formData.get(campo) || "").trim();
   return valor || null;
+}
+
+function identificador(formData: FormData, campo: string) {
+  const valor = Number(formData.get(campo));
+  return Number.isInteger(valor) && valor > 0 ? valor : null;
 }
 
 async function verificarAdministrador() {
@@ -73,6 +77,9 @@ export async function crearEmpresa(formData: FormData) {
       domicilio: texto(formData, "domicilio"),
       localidad: texto(formData, "localidad"),
       provincia: texto(formData, "provincia"),
+      provincia_id: identificador(formData, "provincia_id"),
+      departamento_id: identificador(formData, "departamento_id"),
+      localidad_id: identificador(formData, "localidad_id"),
       codigo_postal: texto(formData, "codigo_postal"),
       cuit: texto(formData, "cuit"),
       correo_electronico: texto(
@@ -141,6 +148,9 @@ export async function actualizarEmpresa(
       domicilio: texto(formData, "domicilio"),
       localidad: texto(formData, "localidad"),
       provincia: texto(formData, "provincia"),
+      provincia_id: identificador(formData, "provincia_id"),
+      departamento_id: identificador(formData, "departamento_id"),
+      localidad_id: identificador(formData, "localidad_id"),
       codigo_postal: texto(formData, "codigo_postal"),
       cuit: texto(formData, "cuit"),
       correo_electronico: texto(
