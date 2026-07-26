@@ -4,33 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { SignOutButton } from "@/components/sign-out-button";
 import { createClient } from "@/lib/supabase/server";
 import { actualizarEmpresa } from "../../actions";
-
-const PROVINCIAS = [
-  "BUENOS AIRES",
-  "CATAMARCA",
-  "CHACO",
-  "CHUBUT",
-  "CIUDAD AUTÓNOMA DE BUENOS AIRES",
-  "CÓRDOBA",
-  "CORRIENTES",
-  "ENTRE RÍOS",
-  "FORMOSA",
-  "JUJUY",
-  "LA PAMPA",
-  "LA RIOJA",
-  "MENDOZA",
-  "MISIONES",
-  "NEUQUÉN",
-  "RÍO NEGRO",
-  "SALTA",
-  "SAN JUAN",
-  "SAN LUIS",
-  "SANTA CRUZ",
-  "SANTA FE",
-  "SANTIAGO DEL ESTERO",
-  "TIERRA DEL FUEGO",
-  "TUCUMÁN",
-];
+import { TerritoryFields } from "@/components/territory-fields";
 
 export default async function EditarEmpresaPage({
   params,
@@ -83,12 +57,21 @@ export default async function EditarEmpresaPage({
         cuit,
         correo_electronico,
         telefono
+        ,provincia_id
+        ,departamento_id
+        ,localidad_id
       `,
     )
     .eq("id", Number(id))
     .maybeSingle();
 
   if (!empresa) notFound();
+
+  const [{data:provincias},{data:departamentos},{data:localidades}]=await Promise.all([
+    supabase.from("provincias").select("id,nombre").eq("habilitada",true).order("orden"),
+    supabase.from("departamentos").select("id,nombre,provincia_id").eq("habilitado",true).order("orden"),
+    supabase.from("localidades").select("id,nombre,codigo_postal,departamento_id").eq("habilitada",true).order("orden"),
+  ]);
 
   const nombreUsuario = [
     profile.nombre,
@@ -226,47 +209,19 @@ export default async function EditarEmpresaPage({
               />
             </label>
 
-            <label>
-              <span>Provincia</span>
-              <select
-                name="provincia"
-                defaultValue={empresa.provincia || "SAN JUAN"}
-              >
-                {!PROVINCIAS.includes(
-                  empresa.provincia || "",
-                ) &&
-                  empresa.provincia && (
-                    <option value={empresa.provincia}>
-                      {empresa.provincia}
-                    </option>
-                  )}
-
-                {PROVINCIAS.map((provincia) => (
-                  <option
-                    key={provincia}
-                    value={provincia}
-                  >
-                    {provincia}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label>
-              <span>Localidad</span>
-              <input
-                name="localidad"
-                defaultValue={empresa.localidad || ""}
-              />
-            </label>
-
-            <label>
-              <span>Código postal</span>
-              <input
-                name="codigo_postal"
-                defaultValue={empresa.codigo_postal || ""}
-              />
-            </label>
+            <TerritoryFields
+              provincias={provincias||[]}
+              departamentos={departamentos||[]}
+              localidades={localidades||[]}
+              inicial={{
+                provincia_id:empresa.provincia_id,
+                departamento_id:empresa.departamento_id,
+                localidad_id:empresa.localidad_id,
+                provincia:empresa.provincia,
+                localidad:empresa.localidad,
+                codigo_postal:empresa.codigo_postal,
+              }}
+            />
 
             <label>
               <span>Teléfono</span>
