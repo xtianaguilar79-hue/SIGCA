@@ -1,7 +1,6 @@
 "use client";
 
-import { CompanyCombobox } from "@/components/company-combobox";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import {
   PDFDocument,
@@ -74,6 +73,10 @@ const emptyEmployer: EmployerData = {
   telefono: "",
 };
 
+export type ProvinciaAfiliacion={id:number;nombre:string};
+export type DepartamentoAfiliacion={id:number;nombre:string;provincia_id:number};
+export type LocalidadAfiliacion={id:number;nombre:string;codigo_postal:string|null;departamento_id:number};
+
 function normalizeEmployer(data: EmployerData): EmployerData {
   const upper = (value: string) => value.toLocaleUpperCase("es-AR");
 
@@ -115,33 +118,6 @@ const emptyPerson: PersonData = {
   otroGremio: "",
   observaciones: "",
 };
-
-const ARGENTINE_PROVINCES = [
-  "Buenos Aires",
-  "Ciudad Autónoma de Buenos Aires",
-  "Catamarca",
-  "Chaco",
-  "Chubut",
-  "Córdoba",
-  "Corrientes",
-  "Entre Ríos",
-  "Formosa",
-  "Jujuy",
-  "La Pampa",
-  "La Rioja",
-  "Mendoza",
-  "Misiones",
-  "Neuquén",
-  "Río Negro",
-  "Salta",
-  "San Juan",
-  "San Luis",
-  "Santa Cruz",
-  "Santa Fe",
-  "Santiago del Estero",
-  "Tierra del Fuego, Antártida e Islas del Atlántico Sur",
-  "Tucumán",
-] as const;
 
 function formatDate(value: string) {
   if (!value) return "";
@@ -412,6 +388,10 @@ export function AffiliateForm({
   initialCompanyId = "",
   initialEmployer,
   initialPerson,
+  provincias,
+  departamentos,
+  localidades,
+  initialTerritory,
   autoDownload = false,
 }: {
   companies: EmpresaAfiliacion[];
@@ -419,6 +399,10 @@ export function AffiliateForm({
   initialCompanyId?: string;
   initialEmployer?: EmployerData;
   initialPerson?: PersonData;
+  provincias: ProvinciaAfiliacion[];
+  departamentos: DepartamentoAfiliacion[];
+  localidades: LocalidadAfiliacion[];
+  initialTerritory?:{provincia_id?:number|null;departamento_id?:number|null;localidad_id?:number|null};
   autoDownload?: boolean;
 }) {
   const autoDownloadStarted = useRef(false);
@@ -437,6 +421,11 @@ export function AffiliateForm({
 
   const [person, setPerson] =
     useState<PersonData>(initialPerson || emptyPerson);
+  const[provinciaId,setProvinciaId]=useState(initialTerritory?.provincia_id||0);
+  const[departamentoId,setDepartamentoId]=useState(initialTerritory?.departamento_id||0);
+  const[localidadId,setLocalidadId]=useState(initialTerritory?.localidad_id||0);
+  const departamentosVisibles=useMemo(()=>departamentos.filter(d=>d.provincia_id===provinciaId),[departamentos,provinciaId]);
+  const localidadesVisibles=useMemo(()=>localidades.filter(l=>l.departamento_id===departamentoId),[localidades,departamentoId]);
 
   useEffect(() => {
     if (!autoDownload || autoDownloadStarted.current) return;
@@ -524,6 +513,9 @@ export function AffiliateForm({
 
     if (blank) {
       setPerson(emptyPerson);
+      setProvinciaId(0);
+      setDepartamentoId(0);
+      setLocalidadId(0);
     }
   }
 
@@ -589,7 +581,10 @@ export function AffiliateForm({
       apellido_nombres: textOrNull(person.apellidoNombres),
       domicilio: textOrNull(person.domicilio),
       provincia: textOrNull(person.provincia),
+      provincia_id: provinciaId || null,
+      departamento_id: departamentoId || null,
       localidad: textOrNull(person.localidad),
+      localidad_id: localidadId || null,
       codigo_postal: textOrNull(person.codigoPostal),
       fecha_nacimiento: person.fechaNacimiento || null,
       tipo_documento: textOrNull(person.tipoDocumento),
@@ -683,22 +678,30 @@ export function AffiliateForm({
       >
         <section className="affiliation-options">
           <div className="field">
-  <CompanyCombobox
-    empresas={companies}
-    defaultValue={
-      companies.find(
-        (company) =>
-          String(company.id) === companyId,
-      )?.nombre || ""
-    }
-    placeholder="Escribí para buscar una empresa"
-    onCompanySelect={(company) =>
-      selectCompany(
-        company ? String(company.id) : "",
-      )
-    }
-  />
-</div>
+            <label htmlFor="modo-persona">
+              Modalidad
+            </label>
+
+            <select
+              id="modo-persona"
+              value={
+                blankPerson ? "blanco" : "completar"
+              }
+              onChange={(event) =>
+                changePersonMode(
+                  event.target.value === "blanco"
+                )
+              }
+            >
+              <option value="completar">
+                Completar datos antes de imprimir
+              </option>
+
+              <option value="blanco">
+                Datos personales en blanco
+              </option>
+            </select>
+          </div>
 
           <div className="field">
             <label htmlFor="empresa">
@@ -887,34 +890,37 @@ export function AffiliateForm({
             <div className="field">
               <label>Provincia</label>
               <select
-                value={person.provincia}
-                onChange={(event) =>
-                  updatePerson(
-                    "provincia",
-                    event.target.value
-                  )
-                }
+                value={provinciaId||""}
+                onChange={(event)=>{
+                  const id=Number(event.target.value);
+                  setProvinciaId(id);setDepartamentoId(0);setLocalidadId(0);
+                  updatePerson("provincia",provincias.find(p=>p.id===id)?.nombre||"");
+                  updatePerson("localidad","");updatePerson("codigoPostal","");
+                }}
               >
                 <option value="">Seleccionar provincia</option>
-                {ARGENTINE_PROVINCES.map((province) => (
-                  <option key={province} value={province}>
-                    {province}
+                {provincias.map((province) => (
+                  <option key={province.id} value={province.id}>
+                    {province.nombre}
                   </option>
                 ))}
               </select>
             </div>
 
             <div className="field">
+              <label>Departamento</label>
+              <select value={departamentoId||""} onChange={(event)=>{setDepartamentoId(Number(event.target.value));setLocalidadId(0);updatePerson("localidad","");updatePerson("codigoPostal","");}}>
+                <option value="">Seleccionar departamento</option>
+                {departamentosVisibles.map(d=><option key={d.id} value={d.id}>{d.nombre}</option>)}
+              </select>
+            </div>
+
+            <div className="field">
               <label>Localidad</label>
-              <input
-                value={person.localidad}
-                onChange={(event) =>
-                  updatePerson(
-                    "localidad",
-                    event.target.value
-                  )
-                }
-              />
+              <select value={localidadId||""} onChange={(event)=>{const id=Number(event.target.value);const l=localidades.find(x=>x.id===id);setLocalidadId(id);updatePerson("localidad",l?.nombre||"");updatePerson("codigoPostal",l?.codigo_postal||"");}}>
+                <option value="">Seleccionar localidad</option>
+                {localidadesVisibles.map(l=><option key={l.id} value={l.id}>{l.nombre}</option>)}
+              </select>
             </div>
 
             <div className="field">
