@@ -194,7 +194,10 @@ export default async function SistemaPage() {
             <small>INGRESAR</small>
           </Link>
 
-          <article className="module">
+          <Link
+            className="module module-link"
+            href="/gestion/sistema/configuracion/estados-afiliatorios"
+          >
             <span>⚙</span>
 
             <h2>Configuración</h2>
@@ -205,8 +208,8 @@ export default async function SistemaPage() {
               sistema.
             </p>
 
-            <small>EN PREPARACIÓN</small>
-          </article>
+            <small>INGRESAR</small>
+          </Link>
         </div>
       </section>
     </main>
