@@ -9,6 +9,13 @@ function value(data: unknown) {
   return String(data || "");
 }
 
+function numberValue(data: unknown) {
+  const number = Number(data);
+  return Number.isInteger(number) && number > 0
+    ? number
+    : null;
+}
+
 export default async function EditarSolicitudPage({
   params,
   searchParams,
@@ -92,7 +99,7 @@ export default async function EditarSolicitudPage({
     <section className="main-area">
       <Link className="library-back" href="/gestion/sindical/afiliaciones/solicitudes">← Volver a solicitudes</Link>
       <header className="main-head"><div><p className="kicker">AFILIACIONES</p><h1>Modificar solicitud</h1><p>Corregí los datos pendientes y volvé a guardar o descargar la ficha.</p></div></header>
-      <AffiliateForm companies={companies || []} applicationId={id} initialCompanyId={value(application.empresa_id)} initialEmployer={initialEmployer} initialPerson={initialPerson} provincias={provincias||[]} departamentos={departamentos||[]} localidades={localidades||[]} initialTerritory={{provincia_id:application.provincia_id,departamento_id:application.departamento_id,localidad_id:application.localidad_id}} autoDownload={autoDownload}/>
+      <AffiliateForm companies={companies || []} applicationId={id} initialCompanyId={value(application.empresa_id)} initialEmployer={initialEmployer} initialPerson={initialPerson} provincias={provincias||[]} departamentos={departamentos||[]} localidades={localidades||[]} initialTerritory={{provincia_id:numberValue((application as Record<string,unknown>).provincia_id),departamento_id:numberValue((application as Record<string,unknown>).departamento_id),localidad_id:numberValue((application as Record<string,unknown>).localidad_id)}} autoDownload={autoDownload}/>
     </section>
   </main>;
 }
