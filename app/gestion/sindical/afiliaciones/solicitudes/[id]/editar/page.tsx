@@ -34,10 +34,12 @@ export default async function EditarSolicitudPage({
   if (!application) notFound();
   if (application.estado !== "pendiente_firma") redirect("/gestion/sindical/afiliaciones/solicitudes");
 
-  const { data: companies } = await supabase
-    .from("empresas")
-    .select("id,nombre,rama,domicilio,localidad,provincia,codigo_postal,cuit,correo_electronico,telefono")
-    .order("nombre");
+  const[{data:companies},{data:provincias},{data:departamentos},{data:localidades}]=await Promise.all([
+    supabase.from("empresas").select("id,nombre,rama,domicilio,localidad,provincia,codigo_postal,cuit,correo_electronico,telefono").order("nombre"),
+    supabase.from("provincias").select("id,nombre").eq("habilitada",true).order("orden"),
+    supabase.from("departamentos").select("id,nombre,provincia_id").eq("habilitado",true).order("orden"),
+    supabase.from("localidades").select("id,nombre,codigo_postal,departamento_id").eq("habilitada",true).order("orden"),
+  ]);
 
   const cuilDigits = value(application.cuil).replace(/\D/g, "");
   const initialEmployer: EmployerData = {
@@ -90,7 +92,7 @@ export default async function EditarSolicitudPage({
     <section className="main-area">
       <Link className="library-back" href="/gestion/sindical/afiliaciones/solicitudes">← Volver a solicitudes</Link>
       <header className="main-head"><div><p className="kicker">AFILIACIONES</p><h1>Modificar solicitud</h1><p>Corregí los datos pendientes y volvé a guardar o descargar la ficha.</p></div></header>
-      <AffiliateForm companies={companies || []} applicationId={id} initialCompanyId={value(application.empresa_id)} initialEmployer={initialEmployer} initialPerson={initialPerson} autoDownload={autoDownload}/>
+      <AffiliateForm companies={companies || []} applicationId={id} initialCompanyId={value(application.empresa_id)} initialEmployer={initialEmployer} initialPerson={initialPerson} provincias={provincias||[]} departamentos={departamentos||[]} localidades={localidades||[]} initialTerritory={{provincia_id:application.provincia_id,departamento_id:application.departamento_id,localidad_id:application.localidad_id}} autoDownload={autoDownload}/>
     </section>
   </main>;
 }
