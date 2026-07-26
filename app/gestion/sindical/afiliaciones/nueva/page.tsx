@@ -34,13 +34,15 @@ export default async function NuevaAfiliacionPage() {
     redirect("/acceso");
   }
 
-  const { data: companyRows } = await supabase
-    .from("empresas")
-    .select(
-      "id,nombre,rama,domicilio,localidad,provincia,codigo_postal,cuit,correo_electronico,telefono"
-    )
-    .eq("activa", true)
-    .order("nombre");
+  const[
+    {data:companyRows},{data:provincias},
+    {data:departamentos},{data:localidades},
+  ]=await Promise.all([
+    supabase.from("empresas").select("id,nombre,rama,domicilio,localidad,provincia,codigo_postal,cuit,correo_electronico,telefono").eq("activa",true).order("nombre"),
+    supabase.from("provincias").select("id,nombre").eq("habilitada",true).order("orden"),
+    supabase.from("departamentos").select("id,nombre,provincia_id").eq("habilitado",true).order("orden"),
+    supabase.from("localidades").select("id,nombre,codigo_postal,departamento_id").eq("habilitada",true).order("orden"),
+  ]);
 
   const companies =
     (companyRows ?? []) as EmpresaAfiliacion[];
@@ -137,7 +139,7 @@ export default async function NuevaAfiliacionPage() {
           </div>
         </header>
 
-        <AffiliateForm companies={companies} />
+        <AffiliateForm companies={companies} provincias={provincias||[]} departamentos={departamentos||[]} localidades={localidades||[]}/>
       </section>
     </main>
   );
