@@ -175,6 +175,17 @@ export default async function HistorialBeneficiosPage({
   const total = count || 0;
   const paginas = Math.max(1, Math.ceil(total / POR_PAGINA));
   const name = [profile.nombre, profile.apellido].filter(Boolean).join(" ");
+  const exportParams = new URLSearchParams();
+
+  if (buscar) exportParams.set("buscar", buscar);
+  if (beneficioId > 0) {
+    exportParams.set("beneficio", String(beneficioId));
+  }
+  if (lugarId > 0) {
+    exportParams.set("lugar", String(lugarId));
+  }
+  if (desdeFecha) exportParams.set("desde", desdeFecha);
+  if (hastaFecha) exportParams.set("hasta", hastaFecha);
 
   function enlacePagina(numero: number) {
     const query = new URLSearchParams();
@@ -274,24 +285,17 @@ export default async function HistorialBeneficiosPage({
         </form>
 
         <div className="benefit-history-total">
-          <strong>{total.toLocaleString("es-AR")} entregas</strong>
-          <span>Página {pagina} de {paginas}</span>
-          <Link
-  className="benefit-history-download"
-  href={`/api/beneficios/historial-csv?${new URLSearchParams({
-    ...(buscar ? { buscar } : {}),
-    ...(beneficioId > 0
-      ? { beneficio: String(beneficioId) }
-      : {}),
-    ...(lugarId > 0
-      ? { lugar: String(lugarId) }
-      : {}),
-    ...(desdeFecha ? { desde: desdeFecha } : {}),
-    ...(hastaFecha ? { hasta: hastaFecha } : {}),
-  }).toString()}`}
->
-  Descargar CSV
-</Link>
+          <div>
+            <strong>{total.toLocaleString("es-AR")} entregas</strong>
+            <span>Página {pagina} de {paginas}</span>
+          </div>
+
+          <a
+            className="benefit-history-download"
+            href={`/api/beneficios/historial-csv?${exportParams.toString()}`}
+          >
+            Descargar CSV
+          </a>
         </div>
 
         {error ? (
@@ -319,7 +323,7 @@ export default async function HistorialBeneficiosPage({
                   </strong>
                   <span>
                     DNI {entrega.afiliados?.documento_numero || "sin informar"} ·
-                    AOMA {entrega.afiliados?.numero_aoma || "sin informar"}
+                    AOMA {entrega.afiliados?.numero_aoma ?? 0}
                   </span>
                   <span>
                     {entrega.afiliados?.empresa_original || "Sin empresa"} ·{" "}
