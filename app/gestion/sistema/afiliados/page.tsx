@@ -215,14 +215,18 @@ export default async function PadronAfiliadosPage({
           <Link className="active" href="/gestion/sistema">
             Sistema
           </Link>
-          <Link href="/gestion/usuarios">
-            Administración de usuarios
-          </Link>
+          {isAdmin && (
+            <Link href="/gestion/usuarios">
+              Administración de usuarios
+            </Link>
+          )}
         </nav>
 
         <div className="session">
           <strong>{nombreUsuario}</strong>
-          <span>Administrador</span>
+          <span>
+            {String(profile.rol || "Usuario autorizado")}
+          </span>
           <SignOutButton />
         </div>
       </aside>
