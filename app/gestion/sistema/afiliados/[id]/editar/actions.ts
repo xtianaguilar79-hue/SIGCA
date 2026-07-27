@@ -4,7 +4,12 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export async function cambiarEstadoAfiliado(
+function texto(formData: FormData, nombre: string) {
+  const valor = String(formData.get(nombre) || "").trim();
+  return valor || null;
+}
+
+export async function actualizarAfiliado(
   formData: FormData,
 ) {
   const supabase = await createClient();
@@ -38,28 +43,24 @@ export async function cambiarEstadoAfiliado(
     ? { data: null }
     : await supabase
         .from("usuarios_permisos_sistema")
-        .select("habilitado,puede_aprobar,alcance")
+        .select("habilitado,puede_editar,alcance")
         .eq("usuario_id", user.id)
         .eq("modulo_clave", "afiliados")
         .maybeSingle();
 
-  const canApproveAffiliate =
+  const canEditAffiliate =
     isAdmin ||
     Boolean(
       affiliatePermission?.habilitado &&
-        affiliatePermission?.puede_aprobar &&
+        affiliatePermission?.puede_editar &&
         affiliatePermission?.alcance !== "ninguno",
     );
 
-  if (!canApproveAffiliate) {
+  if (!canEditAffiliate) {
     redirect("/gestion/sistema/afiliados");
   }
 
   const id = String(formData.get("id") || "");
-  const estado = String(formData.get("estado") || "").trim();
-  const observacion = String(
-    formData.get("observacion") || "",
-  ).trim();
 
   if (
     !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
@@ -69,24 +70,41 @@ export async function cambiarEstadoAfiliado(
     redirect("/gestion/sistema/afiliados");
   }
 
-  if (!estado || observacion.length < 5) {
+  const email = texto(formData, "email");
+
+  if (
+    email &&
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  ) {
     redirect(
-      `/gestion/sistema/afiliados/${id}?estado_error=datos`,
+      `/gestion/sistema/afiliados/${id}/editar?error=correo`,
     );
   }
 
-  const { error } = await supabase.rpc(
-    "cambiar_estado_afiliado",
-    {
-      p_afiliado_id: id,
-      p_estado_nuevo: estado,
-      p_observacion: observacion,
-    },
-  );
+  const { error } = await supabase
+    .from("afiliados")
+    .update({
+      apellido_nombres: texto(
+        formData,
+        "apellido_nombres",
+      ),
+      fecha_nacimiento: texto(
+        formData,
+        "fecha_nacimiento",
+      ),
+      direccion: texto(formData, "direccion"),
+      codigo_postal: texto(formData, "codigo_postal"),
+      provincia: texto(formData, "provincia"),
+      departamento: texto(formData, "departamento"),
+      telefono_fijo: texto(formData, "telefono_fijo"),
+      telefono_movil: texto(formData, "telefono_movil"),
+      email: email?.toLowerCase() || null,
+    })
+    .eq("id", id);
 
   if (error) {
     redirect(
-      `/gestion/sistema/afiliados/${id}?estado_error=guardado`,
+      `/gestion/sistema/afiliados/${id}/editar?error=guardado`,
     );
   }
 
@@ -94,6 +112,6 @@ export async function cambiarEstadoAfiliado(
   revalidatePath("/gestion/sistema/afiliados");
 
   redirect(
-    `/gestion/sistema/afiliados/${id}?estado_actualizado=1`,
+    `/gestion/sistema/afiliados/${id}?actualizado=1`,
   );
 }
