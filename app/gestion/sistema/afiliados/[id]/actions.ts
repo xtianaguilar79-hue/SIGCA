@@ -26,10 +26,33 @@ export async function cambiarEstadoAfiliado(
   if (
     !profile ||
     profile.activo === false ||
-    String(profile.estado).toLowerCase() !== "aprobado" ||
-    String(profile.rol).toLowerCase() !== "administrador"
+    String(profile.estado).toLowerCase() !== "aprobado"
   ) {
-    redirect("/gestion");
+    redirect("/acceso");
+  }
+
+  const isAdmin =
+    String(profile.rol).toLowerCase() === "administrador";
+
+  const { data: affiliatePermission } = isAdmin
+    ? { data: null }
+    : await supabase
+        .from("usuarios_permisos_sistema")
+        .select("habilitado,puede_aprobar,alcance")
+        .eq("usuario_id", user.id)
+        .eq("modulo_clave", "afiliados")
+        .maybeSingle();
+
+  const canApproveAffiliate =
+    isAdmin ||
+    Boolean(
+      affiliatePermission?.habilitado &&
+        affiliatePermission?.puede_aprobar &&
+        affiliatePermission?.alcance !== "ninguno",
+    );
+
+  if (!canApproveAffiliate) {
+    redirect("/gestion/sistema/afiliados");
   }
 
   const id = String(formData.get("id") || "");
