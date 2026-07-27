@@ -23,6 +23,7 @@ function fechaHora(valor: string) {
   return new Intl.DateTimeFormat("es-AR", {
     dateStyle: "short",
     timeStyle: "short",
+    timeZone: "America/Argentina/Buenos_Aires",
   }).format(fecha);
 }
 
@@ -47,14 +48,14 @@ export function AffiliateStatusHistory({
       <h2>Historial de estados</h2>
 
       <p>
-        Registro cronológico de los cambios realizados
-        sobre la situación del afiliado.
+        Registro cronológico de los cambios realizados sobre la situación del
+        afiliado.
       </p>
 
       {cambios.length === 0 ? (
         <div className="affiliate-history-empty">
-          Todavía no se registraron cambios de estado
-          desde la incorporación del padrón a SIGCA.
+          Todavía no se registraron cambios de estado desde la incorporación
+          del padrón a SIGCA.
         </div>
       ) : (
         <div className="affiliate-history-list">
@@ -63,9 +64,7 @@ export function AffiliateStatusHistory({
               <div className="affiliate-history-states">
                 <span
                   className="affiliate-state"
-                  data-state={
-                    cambio.estado_anterior || "SIN ESTADO"
-                  }
+                  data-state={cambio.estado_anterior || "SIN ESTADO"}
                 >
                   {cambio.estado_anterior || "SIN ESTADO"}
                 </span>
@@ -74,17 +73,14 @@ export function AffiliateStatusHistory({
 
                 <span
                   className="affiliate-state"
-                  data-state={
-                    cambio.estado_nuevo || "SIN ESTADO"
-                  }
+                  data-state={cambio.estado_nuevo || "SIN ESTADO"}
                 >
                   {cambio.estado_nuevo || "SIN ESTADO"}
                 </span>
               </div>
 
               <p>
-                {cambio.observacion ||
-                  "Sin observación registrada."}
+                {cambio.observacion || "Sin observación registrada."}
               </p>
 
               <footer>
