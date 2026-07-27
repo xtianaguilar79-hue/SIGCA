@@ -289,7 +289,7 @@ export default async function FichaAfiliadoPage({
 
           <div className="affiliate-detail-number">
             <span>NÚMERO DE AFILIADO</span>
-            <strong>{mostrar(afiliado.numero_aoma)}</strong>
+            <strong>{afiliado.numero_aoma || "0"}</strong>
           </div>
 
           <span
