@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "@/components/sign-out-button";
 import { SignedAffiliationUpload } from "@/components/signed-affiliation-upload";
+import { ApproveAffiliationForm } from "@/components/approve-affiliation-form";
 
 const STATUS_LABELS: Record<string, string> = {
   pendiente_firma: "Pendiente de firma",
@@ -36,6 +37,32 @@ async function updateApplicationStatus(formData: FormData) {
   redirect(`${route}?resultado=actualizado`);
 }
 
+async function approveAndRegisterAffiliate(formData: FormData) {
+  "use server";
+
+  const id = String(formData.get("id") || "");
+  const route = "/gestion/sindical/afiliaciones/solicitudes";
+
+  if (!id) redirect(`${route}?resultado=error_aprobacion`);
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc(
+    "aprobar_solicitud_afiliacion",
+    { p_solicitud_id: id },
+  );
+
+  if (error) {
+    const message = encodeURIComponent(
+      error.message || "No fue posible incorporar la persona al padrón.",
+    );
+    redirect(`${route}?resultado=error_aprobacion&mensaje=${message}`);
+  }
+
+  revalidatePath(route);
+  revalidatePath("/gestion/sistema/afiliados");
+  redirect(`${route}?resultado=incorporado&afiliado=${data}`);
+}
+
 function text(value: unknown) {
   return String(value || "—");
 }
@@ -48,7 +75,13 @@ function formatDate(value: string | null) {
 export default async function SolicitudesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; estado?: string; resultado?: string }>;
+  searchParams: Promise<{
+    q?: string;
+    estado?: string;
+    resultado?: string;
+    afiliado?: string;
+    mensaje?: string;
+  }>;
 }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -133,6 +166,27 @@ export default async function SolicitudesPage({
 
         {params.resultado === "actualizado" && <p className="applications-message success">Estado actualizado correctamente.</p>}
         {params.resultado === "error" && <p className="applications-message error">No se pudo actualizar el estado. Verificá tus permisos.</p>}
+        {params.resultado === "incorporado" && (
+          <div className="applications-message success approval-result">
+            <div>
+              <strong>Afiliación aprobada correctamente</strong>
+              <p>La persona ya fue incorporada al padrón con estado AFILIADO EN TRÁMITE.</p>
+            </div>
+            {params.afiliado && (
+              <Link href={`/gestion/sistema/afiliados/${params.afiliado}`}>
+                Ver ficha en el padrón
+              </Link>
+            )}
+          </div>
+        )}
+        {params.resultado === "error_aprobacion" && (
+          <div className="applications-message error approval-result">
+            <div>
+              <strong>No se pudo aprobar la afiliación</strong>
+              <p>{params.mensaje || "Revisá los datos, el estado de la solicitud y tus permisos."}</p>
+            </div>
+          </div>
+        )}
 
         {error && <p className="applications-message error">No se pudieron cargar las solicitudes.</p>}
         {!error && <p className="applications-count">{filtered.length} solicitudes encontradas</p>}
@@ -164,16 +218,24 @@ export default async function SolicitudesPage({
                   <div><dt>Estado</dt><dd>{STATUS_LABELS[application.estado] || application.estado}</dd></div>
                 </dl>
                 {isAdmin && (
-                  <form className="application-status-form" action={updateApplicationStatus}>
-                    <input type="hidden" name="id" value={application.id} />
-                    <label htmlFor={`estado-${application.id}`}>Cambiar estado</label>
-                    <div>
-                      <select id={`estado-${application.id}`} name="estado" defaultValue={application.estado}>
-                        {VALID_STATUSES.map((status) => <option key={status} value={status}>{STATUS_LABELS[status]}</option>)}
-                      </select>
-                      <button type="submit">Guardar estado</button>
-                    </div>
-                  </form>
+                  <>
+                    <form className="application-status-form" action={updateApplicationStatus}>
+                      <input type="hidden" name="id" value={application.id} />
+                      <label htmlFor={`estado-${application.id}`}>Cambiar estado</label>
+                      <div>
+                        <select id={`estado-${application.id}`} name="estado" defaultValue={application.estado}>
+                          {VALID_STATUSES.map((status) => <option key={status} value={status}>{STATUS_LABELS[status]}</option>)}
+                        </select>
+                        <button type="submit">Guardar estado</button>
+                      </div>
+                    </form>
+                    {(application.estado === "firmada" || application.estado === "presentada") && (
+                      <ApproveAffiliationForm
+                        applicationId={application.id}
+                        action={approveAndRegisterAffiliate}
+                      />
+                    )}
+                  </>
                 )}
                 {application.estado === "pendiente_firma" && <SignedAffiliationUpload applicationId={application.id} initialPath={application.archivo_firmado_path} initialName={application.archivo_firmado_nombre}/>} 
               </details>
@@ -207,6 +269,19 @@ export default async function SolicitudesPage({
         :root[data-theme="dark"] .application-actions a{border-color:#8fd0de;color:#b8e6ef}
         :root[data-theme="dark"] .application-actions a.pdf{background:#8fd0de;color:#092a33}
         @media(max-width:700px){.application-summary{grid-template-columns:1fr}.application-actions{display:grid}.application-actions a{text-align:center;min-height:44px}.application-status-form>div{display:grid}.application-status-form button{min-height:46px}}
+        .approve-affiliation-form{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:18px;margin-top:16px;padding:18px;border:1px solid #8ebdab;border-radius:12px;background:#edf8f3}
+        .approve-affiliation-form p{max-width:720px;margin:0;color:#315e50;font-size:14px;line-height:1.5}
+        .approve-affiliation-form button{min-height:48px;padding:12px 18px;border:0;border-radius:9px;background:#17664f;color:white;font-size:15px;font-weight:900;cursor:pointer}
+        .approve-affiliation-form button:hover,.approve-affiliation-form button:focus-visible{background:#0f503d;outline:3px solid #79bca5;outline-offset:2px}
+        .approval-result{display:flex;align-items:center;justify-content:space-between;gap:20px}
+        .approval-result strong{display:block;margin-bottom:5px;font-size:17px}
+        .approval-result p{margin:0;line-height:1.5}
+        .approval-result a{flex:none;padding:11px 15px;border-radius:8px;background:#17664f;color:white;font-weight:900;text-decoration:none}
+        :root[data-theme="dark"] .approve-affiliation-form{border-color:#5c9e89;background:#173b32}
+        :root[data-theme="dark"] .approve-affiliation-form p{color:#d2eee3}
+        :root[data-theme="dark"] .approve-affiliation-form button{background:#8fd3b9;color:#092f24}
+        :root[data-theme="dark"] .approval-result a{background:#8fd3b9;color:#092f24}
+        @media(max-width:700px){.approve-affiliation-form{grid-template-columns:1fr;padding:16px}.approve-affiliation-form button{width:100%}.approval-result{display:grid}.approval-result a{text-align:center}}
       `}</style>
     </main>
   );
