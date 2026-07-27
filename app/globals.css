@@ -1836,3 +1836,322 @@ body:has(.print-report-page) .notification-bell,body:has(.print-report-page) .th
 
 /* Configuración de estados afiliatorios */
 .affiliate-states-page{max-width:1450px;width:100%}.affiliate-states-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:24px 0}.affiliate-states-summary article{display:grid;gap:6px;padding:23px;border:1px solid var(--linea);border-radius:16px;background:#fff}.affiliate-states-summary strong{font-size:34px;color:var(--petroleo)}.affiliate-states-summary span{color:var(--gris)}.affiliate-state-create{margin-bottom:28px;border:1px solid var(--linea);border-radius:16px;background:#fff;overflow:hidden}.affiliate-state-create summary{padding:20px 23px;background:var(--petroleo);color:#fff;font-size:20px;font-weight:900;cursor:pointer}.affiliate-state-create form,.affiliate-state-list article form{display:grid;grid-template-columns:1fr 150px;gap:15px;padding:22px}.affiliate-state-create label,.affiliate-state-list label{display:grid;gap:7px}.affiliate-state-create label span,.affiliate-state-list label span{font-weight:800;color:var(--petroleo)}.affiliate-state-create input,.affiliate-state-create textarea,.affiliate-state-list input,.affiliate-state-list textarea,.affiliate-state-list select{width:100%;min-height:48px;padding:10px 13px;border:1px solid #adc2c8;border-radius:9px;background:#fff;color:var(--tinta);font:inherit}.affiliate-state-create input[name="nombre"]{text-transform:uppercase}.affiliate-state-create .state-description,.affiliate-state-list .state-description{grid-column:1/-1}.affiliate-state-create button,.affiliate-state-list button{min-height:46px;padding:11px 17px;border:0;border-radius:9px;background:var(--petroleo);color:#fff;font:inherit;font-weight:850;cursor:pointer}.affiliate-state-list{display:grid;gap:14px}.affiliate-state-list>.section-heading{margin-bottom:4px}.affiliate-state-list article{border:1px solid var(--linea);border-radius:15px;background:#fff;overflow:hidden}.affiliate-state-list article header{padding:19px 22px;border-bottom:1px solid var(--linea)}.affiliate-state-list article header>div{display:flex;align-items:center;justify-content:space-between;gap:15px}.affiliate-state-list h3{margin:0;color:var(--petroleo);font-size:18px}.affiliate-state-list header span{padding:7px 10px;border-radius:999px;font-size:11px;font-weight:900}.affiliate-state-list header span.active{background:#dff3ea;color:#145e4d}.affiliate-state-list header span.inactive{background:#f7e2df;color:#8a3028}.affiliate-state-list article form{grid-template-columns:120px 1fr 190px auto;align-items:end}.affiliate-state-list .state-description{grid-column:auto}.affiliate-states-note{margin-top:20px;padding:16px 18px;border-left:4px solid var(--dorado);background:#fff8e7;color:#604b1d;line-height:1.5}:root[data-theme="dark"] .affiliate-states-summary article,:root[data-theme="dark"] .affiliate-state-create,:root[data-theme="dark"] .affiliate-state-list article{background:#18343e;border-color:#49636c}:root[data-theme="dark"] .affiliate-states-summary strong,:root[data-theme="dark"] .affiliate-state-list h3,:root[data-theme="dark"] .affiliate-state-create label span,:root[data-theme="dark"] .affiliate-state-list label span{color:#f0f6f7}:root[data-theme="dark"] .affiliate-state-create input,:root[data-theme="dark"] .affiliate-state-create textarea,:root[data-theme="dark"] .affiliate-state-list input,:root[data-theme="dark"] .affiliate-state-list textarea,:root[data-theme="dark"] .affiliate-state-list select{background:#10272f;border-color:#49636c;color:#edf5f6}:root[data-theme="dark"] .affiliate-states-note{background:#3b3321;color:#f1ddb0}@media(max-width:900px){.affiliate-state-list article form{grid-template-columns:1fr 1fr}.affiliate-state-list .state-description{grid-column:1/-1}}@media(max-width:650px){.affiliate-states-summary{grid-template-columns:1fr;gap:10px}.affiliate-state-create form,.affiliate-state-list article form{grid-template-columns:1fr}.affiliate-state-create .state-description,.affiliate-state-list .state-description{grid-column:auto}.affiliate-state-list article header>div{align-items:flex-start;flex-direction:column}.affiliate-state-create button,.affiliate-state-list button{width:100%}}
+/* =========================================================
+   GRUPO FAMILIAR
+   ========================================================= */
+
+.affiliate-family {
+  margin-top: 24px;
+  padding: 32px;
+  border: 1px solid #d4e0e3;
+  border-radius: 20px;
+  background: #fff;
+  color: var(--tinta);
+}
+
+.affiliate-family-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.affiliate-family-header h2 {
+  margin: 5px 0 8px;
+  color: var(--petroleo);
+  font-size: clamp(28px, 3vw, 38px);
+}
+
+.affiliate-family-header p {
+  margin: 0;
+  color: var(--gris);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.affiliate-family-total {
+  flex: none;
+  padding: 11px 16px;
+  border-radius: 999px;
+  background: #e5f3ee;
+  color: #186b5c;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+}
+
+.affiliate-family-empty {
+  padding: 28px;
+  border: 1px dashed #b9cdd2;
+  border-radius: 14px;
+  background: #f7fafb;
+  color: var(--gris);
+  text-align: center;
+  font-size: 16px;
+}
+
+.affiliate-family-list {
+  display: grid;
+  gap: 16px;
+}
+
+.affiliate-family-card {
+  padding: 22px;
+  border: 1px solid #d4e0e3;
+  border-radius: 16px;
+  background: #f9fbfb;
+}
+
+.affiliate-family-card > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #dce6e8;
+}
+
+.affiliate-family-card > header span {
+  display: block;
+  margin-bottom: 5px;
+  color: #a06a00;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.affiliate-family-card h3 {
+  margin: 0;
+  color: var(--petroleo);
+  font-size: 22px;
+}
+
+.affiliate-family-card > header > strong {
+  padding: 8px 11px;
+  border-radius: 999px;
+  background: #fff0d6;
+  color: #875400;
+  font-size: 11px;
+  text-align: center;
+}
+
+.affiliate-family-card dl {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+  margin: 20px 0 0;
+}
+
+.affiliate-family-card dl div {
+  min-width: 0;
+}
+
+.affiliate-family-card dt {
+  margin-bottom: 6px;
+  color: var(--gris);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.affiliate-family-card dd {
+  margin: 0;
+  color: var(--tinta);
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+
+.affiliate-family-observation {
+  margin: 18px 0 0;
+  padding: 14px;
+  border-radius: 10px;
+  background: #edf4f5;
+  line-height: 1.5;
+}
+
+.affiliate-family-create {
+  margin-top: 22px;
+  border: 1px solid #b8cdd2;
+  border-radius: 15px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.affiliate-family-create summary {
+  padding: 18px 22px;
+  background: var(--petroleo);
+  color: #fff;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 900;
+  list-style-position: inside;
+}
+
+.affiliate-family-create[open] summary {
+  border-bottom: 4px solid var(--dorado);
+}
+
+.affiliate-family-create form {
+  padding: 24px;
+}
+
+.affiliate-family-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.affiliate-family-form-grid label {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.affiliate-family-form-grid label.wide {
+  grid-column: 1 / -1;
+}
+
+.affiliate-family-form-grid label span {
+  color: var(--petroleo);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.affiliate-family-form-grid input,
+.affiliate-family-form-grid select,
+.affiliate-family-form-grid textarea {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 14px;
+  border: 1px solid #adc2c8;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--tinta);
+  font: inherit;
+}
+
+.affiliate-family-form-grid textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.affiliate-family-form-grid input:focus,
+.affiliate-family-form-grid select:focus,
+.affiliate-family-form-grid textarea:focus {
+  border-color: #31859a;
+  outline: none;
+  box-shadow: 0 0 0 3px #31859a25;
+}
+
+/* Modo oscuro */
+
+:root[data-theme="dark"] .affiliate-family,
+:root[data-theme="dark"] .affiliate-family-create {
+  border-color: #49636c;
+  background: #18343e;
+}
+
+:root[data-theme="dark"] .affiliate-family-header h2,
+:root[data-theme="dark"] .affiliate-family-card h3,
+:root[data-theme="dark"] .affiliate-family-form-grid label span {
+  color: #f1f7f8;
+}
+
+:root[data-theme="dark"] .affiliate-family-header p,
+:root[data-theme="dark"] .affiliate-family-empty,
+:root[data-theme="dark"] .affiliate-family-card dt {
+  color: #bfd0d4;
+}
+
+:root[data-theme="dark"] .affiliate-family-empty,
+:root[data-theme="dark"] .affiliate-family-card {
+  border-color: #49636c;
+  background: #10272f;
+}
+
+:root[data-theme="dark"] .affiliate-family-card > header {
+  border-color: #36505a;
+}
+
+:root[data-theme="dark"] .affiliate-family-card dd {
+  color: #edf5f6;
+}
+
+:root[data-theme="dark"] .affiliate-family-observation {
+  background: #244752;
+  color: #edf5f6;
+}
+
+:root[data-theme="dark"] .affiliate-family-form-grid input,
+:root[data-theme="dark"] .affiliate-family-form-grid select,
+:root[data-theme="dark"] .affiliate-family-form-grid textarea {
+  border-color: #4b6871;
+  background: #0b222a;
+  color: #f5f8f9;
+}
+
+/* Teléfono y tablet */
+
+@media (max-width: 850px) {
+  .affiliate-family {
+    margin-top: 18px;
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .affiliate-family-header {
+    display: grid;
+    gap: 14px;
+  }
+
+  .affiliate-family-total {
+    justify-self: start;
+  }
+
+  .affiliate-family-card {
+    padding: 18px;
+  }
+
+  .affiliate-family-card > header {
+    display: grid;
+  }
+
+  .affiliate-family-card > header > strong {
+    justify-self: start;
+  }
+
+  .affiliate-family-card dl {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .affiliate-family-card dl div {
+    padding-bottom: 12px;
+    border-bottom: 1px solid #dce6e8;
+  }
+
+  .affiliate-family-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .affiliate-family-form-grid label.wide {
+    grid-column: auto;
+  }
+
+  .affiliate-family-create summary {
+    padding: 17px;
+    font-size: 17px;
+  }
+
+  .affiliate-family-create form {
+    padding: 18px;
+  }
+
+  :root[data-theme="dark"] .affiliate-family-card dl div {
+    border-color: #36505a;
+  }
+}
