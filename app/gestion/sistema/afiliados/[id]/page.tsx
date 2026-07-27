@@ -60,7 +60,46 @@ export default async function FichaAfiliadoPage({
   const isAdmin =
     String(profile.rol).toLowerCase() === "administrador";
 
-  if (!isAdmin) {
+  const { data: affiliatePermission } = isAdmin
+    ? { data: null }
+    : await supabase
+        .from("usuarios_permisos_sistema")
+        .select(
+          "habilitado,puede_consultar,puede_editar,puede_aprobar,alcance,empresa_id,sede",
+        )
+        .eq("usuario_id", user.id)
+        .eq("modulo_clave", "afiliados")
+        .maybeSingle();
+
+  const hasAffiliateAccess =
+    isAdmin ||
+    Boolean(
+      affiliatePermission?.habilitado &&
+        affiliatePermission?.alcance !== "ninguno",
+    );
+
+  const canViewAffiliate =
+    isAdmin ||
+    Boolean(
+      hasAffiliateAccess &&
+        affiliatePermission?.puede_consultar,
+    );
+
+  const canEditAffiliate =
+    isAdmin ||
+    Boolean(
+      hasAffiliateAccess &&
+        affiliatePermission?.puede_editar,
+    );
+
+  const canApproveAffiliate =
+    isAdmin ||
+    Boolean(
+      hasAffiliateAccess &&
+        affiliatePermission?.puede_aprobar,
+    );
+
+  if (!canViewAffiliate) {
     redirect("/gestion/sistema");
   }
 
@@ -186,14 +225,18 @@ export default async function FichaAfiliadoPage({
           <Link className="active" href="/gestion/sistema">
             Sistema
           </Link>
-          <Link href="/gestion/usuarios">
-            Administración de usuarios
-          </Link>
+          {isAdmin && (
+            <Link href="/gestion/usuarios">
+              Administración de usuarios
+            </Link>
+          )}
         </nav>
 
         <div className="session">
           <strong>{nombreUsuario}</strong>
-          <span>Administrador</span>
+          <span>
+            {String(profile.rol || "Usuario autorizado")}
+          </span>
           <SignOutButton />
         </div>
       </aside>
@@ -331,25 +374,29 @@ export default async function FichaAfiliadoPage({
           </dl>
         </section>
 
-        <AffiliateStatusForm
-          afiliadoId={afiliado.id}
-          estadoActual={afiliado.estado}
-          estados={estados}
-          resultado={resultado}
-        />
+        {canApproveAffiliate && (
+          <AffiliateStatusForm
+            afiliadoId={afiliado.id}
+            estadoActual={afiliado.estado}
+            estados={estados}
+            resultado={resultado}
+          />
+        )}
 
         <AffiliateStatusHistory
           cambios={cambiosEstado}
           responsables={responsables || []}
         />
 
-        <div className="affiliate-card-actions">
-          <Link
-            href={`/gestion/sistema/afiliados/${afiliado.id}/editar`}
-          >
-            Editar datos personales
-          </Link>
-        </div>
+        {canEditAffiliate && (
+          <div className="affiliate-card-actions">
+            <Link
+              href={`/gestion/sistema/afiliados/${afiliado.id}/editar`}
+            >
+              Editar datos personales
+            </Link>
+          </div>
+        )}
 
         <p className="affiliate-readonly-note">
           Esta ficha se encuentra en modo de consulta. Los datos
