@@ -31,10 +31,33 @@ export default async function EditarAfiliadoPage({
   if (
     !profile ||
     profile.activo === false ||
-    String(profile.estado).toLowerCase() !== "aprobado" ||
-    String(profile.rol).toLowerCase() !== "administrador"
+    String(profile.estado).toLowerCase() !== "aprobado"
   ) {
-    redirect("/gestion");
+    redirect("/acceso");
+  }
+
+  const isAdmin =
+    String(profile.rol).toLowerCase() === "administrador";
+
+  const { data: affiliatePermission } = isAdmin
+    ? { data: null }
+    : await supabase
+        .from("usuarios_permisos_sistema")
+        .select("habilitado,puede_editar,alcance")
+        .eq("usuario_id", user.id)
+        .eq("modulo_clave", "afiliados")
+        .maybeSingle();
+
+  const canEditAffiliate =
+    isAdmin ||
+    Boolean(
+      affiliatePermission?.habilitado &&
+        affiliatePermission?.puede_editar &&
+        affiliatePermission?.alcance !== "ninguno",
+    );
+
+  if (!canEditAffiliate) {
+    redirect("/gestion/sistema/afiliados");
   }
 
   const { id } = await params;
@@ -98,14 +121,18 @@ export default async function EditarAfiliadoPage({
           <Link className="active" href="/gestion/sistema">
             Sistema
           </Link>
-          <Link href="/gestion/usuarios">
-            Administración de usuarios
-          </Link>
+          {isAdmin && (
+            <Link href="/gestion/usuarios">
+              Administración de usuarios
+            </Link>
+          )}
         </nav>
 
         <div className="session">
           <strong>{nombreUsuario}</strong>
-          <span>Administrador</span>
+          <span>
+            {String(profile.rol || "Usuario autorizado")}
+          </span>
           <SignOutButton />
         </div>
       </aside>
