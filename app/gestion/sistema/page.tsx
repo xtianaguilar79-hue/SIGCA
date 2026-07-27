@@ -34,7 +34,29 @@ export default async function SistemaPage() {
     String(profile.rol).toLowerCase() ===
     "administrador";
 
-  if (!isAdmin) {
+  const { data: assignedPermissions } = isAdmin
+    ? { data: [] }
+    : await supabase
+        .from("usuarios_permisos_sistema")
+        .select("modulo_clave")
+        .eq("usuario_id", user.id)
+        .eq("habilitado", true)
+        .eq("puede_consultar", true)
+        .neq("alcance", "ninguno");
+
+  const permissionKeys = new Set(
+    (assignedPermissions || []).map((item) =>
+      String(item.modulo_clave).toLowerCase(),
+    ),
+  );
+
+  const canAccessModule = (...keys: string[]) =>
+    isAdmin ||
+    keys.some((key) =>
+      permissionKeys.has(key.toLowerCase()),
+    );
+
+  if (!isAdmin && permissionKeys.size === 0) {
     redirect("/gestion");
   }
 
@@ -122,12 +144,14 @@ export default async function SistemaPage() {
           </div>
 
           <span className="secure">
-            ● ACCESO ADMINISTRATIVO
+            {isAdmin
+              ? "● ACCESO ADMINISTRATIVO"
+              : "● ACCESO AUTORIZADO"}
           </span>
         </header>
 
         <div className="cards">
-          <Link
+          {canAccessModule("afiliados", "padron") && <Link
             className="module module-link"
             href="/gestion/sistema/afiliados"
           >
@@ -142,9 +166,9 @@ export default async function SistemaPage() {
             </p>
 
             <small>INGRESAR</small>
-          </Link>
+          </Link>}
 
-          <Link
+          {canAccessModule("beneficios") && <Link
             className="module module-link"
             href="/gestion/sistema/beneficios"
           >
@@ -159,9 +183,9 @@ export default async function SistemaPage() {
             </p>
 
             <small>INGRESAR</small>
-          </Link>
+          </Link>}
 
-          <Link
+          {canAccessModule("reportes") && <Link
             className="module module-link"
             href="/gestion/sistema/reportes"
           >
@@ -175,9 +199,9 @@ export default async function SistemaPage() {
             </p>
 
             <small>INGRESAR</small>
-          </Link>
+          </Link>}
 
-          <Link
+          {canAccessModule("empresas") && <Link
             className="module module-link"
             href="/gestion/sistema/empresas"
           >
@@ -192,9 +216,9 @@ export default async function SistemaPage() {
             </p>
 
             <small>INGRESAR</small>
-          </Link>
+          </Link>}
 
-          <Link
+          {canAccessModule("configuracion", "configuración") && <Link
             className="module module-link"
             href="/gestion/sistema/configuracion"
           >
@@ -209,9 +233,9 @@ export default async function SistemaPage() {
             </p>
 
             <small>INGRESAR</small>
-          </Link>
+          </Link>}
 
-          <Link
+          {isAdmin && <Link
             className="module module-link"
             href="/gestion/sistema/permisos"
           >
@@ -225,7 +249,7 @@ export default async function SistemaPage() {
             </p>
 
             <small>ADMINISTRAR</small>
-          </Link>
+          </Link>}
         </div>
       </section>
     </main>
