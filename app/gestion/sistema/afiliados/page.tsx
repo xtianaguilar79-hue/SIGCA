@@ -287,8 +287,7 @@ export default async function PadronAfiliadosPage({
                     <div className="affiliate-number">
                       <span>NÚMERO DE AFILIADO</span>
                       <strong>
-                        {afiliado.numero_aoma ||
-                          "SIN INFORMAR"}
+                        {afiliado.numero_aoma || "0"}
                       </strong>
                     </div>
 
