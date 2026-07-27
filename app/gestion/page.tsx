@@ -73,6 +73,12 @@ export default async function ManagementPage() {
             Biblioteca
           </Link>
 
+          {isAdmin && (
+            <Link href="/gestion/sistema">
+              Sistema
+            </Link>
+          )}
+
           <Link href="/gestion/perfil">
             Mi perfil
           </Link>
@@ -176,6 +182,22 @@ export default async function ManagementPage() {
             </p>
             <small>DISPONIBLE</small>
           </Link>
+
+          {isAdmin && (
+            <Link
+              className="module module-link"
+              href="/gestion/sistema"
+            >
+              <span>⚙</span>
+              <h2>Sistema</h2>
+              <p>
+                Administrá el padrón, beneficios,
+                empresas, reportes, configuraciones y
+                permisos de acceso.
+              </p>
+              <small>ACCESO ADMINISTRATIVO</small>
+            </Link>
+          )}
 
           {isAdmin && (
             <Link
