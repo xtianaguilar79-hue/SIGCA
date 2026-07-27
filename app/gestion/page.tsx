@@ -37,6 +37,19 @@ export default async function ManagementPage() {
     String(profile.rol).toLowerCase() ===
     "administrador";
 
+  const { data: systemPermissions } = isAdmin
+    ? { data: [] }
+    : await supabase
+        .from("usuarios_permisos_sistema")
+        .select("modulo_clave")
+        .eq("usuario_id", user.id)
+        .eq("habilitado", true)
+        .eq("puede_consultar", true)
+        .neq("alcance", "ninguno");
+
+  const canAccessSystem =
+    isAdmin || (systemPermissions?.length || 0) > 0;
+
   return (
     <main className="management">
       <aside className="side">
@@ -73,7 +86,7 @@ export default async function ManagementPage() {
             Biblioteca
           </Link>
 
-          {isAdmin && (
+          {canAccessSystem && (
             <Link href="/gestion/sistema">
               Sistema
             </Link>
@@ -183,7 +196,7 @@ export default async function ManagementPage() {
             <small>DISPONIBLE</small>
           </Link>
 
-          {isAdmin && (
+          {canAccessSystem && (
             <Link
               className="module module-link"
               href="/gestion/sistema"
