@@ -44,7 +44,26 @@ export default async function PadronAfiliadosPage({
   const isAdmin =
     String(profile.rol).toLowerCase() === "administrador";
 
-  if (!isAdmin) {
+  const { data: affiliatePermission } = isAdmin
+    ? { data: null }
+    : await supabase
+        .from("usuarios_permisos_sistema")
+        .select(
+          "habilitado,puede_consultar,alcance,empresa_id,sede",
+        )
+        .eq("usuario_id", user.id)
+        .eq("modulo_clave", "afiliados")
+        .maybeSingle();
+
+  const canViewAffiliates =
+    isAdmin ||
+    Boolean(
+      affiliatePermission?.habilitado &&
+        affiliatePermission?.puede_consultar &&
+        affiliatePermission?.alcance !== "ninguno",
+    );
+
+  if (!canViewAffiliates) {
     redirect("/gestion/sistema");
   }
 
