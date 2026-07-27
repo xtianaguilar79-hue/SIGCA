@@ -153,7 +153,7 @@ export default async function EditarAfiliadoPage({
           </div>
 
           <span className="secure">
-            afiliado.numero_aoma || "Sin informar"
+            afiliado.numero_aoma || "0"
           </span>
         </header>
 
@@ -189,7 +189,7 @@ export default async function EditarAfiliadoPage({
             <div>
               <span>Número AOMA</span>
               <strong>
-                {afiliado.numero_aoma || "Sin informar"}
+                {afiliado.numero_aoma || "0"}
               </strong>
             </div>
           </div>
