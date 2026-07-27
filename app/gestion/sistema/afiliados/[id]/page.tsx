@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { AffiliateStatusForm } from "./status-form";
 import { AffiliateStatusHistory } from "./status-history";
+import { AffiliateFamilySection } from "./family-section";
 import { SignOutButton } from "@/components/sign-out-button";
 import { createClient } from "@/lib/supabase/server";
 
@@ -29,9 +30,11 @@ export default async function FichaAfiliadoPage({
 }: {
   params: Promise<{ id: string }>;
   searchParams: Promise<{
-    estado_actualizado?: string;
-    estado_error?: string;
-  }>;
+  estado_actualizado?: string;
+  estado_error?: string;
+  familia_guardada?: string;
+  familia_error?: string;
+}>;
 }) {
   const supabase = await createClient();
 
@@ -65,7 +68,7 @@ export default async function FichaAfiliadoPage({
     : await supabase
         .from("usuarios_permisos_sistema")
         .select(
-          "habilitado,puede_consultar,puede_editar,puede_aprobar,alcance,empresa_id,sede",
+          "habilitado,puede_consultar,puede_crear,puede_editar,puede_aprobar,alcance,empresa_id,sede",
         )
         .eq("usuario_id", user.id)
         .eq("modulo_clave", "afiliados")
@@ -91,6 +94,12 @@ export default async function FichaAfiliadoPage({
       hasAffiliateAccess &&
         affiliatePermission?.puede_editar,
     );
+  const canCreateFamily =
+  isAdmin ||
+  Boolean(
+    hasAffiliateAccess &&
+      affiliatePermission?.puede_crear,
+  );
 
   const canApproveAffiliate =
     isAdmin ||
@@ -107,10 +116,11 @@ export default async function FichaAfiliadoPage({
   const resultado = await searchParams;
 
   const [
-    afiliadoResult,
-    estadosResult,
-    historialResult,
-  ] = await Promise.all([
+  afiliadoResult,
+  estadosResult,
+  historialResult,
+  familiaresResult,
+] = await Promise.all([
     supabase
       .from("afiliados")
       .select(
@@ -165,12 +175,33 @@ export default async function FichaAfiliadoPage({
       )
       .eq("afiliado_id", id)
       .order("cambiado_at", { ascending: false }),
+    supabase
+  .from("afiliados_familiares")
+  .select(
+    `
+      id,
+      apellido_nombres,
+      vinculo,
+      documento_tipo,
+      documento_numero,
+      fecha_nacimiento,
+      cuil,
+      telefono,
+      correo_electronico,
+      posee_discapacidad,
+      observaciones,
+      activo
+    `,
+  )
+  .eq("afiliado_id", id)
+  .order("apellido_nombres"),
   ]);
 
   const afiliado = afiliadoResult.data;
   const error = afiliadoResult.error;
   const estados = estadosResult.data || [];
   const cambiosEstado = historialResult.data || [];
+  const familiares = familiaresResult.data || [];
 
   const responsablesIds = [
     ...new Set(
@@ -374,6 +405,13 @@ export default async function FichaAfiliadoPage({
           </dl>
         </section>
 
+        <AffiliateFamilySection
+  afiliadoId={afiliado.id}
+  familiares={familiares}
+  puedeCrear={canCreateFamily}
+  guardado={resultado.familia_guardada === "1"}
+  error={resultado.familia_error || ""}
+/>
         {canApproveAffiliate && (
           <AffiliateStatusForm
             afiliadoId={afiliado.id}
