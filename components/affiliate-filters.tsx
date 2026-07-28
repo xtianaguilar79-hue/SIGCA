@@ -58,8 +58,8 @@ export function AffiliateFilters({
         />
 
         <button type="submit">
-          🔍 Buscar
-        </button>
+  Buscar
+</button>
       </div>
 
       <div className="affiliate-filter-row">
