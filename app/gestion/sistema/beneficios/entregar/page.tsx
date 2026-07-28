@@ -249,13 +249,13 @@ export default async function EntregarBeneficioPage({
               </div>
             </div>
 
-            <div className="delivery-place-grid">
+            <div className="delivery-location-buttons">
               {lugares.map((lugar) => (
                 <Link
                   className={
                     lugarSeleccionado === String(lugar.id)
-                      ? "delivery-place is-selected"
-                      : "delivery-place"
+                      ? "active"
+                      : ""
                   }
                   href={enlaceConParametros({
                     lugar: String(lugar.id),
@@ -264,8 +264,7 @@ export default async function EntregarBeneficioPage({
                   })}
                   key={lugar.id}
                 >
-                  <span>⌖</span>
-                  <strong>{lugar.nombre}</strong>
+                  {lugar.nombre}
                 </Link>
               ))}
             </div>
