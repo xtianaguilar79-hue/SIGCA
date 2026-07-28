@@ -6,6 +6,7 @@ import { AffiliateStatusHistory } from "./status-history";
 import { AffiliateFamilySection } from "./family-section";
 import { SignOutButton } from "@/components/sign-out-button";
 import { createClient } from "@/lib/supabase/server";
+import {AffiliateBenefitHistory, type BenefitDelivery, } from "./benefit-history";
 
 function mostrar(valor: unknown) {
   const texto = String(valor ?? "").trim();
@@ -120,6 +121,7 @@ export default async function FichaAfiliadoPage({
   estadosResult,
   historialResult,
   familiaresResult,
+  beneficiosResult,
 ] = await Promise.all([
     supabase
       .from("afiliados")
@@ -160,6 +162,33 @@ export default async function FichaAfiliadoPage({
       .select("nombre")
       .eq("habilitado", true)
       .order("orden"),
+   
+    supabase
+  .from("beneficios_entregas")
+  .select(
+    `
+      id,
+      cantidad,
+      fecha_entrega,
+      fecha_entrega_confirmada,
+      observaciones,
+      destinatario_tipo,
+      destinatario_nombre_original,
+      origen_registro,
+      entregado_por,
+      created_at,
+      beneficio:beneficios(
+        nombre,
+        categoria
+      ),
+      familiar:afiliados_familiares(
+        apellido_nombres,
+        vinculo
+      )
+    `,
+  )
+  .eq("afiliado_id", id)
+  .order("created_at", { ascending: false }),
 
     supabase
       .from("afiliados_historial_estado")
@@ -202,14 +231,21 @@ export default async function FichaAfiliadoPage({
   const estados = estadosResult.data || [];
   const cambiosEstado = historialResult.data || [];
   const familiares = familiaresResult.data || [];
+  const entregas =
+  (beneficiosResult.data || []) as unknown as BenefitDelivery[];
 
   const responsablesIds = [
-    ...new Set(
-      cambiosEstado
-        .map((cambio) => cambio.cambiado_por)
-        .filter((valor): valor is string => Boolean(valor)),
-    ),
-  ];
+  ...new Set(
+    [
+      ...cambiosEstado.map(
+        (cambio) => cambio.cambiado_por,
+      ),
+      ...entregas.map(
+        (entrega) => entrega.entregado_por,
+      ),
+    ].filter((valor): valor is string => Boolean(valor)),
+  ),
+];
 
   const { data: responsables } =
     responsablesIds.length > 0
@@ -411,6 +447,10 @@ export default async function FichaAfiliadoPage({
   puedeCrear={canCreateFamily}
   guardado={resultado.familia_guardada === "1"}
   error={resultado.familia_error || ""}
+/>
+        <AffiliateBenefitHistory
+  entregas={entregas}
+  responsables={responsables || []}
 />
         {canApproveAffiliate && (
           <AffiliateStatusForm
