@@ -467,14 +467,6 @@ export default async function EntregarBeneficioPage({
                     </p>
                   </div>
 
-                  <Link
-                    className="delivery-change-affiliate"
-                    href={enlaceCambiarAfiliado()}
-                  >
-                    Cambiar afiliado
-                  </Link>
-                </div>
-
                 <BenefitRecipientSelector
                   afiliado={afiliadoSeleccionado}
                   familiares={familiares}
