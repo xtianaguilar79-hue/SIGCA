@@ -22,7 +22,6 @@ function mostrarNumeroAoma(
   valor: string | number | null,
 ) {
   const numero = String(valor ?? "").trim();
-
   return numero && numero !== "0" ? numero : "0";
 }
 
@@ -57,59 +56,49 @@ export default async function EntregarBeneficioPage({
   if (
     !profile ||
     profile.activo === false ||
-    String(profile.estado).toLowerCase() !==
-      "aprobado" ||
-    String(profile.rol).toLowerCase() !==
-      "administrador"
+    String(profile.estado).toLowerCase() !== "aprobado" ||
+    String(profile.rol).toLowerCase() !== "administrador"
   ) {
     redirect("/gestion");
   }
 
   const params = await searchParams;
 
-  const lugarSeleccionado = Number(
-    params.lugar || 0,
-  );
-
-  const buscar = String(
-    params.buscar || "",
-  ).trim();
-
+  const lugarSeleccionado = Number(params.lugar || 0);
+  const buscar = String(params.buscar || "").trim();
   const afiliadoSeleccionadoId = String(
     params.afiliado || "",
   ).trim();
 
-  const [{ data: lugares }, { data: beneficiosData }] =
-    await Promise.all([
-      supabase
-        .from("beneficios_lugares_entrega")
-        .select("id,nombre")
-        .eq("activo", true)
-        .order("nombre"),
+  const [
+    { data: lugares },
+    { data: beneficiosData },
+  ] = await Promise.all([
+    supabase
+      .from("beneficios_lugares_entrega")
+      .select("id,nombre")
+      .eq("activo", true)
+      .order("nombre"),
 
-      supabase
-        .from("beneficios")
-        .select(
-          "id,nombre,descripcion,stock,requiere_familiar",
-        )
-        .eq("activo", true)
-        .order("nombre"),
-    ]);
+    supabase
+      .from("beneficios")
+      .select(
+        "id,nombre,descripcion,stock,requiere_familiar",
+      )
+      .eq("activo", true)
+      .order("nombre"),
+  ]);
 
   const beneficios =
     (beneficiosData || []) as Beneficio[];
 
   let afiliados: BenefitAffiliate[] = [];
-  let afiliadoSeleccionado:
-    | BenefitAffiliate
-    | null = null;
-
+  let afiliadoSeleccionado: BenefitAffiliate | null =
+    null;
   let familiares: BenefitRelative[] = [];
 
   if (buscar.length >= 2) {
-    const seguro = buscar
-      .replaceAll(",", " ")
-      .trim();
+    const seguro = buscar.replaceAll(",", " ").trim();
 
     const filtros = [
       `apellido_nombres.ilike.%${seguro}%`,
@@ -117,30 +106,24 @@ export default async function EntregarBeneficioPage({
     ];
 
     if (/^\d+$/.test(seguro)) {
-      filtros.push(
-        `documento_numero.eq.${seguro}`,
-      );
-
+      filtros.push(`documento_numero.eq.${seguro}`);
       filtros.push(`numero_aoma.eq.${seguro}`);
     }
 
-    const { data: afiliadosData } =
-      await supabase
-        .from("afiliados")
-        .select(
-          `
-            id,
-            numero_aoma,
-            apellido_nombres,
-            documento_numero,
-            cuil,
-            empresa_original,
-            estado
-          `,
-        )
-        .or(filtros.join(","))
-        .order("apellido_nombres")
-        .limit(20);
+    const { data: afiliadosData } = await supabase
+      .from("afiliados")
+      .select(`
+        id,
+        numero_aoma,
+        apellido_nombres,
+        documento_numero,
+        cuil,
+        empresa_original,
+        estado
+      `)
+      .or(filtros.join(","))
+      .order("apellido_nombres")
+      .limit(20);
 
     afiliados =
       (afiliadosData || []) as BenefitAffiliate[];
@@ -149,42 +132,34 @@ export default async function EntregarBeneficioPage({
       afiliadoSeleccionado =
         afiliados.find(
           (afiliado) =>
-            afiliado.id ===
-            afiliadoSeleccionadoId,
+            afiliado.id === afiliadoSeleccionadoId,
         ) || null;
     }
 
     if (afiliadoSeleccionado) {
-      const { data: familiaresData } =
-        await supabase
-          .from("afiliados_familiares")
-          .select(
-            `
-              id,
-              afiliado_id,
-              apellido_nombres,
-              vinculo,
-              documento_numero,
-              fecha_nacimiento
-            `,
-          )
-          .eq(
-            "afiliado_id",
-            afiliadoSeleccionado.id,
-          )
-          .eq("activo", true)
-          .order("apellido_nombres");
+      const { data: familiaresData } = await supabase
+        .from("afiliados_familiares")
+        .select(`
+          id,
+          afiliado_id,
+          apellido_nombres,
+          vinculo,
+          documento_numero,
+          fecha_nacimiento
+        `)
+        .eq(
+          "afiliado_id",
+          afiliadoSeleccionado.id,
+        )
+        .eq("activo", true)
+        .order("apellido_nombres");
 
       familiares =
-        (familiaresData ||
-          []) as BenefitRelative[];
+        (familiaresData || []) as BenefitRelative[];
     }
   }
 
-  const name = [
-    profile.nombre,
-    profile.apellido,
-  ]
+  const name = [profile.nombre, profile.apellido]
     .filter(Boolean)
     .join(" ");
 
@@ -207,10 +182,7 @@ export default async function EntregarBeneficioPage({
     const query = new URLSearchParams();
 
     if (lugarSeleccionado > 0) {
-      query.set(
-        "lugar",
-        String(lugarSeleccionado),
-      );
+      query.set("lugar", String(lugarSeleccionado));
     }
 
     query.set("buscar", buscar);
@@ -226,10 +198,7 @@ export default async function EntregarBeneficioPage({
     const query = new URLSearchParams();
 
     if (lugarSeleccionado > 0) {
-      query.set(
-        "lugar",
-        String(lugarSeleccionado),
-      );
+      query.set("lugar", String(lugarSeleccionado));
     }
 
     if (buscar) {
@@ -245,10 +214,7 @@ export default async function EntregarBeneficioPage({
   return (
     <main className="management">
       <aside className="side">
-        <Link
-          className="side-brand"
-          href="/gestion"
-        >
+        <Link className="side-brand" href="/gestion">
           <Image
             src="/logo-aoma.png"
             width={39}
@@ -319,8 +285,8 @@ export default async function EntregarBeneficioPage({
             <h1>Entregar beneficio</h1>
 
             <p>
-              Registrá el lugar, el afiliado o
-              familiar y el beneficio entregado.
+              Registrá el lugar, el afiliado o familiar
+              y el beneficio entregado.
             </p>
           </div>
 
@@ -339,22 +305,16 @@ export default async function EntregarBeneficioPage({
           <div className="form-message error">
             No fue posible registrar la entrega.
             {params.detalle
-              ? ` ${decodeURIComponent(
-                  params.detalle,
-                )}`
+              ? ` ${decodeURIComponent(params.detalle)}`
               : ""}
           </div>
         )}
 
         <section className="delivery-step">
-          <span className="delivery-step-number">
-            1
-          </span>
+          <span className="delivery-step-number">1</span>
 
           <div className="delivery-step-content">
-            <h2>
-              Seleccioná el lugar de entrega
-            </h2>
+            <h2>Seleccioná el lugar de entrega</h2>
 
             <div className="delivery-location-buttons">
               {(lugares || []).map((lugar) => (
@@ -375,9 +335,7 @@ export default async function EntregarBeneficioPage({
         </section>
 
         <section className="delivery-step">
-          <span className="delivery-step-number">
-            2
-          </span>
+          <span className="delivery-step-number">2</span>
 
           <div className="delivery-step-content">
             <h2>Buscá al afiliado</h2>
@@ -404,7 +362,7 @@ export default async function EntregarBeneficioPage({
               />
 
               <button type="submit">
-                🔍 Buscar
+                Buscar
               </button>
             </form>
           </div>
@@ -418,59 +376,25 @@ export default async function EntregarBeneficioPage({
               </span>
 
               <div className="delivery-step-content">
-                <h2>
-                  Seleccioná un afiliado
-                </h2>
+                <h2>Seleccioná un afiliado</h2>
 
                 <p className="delivery-help">
-                  Primero elegí al afiliado titular.
-                  Después podrás seleccionar al titular
-                  o a uno de sus familiares.
+                  Tocá la tarjeta del afiliado titular.
+                  Después podrás elegir al titular o a
+                  uno de sus familiares.
                 </p>
 
                 <div className="delivery-affiliate-list">
                   {afiliados.map((afiliado) => (
                     <Link
-  className="delivery-affiliate-card delivery-affiliate-card-link"
-  href={enlaceAfiliado(afiliado.id)}
-  key={afiliado.id}
-  aria-label={`Seleccionar a ${
-    afiliado.apellido_nombres || "este afiliado"
-  }`}
->
-  <header>
-    <div>
-      <strong>
-        {afiliado.apellido_nombres ||
-          "Afiliado sin nombre"}
-      </strong>
-
-      <span>
-        DNI{" "}
-        {afiliado.documento_numero ||
-          "sin informar"}
-      </span>
-
-      <span>
-        Número AOMA{" "}
-        {mostrarNumeroAoma(
-          afiliado.numero_aoma,
-        )}
-      </span>
-
-      <span>
-        {afiliado.empresa_original ||
-          "Sin empresa"}
-        {" · "}
-        {afiliado.estado || "Sin estado"}
-      </span>
-    </div>
-
-    <span className="delivery-card-arrow" aria-hidden="true">
-      ›
-    </span>
-  </header>
-</Link>
+                      className="delivery-affiliate-card delivery-affiliate-card-link"
+                      href={enlaceAfiliado(afiliado.id)}
+                      key={afiliado.id}
+                      aria-label={`Seleccionar a ${
+                        afiliado.apellido_nombres ||
+                        "afiliado"
+                      }`}
+                    >
                       <header>
                         <div>
                           <strong>
@@ -499,10 +423,8 @@ export default async function EntregarBeneficioPage({
                               "Sin estado"}
                           </span>
                         </div>
-
-                      
                       </header>
-                    </article>
+                    </Link>
                   ))}
 
                   {afiliados.length === 0 && (
@@ -524,9 +446,7 @@ export default async function EntregarBeneficioPage({
             <input
               type="hidden"
               name="lugar_entrega_id"
-              value={
-                lugarSeleccionado || ""
-              }
+              value={lugarSeleccionado || ""}
             />
 
             <section className="delivery-step">
@@ -538,8 +458,7 @@ export default async function EntregarBeneficioPage({
                 <div className="delivery-step-heading">
                   <div>
                     <h2>
-                      Seleccioná quién recibe el
-                      beneficio
+                      Seleccioná quién recibe el beneficio
                     </h2>
 
                     <p className="delivery-help">
@@ -584,19 +503,17 @@ export default async function EntregarBeneficioPage({
                         Seleccionar beneficio
                       </option>
 
-                      {beneficios.map(
-                        (beneficio) => (
-                          <option
-                            value={beneficio.id}
-                            key={beneficio.id}
-                          >
-                            {beneficio.nombre}
-                            {beneficio.stock === null
-                              ? ""
-                              : ` · Stock: ${beneficio.stock}`}
-                          </option>
-                        ),
-                      )}
+                      {beneficios.map((beneficio) => (
+                        <option
+                          value={beneficio.id}
+                          key={beneficio.id}
+                        >
+                          {beneficio.nombre}
+                          {beneficio.stock === null
+                            ? ""
+                            : ` · Stock: ${beneficio.stock}`}
+                        </option>
+                      ))}
                     </select>
                   </label>
 
