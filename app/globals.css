@@ -2592,3 +2592,161 @@ body:has(.print-report-page) .notification-bell,body:has(.print-report-page) .th
     padding: 15px;
   }
 }
+/* =========================================================
+   ACCIONES PRINCIPALES DE BENEFICIOS
+   ========================================================= */
+
+.benefits-primary-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin: 26px 0 30px;
+}
+
+.benefits-primary-actions a.benefits-action {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 15px;
+  width: 100%;
+  min-width: 0;
+  min-height: 94px;
+  padding: 18px;
+  border: 1px solid #b8cbd0;
+  border-radius: 16px;
+  background: #ffffff;
+  color: var(--petroleo);
+  text-align: left;
+  text-decoration: none;
+  box-shadow: 0 8px 22px rgba(6, 63, 80, 0.08);
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.benefits-primary-actions a.benefits-action:hover,
+.benefits-primary-actions a.benefits-action:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--dorado);
+  box-shadow: 0 12px 28px rgba(6, 63, 80, 0.14);
+  outline: none;
+}
+
+.benefits-primary-actions a.benefits-action-primary {
+  border-color: var(--dorado);
+  background: var(--dorado);
+  color: var(--petroleo-oscuro);
+}
+
+.benefits-action-number {
+  display: grid;
+  place-items: center;
+  flex: 0 0 46px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--petroleo);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.benefits-action-primary .benefits-action-number {
+  background: var(--petroleo-oscuro);
+}
+
+.benefits-action-copy {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.benefits-action-copy strong {
+  color: inherit;
+  font-size: 17px;
+  line-height: 1.25;
+}
+
+.benefits-action-copy small {
+  color: var(--gris);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.benefits-action-primary .benefits-action-copy small {
+  color: rgba(3, 47, 60, 0.78);
+}
+
+/* Botón de búsqueda del padrón */
+
+.affiliate-search-row button {
+  min-width: 132px;
+  min-height: 54px;
+  padding: 0 20px;
+  white-space: nowrap;
+  border: 0;
+  border-radius: 11px;
+  background: var(--petroleo);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+/* Modo oscuro */
+
+:root[data-theme="dark"]
+  .benefits-primary-actions
+  a.benefits-action-secondary {
+  border-color: #49636c;
+  background: #18343e;
+  color: #f1f7f8;
+}
+
+:root[data-theme="dark"] .benefits-action-copy small {
+  color: #b8cbd0;
+}
+
+/* Teléfonos */
+
+@media (max-width: 850px) {
+  .benefits-primary-actions {
+    grid-template-columns: 1fr;
+    gap: 13px;
+    margin: 22px 0 26px;
+  }
+
+  .benefits-primary-actions a.benefits-action {
+    min-height: 84px;
+    padding: 15px 16px;
+    border-radius: 14px;
+  }
+
+  .benefits-action-number {
+    flex-basis: 43px;
+    width: 43px;
+    height: 43px;
+  }
+
+  .benefits-action-copy strong {
+    font-size: 17px;
+  }
+
+  .benefits-action-copy small {
+    font-size: 14px;
+  }
+
+  .affiliate-search-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .affiliate-search-row button {
+    width: 100%;
+    min-width: 0;
+    min-height: 52px;
+  }
+}
