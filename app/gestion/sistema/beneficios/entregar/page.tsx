@@ -500,14 +500,7 @@ export default async function EntregarBeneficioPage({
                           </span>
                         </div>
 
-                        <Link
-                          className="delivery-select-affiliate"
-                          href={enlaceAfiliado(
-                            afiliado.id,
-                          )}
-                        >
-                          Seleccionar afiliado
-                        </Link>
+                      
                       </header>
                     </article>
                   ))}
