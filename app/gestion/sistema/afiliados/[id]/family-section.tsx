@@ -24,9 +24,73 @@ function mostrarFecha(valor: string | null) {
 
   const partes = valor.slice(0, 10).split("-");
 
-  return partes.length === 3
-    ? `${partes[2]}/${partes[1]}/${partes[0]}`
-    : valor;
+  if (partes.length !== 3) return valor;
+
+  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+function calcularEdad(valor: string | null) {
+  if (!valor) return "Sin informar";
+
+  const partes = valor.slice(0, 10).split("-").map(Number);
+
+  if (
+    partes.length !== 3 ||
+    partes.some((parte) => !Number.isFinite(parte))
+  ) {
+    return "Sin informar";
+  }
+
+  const [anio, mes, dia] = partes;
+
+  const partesActuales = new Intl.DateTimeFormat("es-AR", {
+    timeZone: "America/Argentina/Buenos_Aires",
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+  }).formatToParts(new Date());
+
+  const obtener = (tipo: string) =>
+    Number(
+      partesActuales.find((parte) => parte.type === tipo)?.value,
+    );
+
+  const anioActual = obtener("year");
+  const mesActual = obtener("month");
+  const diaActual = obtener("day");
+
+  let edad = anioActual - anio;
+
+  if (
+    mesActual < mes ||
+    (mesActual === mes && diaActual < dia)
+  ) {
+    edad -= 1;
+  }
+
+  if (edad < 0 || edad > 130) {
+    return "Sin informar";
+  }
+
+  return `${edad} ${edad === 1 ? "año" : "años"}`;
+}
+
+function mostrarVinculo(valor: string) {
+  const vinculo = String(valor || "").trim().toUpperCase();
+
+  const nombres: Record<string, string> = {
+    "CÓNYUGE": "Cónyuge",
+    CONVIVIENTE: "Conviviente",
+    HIJO: "Hijo",
+    HIJA: "Hija",
+    "HIJO/A": "Hijo/a",
+    PADRE: "Padre",
+    MADRE: "Madre",
+    "HERMANO/A": "Hermano/a",
+    OTRO: "Otro",
+  };
+
+  return nombres[vinculo] || valor;
 }
 
 export function AffiliateFamilySection({
@@ -86,69 +150,50 @@ export function AffiliateFamilySection({
           persona.
         </div>
       ) : (
-        <div className="affiliate-family-list">
-          {familiaresActivos.map((familiar) => (
-            <article
-              className="affiliate-family-card"
-              key={familiar.id}
-            >
-              <header>
-                <div>
-                  <span>{familiar.vinculo}</span>
-                  <h3>{familiar.apellido_nombres}</h3>
-                </div>
+        <div className="affiliate-family-table-wrap">
+          <table className="affiliate-family-table">
+            <thead>
+              <tr>
+                <th>Vínculo</th>
+                <th>Apellido y nombre</th>
+                <th>DNI</th>
+                <th>Fecha de nacimiento</th>
+                <th>Edad</th>
+              </tr>
+            </thead>
 
-                {familiar.posee_discapacidad && (
-                  <strong>DISCAPACIDAD INFORMADA</strong>
-                )}
-              </header>
+            <tbody>
+              {familiaresActivos.map((familiar) => (
+                <tr key={familiar.id}>
+                  <td data-label="Vínculo">
+                    {mostrarVinculo(familiar.vinculo)}
+                  </td>
 
-              <dl>
-                <div>
-                  <dt>Documento</dt>
-                  <dd>
-                    {mostrar(familiar.documento_tipo)}{" "}
+                  <td data-label="Apellido y nombre">
+                    <strong>{familiar.apellido_nombres}</strong>
+
+                    {familiar.posee_discapacidad && (
+                      <span className="affiliate-family-disability">
+                        Discapacidad informada
+                      </span>
+                    )}
+                  </td>
+
+                  <td data-label="DNI">
                     {mostrar(familiar.documento_numero)}
-                  </dd>
-                </div>
+                  </td>
 
-                <div>
-                  <dt>CUIL</dt>
-                  <dd>{mostrar(familiar.cuil)}</dd>
-                </div>
+                  <td data-label="Fecha de nacimiento">
+                    {mostrarFecha(familiar.fecha_nacimiento)}
+                  </td>
 
-                <div>
-                  <dt>Fecha de nacimiento</dt>
-                  <dd>
-                    {mostrarFecha(
-                      familiar.fecha_nacimiento,
-                    )}
-                  </dd>
-                </div>
-
-                <div>
-                  <dt>Teléfono</dt>
-                  <dd>{mostrar(familiar.telefono)}</dd>
-                </div>
-
-                <div>
-                  <dt>Correo electrónico</dt>
-                  <dd>
-                    {mostrar(
-                      familiar.correo_electronico,
-                    )}
-                  </dd>
-                </div>
-              </dl>
-
-              {familiar.observaciones && (
-                <p className="affiliate-family-observation">
-                  <strong>Observaciones:</strong>{" "}
-                  {familiar.observaciones}
-                </p>
-              )}
-            </article>
-          ))}
+                  <td data-label="Edad">
+                    {calcularEdad(familiar.fecha_nacimiento)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
@@ -176,22 +221,27 @@ export function AffiliateFamilySection({
 
               <label>
                 <span>Vínculo *</span>
+
                 <select name="vinculo" required defaultValue="">
                   <option value="" disabled>
                     Seleccionar
                   </option>
-                  <option>CÓNYUGE</option>
-                  <option>CONVIVIENTE</option>
-                  <option>HIJO/A</option>
-                  <option>PADRE</option>
-                  <option>MADRE</option>
-                  <option>HERMANO/A</option>
-                  <option>OTRO</option>
+                  <option value="CÓNYUGE">CÓNYUGE</option>
+                  <option value="CONVIVIENTE">
+                    CONVIVIENTE
+                  </option>
+                  <option value="HIJO">HIJO</option>
+                  <option value="HIJA">HIJA</option>
+                  <option value="PADRE">PADRE</option>
+                  <option value="MADRE">MADRE</option>
+                  <option value="HERMANO/A">HERMANO/A</option>
+                  <option value="OTRO">OTRO</option>
                 </select>
               </label>
 
               <label>
                 <span>Tipo de documento</span>
+
                 <select
                   name="documento_tipo"
                   defaultValue="DNI"
@@ -248,6 +298,7 @@ export function AffiliateFamilySection({
 
               <label>
                 <span>Discapacidad informada</span>
+
                 <select
                   name="posee_discapacidad"
                   defaultValue="false"
@@ -267,10 +318,7 @@ export function AffiliateFamilySection({
               </label>
             </div>
 
-            <button
-              className="save-user"
-              type="submit"
-            >
+            <button className="save-user" type="submit">
               Guardar familiar
             </button>
           </form>
