@@ -192,25 +192,42 @@ export default async function BeneficiosPage({
         </div>
 
         <div className="benefits-primary-actions">
-          <Link href="/gestion/sistema/beneficios/entregar">
-            Entregar un beneficio
-          </Link>
+  <Link
+    className="benefits-action benefits-action-primary"
+    href="/gestion/sistema/beneficios/entregar"
+  >
+    <span className="benefits-action-number">01</span>
 
-          <Link
-            className="benefits-secondary-action"
-            href="/gestion/sistema/beneficios/historial"
-          >
-            Historial de entregas
-          </Link>
+    <span className="benefits-action-copy">
+      <strong>Entregar un beneficio</strong>
+      <small>Registrar una nueva entrega</small>
+    </span>
+  </Link>
 
-          <Link
-            className="benefits-secondary-action"
-            href="/gestion/sistema/beneficios/lugares"
-          >
-            Administrar lugares
-          </Link>
-        </div>
+  <Link
+    className="benefits-action benefits-action-secondary"
+    href="/gestion/sistema/beneficios/historial"
+  >
+    <span className="benefits-action-number">02</span>
 
+    <span className="benefits-action-copy">
+      <strong>Historial de entregas</strong>
+      <small>Consultar movimientos anteriores</small>
+    </span>
+  </Link>
+
+  <Link
+    className="benefits-action benefits-action-secondary"
+    href="/gestion/sistema/beneficios/lugares"
+  >
+    <span className="benefits-action-number">03</span>
+
+    <span className="benefits-action-copy">
+      <strong>Administrar lugares</strong>
+      <small>Configurar las sedes de entrega</small>
+    </span>
+  </Link>
+</div>
         <details className="benefit-create">
           <summary>
             ＋ Crear nuevo beneficio
