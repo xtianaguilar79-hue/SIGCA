@@ -65,7 +65,7 @@ export function BenefitRecipientSelector({
   }
 
   return (
-    <article className="delivery-affiliate-card selected">
+    <article className="benefit-recipient-selector-shell">
       <header className="delivery-selected-affiliate">
         <div className="delivery-selected-avatar" aria-hidden="true">
           {iniciales(afiliado.apellido_nombres)}
