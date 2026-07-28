@@ -3251,3 +3251,229 @@ body:has(.print-report-page) .notification-bell,body:has(.print-report-page) .th
     gap: 2px;
   }
 }
+/* Tarjeta definitiva del afiliado seleccionado en Beneficios */
+
+.delivery-selected-affiliate {
+  display: grid;
+  grid-template-columns:
+    82px
+    minmax(260px, 1fr)
+    minmax(190px, 245px)
+    auto;
+  align-items: center;
+  gap: 22px;
+  padding: 28px 30px;
+  border: 1px solid #b8d0d6;
+  border-radius: 22px;
+  background:
+    linear-gradient(
+      135deg,
+      #edf8fa 0%,
+      #ffffff 72%
+    );
+  box-shadow: 0 14px 32px #063f5014;
+}
+
+.delivery-selected-avatar {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: var(--petroleo);
+  color: #fff;
+  font-size: 26px;
+  font-weight: 900;
+  box-shadow: 0 10px 22px #063f5030;
+}
+
+.delivery-selected-information {
+  min-width: 0;
+}
+
+.delivery-selected-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #986400;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.delivery-selected-information > strong {
+  display: block;
+  color: var(--petroleo);
+  font-size: clamp(25px, 2.2vw, 35px);
+  line-height: 1.08;
+}
+
+.delivery-selected-metadata {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 12px;
+  color: #526d75;
+  font-size: 16px;
+}
+
+.delivery-selected-metadata span {
+  display: inline-flex;
+  align-items: center;
+}
+
+.delivery-selected-number {
+  display: grid;
+  min-width: 190px;
+  place-items: center;
+  padding: 15px 20px;
+  border: 3px solid #d7a126;
+  border-radius: 17px;
+  background: #fff7dc;
+  text-align: center;
+}
+
+.delivery-selected-number span {
+  color: #805700;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.delivery-selected-number strong {
+  margin-top: 3px;
+  color: var(--petroleo);
+  font-size: clamp(32px, 3vw, 44px);
+  line-height: 1;
+}
+
+.delivery-selected-status {
+  display: inline-flex;
+  max-width: 300px;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 17px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.25;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Misma lógica cromática que el padrón */
+
+.delivery-selected-status.estado-activo {
+  border-color: #a9ddc0;
+  background: #e0f5e8;
+  color: #08704d;
+}
+
+.delivery-selected-status.estado-dirigente {
+  border-color: #a9d7e8;
+  background: #e2f3fa;
+  color: #075c78;
+}
+
+.delivery-selected-status.estado-observacion {
+  border-color: #eac45c;
+  background: #fff1c8;
+  color: #835700;
+}
+
+.delivery-selected-status.estado-baja {
+  border-color: #edb6ab;
+  background: #fde5df;
+  color: #873827;
+}
+
+.delivery-selected-status.estado-renuncia {
+  border-color: #dc8177;
+  background: #f7c7c2;
+  color: #731d17;
+}
+
+.delivery-selected-status.estado-neutro {
+  border-color: #bdcdd1;
+  background: #edf3f4;
+  color: #3f5961;
+}
+
+/* Modo oscuro */
+
+:root[data-theme="dark"] .delivery-selected-affiliate {
+  border-color: #45636d;
+  background: linear-gradient(
+    135deg,
+    #173b46,
+    #18343e
+  );
+}
+
+:root[data-theme="dark"]
+  .delivery-selected-information > strong,
+:root[data-theme="dark"]
+  .delivery-selected-number strong {
+  color: #f2f7f8;
+}
+
+:root[data-theme="dark"]
+  .delivery-selected-metadata {
+  color: #c5d5d9;
+}
+
+:root[data-theme="dark"]
+  .delivery-selected-number {
+  border-color: #d6a33e;
+  background: #40371f;
+}
+
+:root[data-theme="dark"]
+  .delivery-selected-number span {
+  color: #f0c86d;
+}
+
+/* Teléfono móvil */
+
+@media (max-width: 850px) {
+  .delivery-selected-affiliate {
+    grid-template-columns: 62px minmax(0, 1fr);
+    gap: 16px;
+    padding: 22px 18px;
+  }
+
+  .delivery-selected-avatar {
+    width: 58px;
+    height: 58px;
+    font-size: 20px;
+  }
+
+  .delivery-selected-information > strong {
+    font-size: 24px;
+  }
+
+  .delivery-selected-metadata {
+    display: grid;
+    gap: 5px;
+    font-size: 15px;
+  }
+
+  .delivery-selected-number {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+    padding: 14px;
+  }
+
+  .delivery-selected-number strong {
+    font-size: 38px;
+  }
+
+  .delivery-selected-status {
+    grid-column: 1 / -1;
+    justify-self: start;
+    max-width: 100%;
+  }
+}
