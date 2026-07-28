@@ -430,10 +430,47 @@ export default async function EntregarBeneficioPage({
 
                 <div className="delivery-affiliate-list">
                   {afiliados.map((afiliado) => (
-                    <article
-                      className="delivery-affiliate-card"
-                      key={afiliado.id}
-                    >
+                    <Link
+  className="delivery-affiliate-card delivery-affiliate-card-link"
+  href={enlaceAfiliado(afiliado.id)}
+  key={afiliado.id}
+  aria-label={`Seleccionar a ${
+    afiliado.apellido_nombres || "este afiliado"
+  }`}
+>
+  <header>
+    <div>
+      <strong>
+        {afiliado.apellido_nombres ||
+          "Afiliado sin nombre"}
+      </strong>
+
+      <span>
+        DNI{" "}
+        {afiliado.documento_numero ||
+          "sin informar"}
+      </span>
+
+      <span>
+        Número AOMA{" "}
+        {mostrarNumeroAoma(
+          afiliado.numero_aoma,
+        )}
+      </span>
+
+      <span>
+        {afiliado.empresa_original ||
+          "Sin empresa"}
+        {" · "}
+        {afiliado.estado || "Sin estado"}
+      </span>
+    </div>
+
+    <span className="delivery-card-arrow" aria-hidden="true">
+      ›
+    </span>
+  </header>
+</Link>
                       <header>
                         <div>
                           <strong>
