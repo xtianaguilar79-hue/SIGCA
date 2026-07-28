@@ -2155,3 +2155,440 @@ body:has(.print-report-page) .notification-bell,body:has(.print-report-page) .th
     border-color: #36505a;
   }
 }
+/* =========================================================
+   SIGCA · ENTREGA DE BENEFICIOS
+   Rediseño visual de afiliado y grupo familiar
+   ========================================================= */
+
+.benefit-delivery-page {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.delivery-help {
+  margin: -6px 0 24px;
+  color: #5b7078;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+/* Contenedor general de resultados */
+
+.delivery-affiliate-list {
+  display: grid;
+  gap: 24px;
+}
+
+/* Ficha principal del afiliado */
+
+.delivery-affiliate-card {
+  overflow: hidden;
+  border: 1px solid #cbdadd;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(5, 52, 66, 0.08);
+}
+
+/* Encabezado institucional del afiliado */
+
+.delivery-affiliate-card > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 22px 26px;
+  border-bottom: 1px solid #d8e3e5;
+  background:
+    linear-gradient(
+      135deg,
+      #edf7f8 0%,
+      #f8fbfc 100%
+    );
+}
+
+.delivery-affiliate-card > header > div {
+  display: grid;
+  gap: 7px;
+  width: 100%;
+}
+
+.delivery-affiliate-card > header strong {
+  display: block;
+  margin: 0;
+  color: var(--petroleo);
+  font-size: 23px;
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.delivery-affiliate-card > header span {
+  display: block;
+  color: #526b73;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+/* Área de selección del destinatario */
+
+.delivery-recipient-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  padding: 24px 26px 28px;
+}
+
+/* Sobrescribe el estilo viejo de los label */
+
+.delivery-affiliate-list
+  .delivery-recipient-options
+  label {
+  position: relative;
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  align-items: center;
+  gap: 15px;
+  min-height: 94px;
+  margin: 0;
+  padding: 18px 20px;
+  border: 1px solid #cadadd;
+  border-radius: 14px;
+  background: #ffffff;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.delivery-affiliate-list
+  .delivery-recipient-options
+  label:hover {
+  border-color: #74a5b0;
+  background: #f5fafb;
+  box-shadow: 0 8px 20px rgba(5, 52, 66, 0.09);
+  transform: translateY(-1px);
+}
+
+.delivery-affiliate-list
+  .delivery-recipient-options
+  label:has(input:checked) {
+  border-color: var(--dorado);
+  background: #fff8e8;
+  box-shadow:
+    0 0 0 3px rgba(214, 163, 62, 0.2),
+    0 10px 24px rgba(91, 66, 15, 0.1);
+}
+
+/* Radio grande y accesible */
+
+.delivery-affiliate-list
+  .delivery-recipient-options
+  input[type="radio"] {
+  width: 23px;
+  height: 23px;
+  margin: 0;
+  accent-color: var(--petroleo);
+  cursor: pointer;
+}
+
+/* Información del destinatario */
+
+.delivery-recipient-options label > span {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.delivery-recipient-options label strong {
+  display: block;
+  color: var(--petroleo);
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.delivery-recipient-options label small {
+  display: block;
+  color: #597078;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* Titular: ocupa todo el ancho y se diferencia */
+
+.delivery-recipient-options label:first-child {
+  grid-column: 1 / -1;
+  min-height: 88px;
+  border-color: #9fc2ca;
+  background: #eef7f8;
+}
+
+.delivery-recipient-options
+  label:first-child
+  strong {
+  font-size: 18px;
+}
+
+/* Mensaje cuando no existen familiares */
+
+.delivery-family-empty {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 20px;
+  border: 1px dashed #b8cdd2;
+  border-radius: 12px;
+  background: #f7fafb;
+  color: #5b7078;
+  font-size: 15px;
+  text-align: center;
+}
+
+/* Mejora general de los pasos */
+
+.delivery-step {
+  margin: 24px 0;
+  padding: 28px;
+  gap: 22px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(5, 52, 66, 0.06);
+}
+
+.delivery-step-number {
+  width: 50px;
+  height: 50px;
+  font-size: 20px;
+  box-shadow: 0 7px 18px rgba(5, 63, 80, 0.2);
+}
+
+.delivery-step-content h2 {
+  margin: 5px 0 20px;
+  font-size: 26px;
+  line-height: 1.25;
+}
+
+/* Formulario final */
+
+.delivery-fields {
+  gap: 20px;
+}
+
+.delivery-fields label > span {
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.delivery-fields select,
+.delivery-fields input,
+.delivery-fields textarea {
+  min-height: 54px;
+  padding: 13px 15px;
+  font-size: 16px;
+}
+
+.delivery-fields textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.delivery-submit {
+  min-height: 54px;
+  margin-top: 22px;
+  padding: 14px 24px;
+  border-radius: 11px;
+  font-size: 17px;
+}
+
+/* =========================================================
+   MODO OSCURO
+   ========================================================= */
+
+:root[data-theme="dark"]
+  .delivery-affiliate-card {
+  border-color: #45626c;
+  background: #18343e;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+:root[data-theme="dark"]
+  .delivery-affiliate-card
+  > header {
+  border-color: #45626c;
+  background:
+    linear-gradient(
+      135deg,
+      #21434e 0%,
+      #193640 100%
+    );
+}
+
+:root[data-theme="dark"]
+  .delivery-affiliate-card
+  > header
+  strong {
+  color: #f4f9fa;
+}
+
+:root[data-theme="dark"]
+  .delivery-affiliate-card
+  > header
+  span {
+  color: #c3d4d8;
+}
+
+:root[data-theme="dark"]
+  .delivery-help {
+  color: #c0d1d5;
+}
+
+:root[data-theme="dark"]
+  .delivery-affiliate-list
+  .delivery-recipient-options
+  label {
+  border-color: #49656e;
+  background: #102a33;
+}
+
+:root[data-theme="dark"]
+  .delivery-affiliate-list
+  .delivery-recipient-options
+  label:hover {
+  border-color: #78aeba;
+  background: #21434e;
+}
+
+:root[data-theme="dark"]
+  .delivery-affiliate-list
+  .delivery-recipient-options
+  label:has(input:checked) {
+  border-color: #e0b44d;
+  background: #3b3321;
+  box-shadow:
+    0 0 0 3px rgba(224, 180, 77, 0.2),
+    0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+:root[data-theme="dark"]
+  .delivery-recipient-options
+  label
+  strong {
+  color: #f1f7f8;
+}
+
+:root[data-theme="dark"]
+  .delivery-recipient-options
+  label
+  small {
+  color: #bfd0d4;
+}
+
+:root[data-theme="dark"]
+  .delivery-recipient-options
+  label:first-child {
+  border-color: #5c8994;
+  background: #173b46;
+}
+
+:root[data-theme="dark"]
+  .delivery-family-empty {
+  border-color: #49656e;
+  background: #102a33;
+  color: #bfd0d4;
+}
+
+/* =========================================================
+   TELÉFONOS Y TABLETS
+   ========================================================= */
+
+@media (max-width: 850px) {
+  .delivery-step {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin: 18px 0;
+    padding: 19px;
+    border-radius: 17px;
+  }
+
+  .delivery-step-number {
+    width: 42px;
+    height: 42px;
+    font-size: 18px;
+  }
+
+  .delivery-step-content h2 {
+    margin: 2px 0 12px;
+    font-size: 22px;
+  }
+
+  .delivery-help {
+    margin: 0 0 18px;
+    font-size: 16px;
+  }
+
+  .delivery-affiliate-card > header {
+    padding: 19px;
+  }
+
+  .delivery-affiliate-card > header strong {
+    font-size: 21px;
+  }
+
+  .delivery-affiliate-card > header span {
+    font-size: 15px;
+  }
+
+  .delivery-recipient-options {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 18px;
+  }
+
+  .delivery-recipient-options label:first-child {
+    grid-column: auto;
+  }
+
+  .delivery-affiliate-list
+    .delivery-recipient-options
+    label {
+    grid-template-columns: 25px minmax(0, 1fr);
+    min-height: 92px;
+    padding: 17px;
+  }
+
+  .delivery-recipient-options label strong {
+    font-size: 17px;
+  }
+
+  .delivery-recipient-options label small {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 430px) {
+  .delivery-step {
+    padding: 16px;
+  }
+
+  .delivery-affiliate-card > header {
+    padding: 17px;
+  }
+
+  .delivery-affiliate-card > header strong {
+    font-size: 19px;
+  }
+
+  .delivery-recipient-options {
+    padding: 14px;
+  }
+
+  .delivery-affiliate-list
+    .delivery-recipient-options
+    label {
+    padding: 15px;
+  }
+}
