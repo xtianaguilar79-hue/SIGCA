@@ -21,11 +21,8 @@ export type BenefitRelative = {
   fecha_nacimiento: string | null;
 };
 
-function mostrarNumeroAoma(
-  valor: string | number | null,
-) {
+function mostrarNumeroAoma(valor: string | number | null) {
   const numero = String(valor ?? "").trim();
-
   return numero && numero !== "0" ? numero : "0";
 }
 
@@ -33,10 +30,24 @@ function mostrarFecha(valor: string | null) {
   if (!valor) return "Sin informar";
 
   const partes = valor.slice(0, 10).split("-");
-
   if (partes.length !== 3) return valor;
 
   return `${partes[2]}/${partes[1]}/${partes[0]}`;
+}
+
+function iniciales(nombre: string | null) {
+  const partes = String(nombre || "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if (partes.length === 0) return "A";
+
+  return partes
+    .slice(0, 2)
+    .map((parte) => parte.charAt(0))
+    .join("")
+    .toUpperCase();
 }
 
 export function BenefitRecipientSelector({
@@ -46,49 +57,59 @@ export function BenefitRecipientSelector({
   afiliado: BenefitAffiliate;
   familiares: BenefitRelative[];
 }) {
-  const [destinatario, setDestinatario] =
-    useState("");
+  const [destinatario, setDestinatario] = useState("");
+  const titularValue = `${afiliado.id}|`;
 
   function alternarDestinatario(valor: string) {
-    setDestinatario((actual) =>
-      actual === valor ? "" : valor,
-    );
+    setDestinatario((actual) => (actual === valor ? "" : valor));
   }
-
-  const titularValue = `${afiliado.id}|`;
 
   return (
     <article className="delivery-affiliate-card selected">
       <header className="delivery-selected-affiliate">
-        <div>
+        <div className="delivery-selected-avatar" aria-hidden="true">
+          {iniciales(afiliado.apellido_nombres)}
+        </div>
+
+        <div className="delivery-selected-information">
           <span className="delivery-selected-label">
             AFILIADO SELECCIONADO
           </span>
 
           <strong>
-            {afiliado.apellido_nombres ||
-              "Afiliado sin nombre"}
+            {afiliado.apellido_nombres || "Afiliado sin nombre"}
           </strong>
 
-          <span>
-            DNI{" "}
-            {afiliado.documento_numero ||
-              "sin informar"}
-            {" · "}
-            AOMA{" "}
-            {mostrarNumeroAoma(
-              afiliado.numero_aoma,
-            )}
-          </span>
+          <div className="delivery-selected-metadata">
+            <span>
+              DNI {afiliado.documento_numero || "sin informar"}
+            </span>
+            <span>
+              AOMA {mostrarNumeroAoma(afiliado.numero_aoma)}
+            </span>
+            <span>{afiliado.empresa_original || "Sin empresa"}</span>
+          </div>
 
-          <span>
-            {afiliado.empresa_original ||
-              "Sin empresa"}
-            {" · "}
+          <span className="delivery-selected-status">
             {afiliado.estado || "Sin estado"}
           </span>
         </div>
       </header>
+
+      <div className="delivery-recipient-introduction">
+        <div>
+          <span className="delivery-recipient-kicker">DESTINATARIO</span>
+          <h3>¿Quién recibirá el beneficio?</h3>
+          <p>
+            Seleccioná al titular o a una persona de su grupo familiar.
+          </p>
+        </div>
+
+        <span className="delivery-recipient-count">
+          {familiares.length}{" "}
+          {familiares.length === 1 ? "familiar" : "familiares"}
+        </span>
+      </div>
 
       <div
         className="delivery-recipient-options"
@@ -99,11 +120,9 @@ export function BenefitRecipientSelector({
         }}
       >
         <label
-          className={
-            destinatario === titularValue
-              ? "selected"
-              : ""
-          }
+          className={`delivery-recipient-card delivery-recipient-owner ${
+            destinatario === titularValue ? "selected" : ""
+          }`}
           onClick={(event) => {
             event.preventDefault();
             alternarDestinatario(titularValue);
@@ -118,60 +137,71 @@ export function BenefitRecipientSelector({
             required
           />
 
-          <span>
-            <strong>Titular afiliado</strong>
+          <span className="delivery-recipient-avatar" aria-hidden="true">
+            {iniciales(afiliado.apellido_nombres)}
+          </span>
 
+          <span className="delivery-recipient-copy">
+            <span className="delivery-recipient-type">TITULAR AFILIADO</span>
+            <strong>
+              {afiliado.apellido_nombres || "Sin informar"}
+            </strong>
             <small>
-              {afiliado.apellido_nombres ||
-                "Sin informar"}
+              DNI {afiliado.documento_numero || "sin informar"} · AOMA{" "}
+              {mostrarNumeroAoma(afiliado.numero_aoma)}
             </small>
+          </span>
+
+          <span className="delivery-recipient-check" aria-hidden="true">
+            ✓
           </span>
         </label>
 
         {familiares.map((familiar) => {
-          const familiarValue =
-            `${afiliado.id}|${familiar.id}`;
+          const familiarValue = `${afiliado.id}|${familiar.id}`;
+          const seleccionado = destinatario === familiarValue;
 
           return (
             <label
-              className={
-                destinatario === familiarValue
-                  ? "selected"
-                  : ""
-              }
+              className={`delivery-recipient-card ${
+                seleccionado ? "selected" : ""
+              }`}
               key={familiar.id}
               onClick={(event) => {
                 event.preventDefault();
-
-                alternarDestinatario(
-                  familiarValue,
-                );
+                alternarDestinatario(familiarValue);
               }}
             >
               <input
                 type="radio"
                 name="destinatario"
                 value={familiarValue}
-                checked={
-                  destinatario === familiarValue
-                }
+                checked={seleccionado}
                 readOnly
                 required
               />
 
-              <span>
-                <strong>{familiar.vinculo}</strong>
+              <span className="delivery-recipient-avatar" aria-hidden="true">
+                {iniciales(familiar.apellido_nombres)}
+              </span>
 
-                <small>
-                  {familiar.apellido_nombres}
-                  {" · DNI "}
-                  {familiar.documento_numero ||
-                    "sin informar"}
-                  {" · Nacimiento "}
-                  {mostrarFecha(
-                    familiar.fecha_nacimiento,
-                  )}
-                </small>
+              <span className="delivery-recipient-copy">
+                <span className="delivery-recipient-type">
+                  {familiar.vinculo}
+                </span>
+                <strong>{familiar.apellido_nombres}</strong>
+                <span className="delivery-recipient-details">
+                  <small>
+                    DNI {familiar.documento_numero || "sin informar"}
+                  </small>
+                  <small>
+                    Nacimiento {mostrarFecha(familiar.fecha_nacimiento)}
+                  </small>
+                </span>
+              </span>
+
+              <span className="delivery-recipient-check" aria-hidden="true">
+                ✓
               </span>
             </label>
           );
@@ -179,8 +209,7 @@ export function BenefitRecipientSelector({
 
         {familiares.length === 0 && (
           <p className="delivery-family-empty">
-            Este afiliado no tiene familiares
-            registrados.
+            Este afiliado no tiene familiares registrados.
           </p>
         )}
       </div>
@@ -189,17 +218,13 @@ export function BenefitRecipientSelector({
         <div className="delivery-recipient-confirmation">
           <span>✓ Destinatario seleccionado</span>
 
-          <button
-            type="button"
-            onClick={() => setDestinatario("")}
-          >
+          <button type="button" onClick={() => setDestinatario("")}>
             Quitar selección
           </button>
         </div>
       ) : (
         <p className="delivery-recipient-required">
-          Seleccioná al titular o a uno de sus
-          familiares para continuar.
+          Seleccioná al titular o a uno de sus familiares para continuar.
         </p>
       )}
     </article>
