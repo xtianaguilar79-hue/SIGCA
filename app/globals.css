@@ -2844,3 +2844,410 @@ body:has(.print-report-page) .notification-bell,body:has(.print-report-page) .th
     font-size: 28px;
   }
 }
+/* Tarjetas de destinatarios de beneficios */
+.delivery-affiliate-card {
+  display: grid;
+  gap: 24px;
+}
+
+.delivery-selected-affiliate {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px;
+  border: 1px solid #c9dadd;
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(228, 243, 246, 0.96), #fff);
+}
+
+.delivery-selected-avatar,
+.delivery-recipient-avatar {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--petroleo);
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.delivery-selected-avatar {
+  width: 66px;
+  height: 66px;
+  font-size: 21px;
+  box-shadow: 0 8px 22px rgba(6, 63, 80, 0.2);
+}
+
+.delivery-selected-information {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.delivery-selected-information > strong {
+  color: var(--petroleo);
+  font-size: clamp(21px, 2vw, 28px);
+  line-height: 1.15;
+}
+
+.delivery-selected-label,
+.delivery-recipient-kicker,
+.delivery-recipient-type {
+  color: #9b6d10;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+}
+
+.delivery-selected-metadata {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.delivery-selected-metadata span,
+.delivery-selected-status,
+.delivery-recipient-count {
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.delivery-selected-metadata span {
+  padding: 6px 10px;
+  background: #fff;
+  color: #48666e;
+  border: 1px solid #d5e2e5;
+}
+
+.delivery-selected-status {
+  width: fit-content;
+  margin-top: 3px;
+  padding: 6px 11px;
+  background: #dff3e9;
+  color: #12694f;
+}
+
+.delivery-recipient-introduction {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.delivery-recipient-introduction h3 {
+  margin: 4px 0 3px;
+  color: var(--petroleo);
+  font-size: clamp(23px, 2.2vw, 31px);
+  line-height: 1.15;
+}
+
+.delivery-recipient-introduction p {
+  margin: 0;
+  color: var(--gris);
+  font-size: 16px;
+}
+
+.delivery-recipient-count {
+  flex: 0 0 auto;
+  padding: 9px 13px;
+  background: #e5f1f3;
+  color: var(--petroleo);
+}
+
+.delivery-recipient-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.delivery-recipient-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) 30px;
+  align-items: center;
+  gap: 15px;
+  min-height: 126px;
+  padding: 18px;
+  overflow: hidden;
+  border: 1px solid #cbdadd;
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(9, 53, 65, 0.07);
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.delivery-recipient-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: #d4e7ea;
+  transition: background 160ms ease;
+}
+
+.delivery-recipient-card:hover {
+  transform: translateY(-2px);
+  border-color: #7fa8b1;
+  box-shadow: 0 13px 30px rgba(9, 53, 65, 0.13);
+}
+
+.delivery-recipient-card:focus-within {
+  outline: 3px solid rgba(59, 141, 160, 0.24);
+  outline-offset: 2px;
+}
+
+.delivery-recipient-card.selected {
+  border-color: var(--dorado);
+  background: linear-gradient(135deg, #fff9e8, #fff);
+  box-shadow: 0 12px 28px rgba(179, 127, 24, 0.18);
+}
+
+.delivery-recipient-card.selected::before {
+  background: var(--dorado);
+}
+
+.delivery-recipient-owner {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, #edf7f8, #fff);
+}
+
+.delivery-recipient-card > input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.delivery-recipient-avatar {
+  width: 52px;
+  height: 52px;
+  background: #e1f0f2;
+  color: var(--petroleo);
+  font-size: 16px;
+}
+
+.delivery-recipient-card.selected .delivery-recipient-avatar {
+  background: var(--petroleo);
+  color: #fff;
+}
+
+.delivery-recipient-copy {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+}
+
+.delivery-recipient-copy > strong {
+  color: var(--petroleo);
+  font-size: 18px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.delivery-recipient-copy small {
+  color: #587078;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.delivery-recipient-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 13px;
+}
+
+.delivery-recipient-check {
+  display: grid;
+  width: 29px;
+  height: 29px;
+  place-items: center;
+  border: 2px solid #b7c9cd;
+  border-radius: 50%;
+  color: transparent;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.delivery-recipient-card.selected .delivery-recipient-check {
+  border-color: var(--dorado);
+  background: var(--dorado);
+  color: #fff;
+}
+
+.delivery-recipient-confirmation,
+.delivery-recipient-required {
+  margin: 0;
+  border-radius: 13px;
+  padding: 14px 16px;
+}
+
+.delivery-recipient-confirmation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  border: 1px solid #a9dcc7;
+  background: #e7f6ef;
+  color: #12694f;
+  font-weight: 850;
+}
+
+.delivery-recipient-confirmation button {
+  border: 1px solid #8bbfac;
+  border-radius: 9px;
+  background: #fff;
+  color: #12694f;
+  padding: 9px 12px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.delivery-recipient-required {
+  border-left: 5px solid var(--dorado);
+  background: #fff6dd;
+  color: #76530d;
+  font-weight: 750;
+}
+
+.delivery-family-empty {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 22px;
+  border: 1px dashed #b8cdd1;
+  border-radius: 15px;
+  color: var(--gris);
+  text-align: center;
+}
+
+:root[data-theme="dark"] .delivery-selected-affiliate,
+:root[data-theme="dark"] .delivery-recipient-card {
+  border-color: #49636c;
+  background: #18343e;
+}
+
+:root[data-theme="dark"] .delivery-selected-information > strong,
+:root[data-theme="dark"] .delivery-recipient-introduction h3,
+:root[data-theme="dark"] .delivery-recipient-copy > strong {
+  color: #f2f7f8;
+}
+
+:root[data-theme="dark"] .delivery-selected-metadata span {
+  border-color: #49636c;
+  background: #10272f;
+  color: #d6e5e8;
+}
+
+:root[data-theme="dark"] .delivery-recipient-introduction p,
+:root[data-theme="dark"] .delivery-recipient-copy small {
+  color: #c1d2d6;
+}
+
+:root[data-theme="dark"] .delivery-recipient-count,
+:root[data-theme="dark"] .delivery-recipient-avatar {
+  background: #244752;
+  color: #dcecef;
+}
+
+:root[data-theme="dark"] .delivery-recipient-card.selected {
+  border-color: #d6a33e;
+  background: linear-gradient(135deg, #44391f, #18343e);
+}
+
+:root[data-theme="dark"] .delivery-recipient-confirmation {
+  border-color: #3d755f;
+  background: #173b32;
+  color: #b8e6d2;
+}
+
+:root[data-theme="dark"] .delivery-recipient-confirmation button {
+  border-color: #4e806c;
+  background: #10272f;
+  color: #c9eadc;
+}
+
+:root[data-theme="dark"] .delivery-recipient-required {
+  background: #3b3321;
+  color: #ecd9a8;
+}
+
+@media (max-width: 850px) {
+  .delivery-selected-affiliate {
+    align-items: flex-start;
+    padding: 18px;
+  }
+
+  .delivery-selected-avatar {
+    width: 54px;
+    height: 54px;
+    font-size: 17px;
+  }
+
+  .delivery-recipient-introduction {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .delivery-recipient-options {
+    grid-template-columns: 1fr;
+    gap: 13px;
+  }
+
+  .delivery-recipient-owner {
+    grid-column: auto;
+  }
+
+  .delivery-recipient-card {
+    grid-template-columns: 48px minmax(0, 1fr) 28px;
+    min-height: 116px;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .delivery-recipient-avatar {
+    width: 48px;
+    height: 48px;
+  }
+
+  .delivery-recipient-copy > strong {
+    font-size: 17px;
+  }
+
+  .delivery-recipient-confirmation {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .delivery-selected-avatar {
+    display: none;
+  }
+
+  .delivery-recipient-card {
+    grid-template-columns: 42px minmax(0, 1fr) 27px;
+    padding: 15px 13px;
+  }
+
+  .delivery-recipient-avatar {
+    width: 42px;
+    height: 42px;
+    font-size: 14px;
+  }
+
+  .delivery-recipient-details {
+    display: grid;
+    gap: 2px;
+  }
+}
