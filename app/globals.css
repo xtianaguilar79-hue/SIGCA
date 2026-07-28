@@ -263,11 +263,6 @@ button { cursor:pointer; }
     font-size: 0;
   }
 
-  .affiliate-search button::after {
-    content: "Ã°Å¸â€Â";
-    font-size: 20px;
-  }
-
   .affiliate-search a {
     grid-column: 1 / -1;
     min-height: 42px;
@@ -2748,5 +2743,29 @@ body:has(.print-report-page) .notification-bell,body:has(.print-report-page) .th
     width: 100%;
     min-width: 0;
     min-height: 52px;
+  }
+}
+/* Corrección definitiva del buscador de afiliados */
+.affiliate-search button::after,
+.affiliate-search-row button::after {
+  content: none !important;
+  display: none !important;
+}
+
+@media (max-width: 850px) {
+  .affiliate-search-row {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .affiliate-search-row input,
+  .affiliate-search-row button {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .affiliate-search-row button {
+    min-height: 54px !important;
   }
 }
