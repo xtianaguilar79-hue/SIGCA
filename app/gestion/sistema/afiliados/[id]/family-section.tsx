@@ -24,24 +24,22 @@ function mostrarFecha(valor: string | null) {
 
   const partes = valor.slice(0, 10).split("-");
 
-  if (partes.length !== 3) return valor;
-
-  return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  return partes.length === 3
+    ? `${partes[2]}/${partes[1]}/${partes[0]}`
+    : valor;
 }
 
 function calcularEdad(valor: string | null) {
   if (!valor) return "Sin informar";
 
-  const partes = valor.slice(0, 10).split("-").map(Number);
+  const [anio, mes, dia] = valor
+    .slice(0, 10)
+    .split("-")
+    .map(Number);
 
-  if (
-    partes.length !== 3 ||
-    partes.some((parte) => !Number.isFinite(parte))
-  ) {
+  if (!anio || !mes || !dia) {
     return "Sin informar";
   }
-
-  const [anio, mes, dia] = partes;
 
   const partesActuales = new Intl.DateTimeFormat("es-AR", {
     timeZone: "America/Argentina/Buenos_Aires",
@@ -52,7 +50,8 @@ function calcularEdad(valor: string | null) {
 
   const obtener = (tipo: string) =>
     Number(
-      partesActuales.find((parte) => parte.type === tipo)?.value,
+      partesActuales.find((parte) => parte.type === tipo)
+        ?.value,
     );
 
   const anioActual = obtener("year");
@@ -150,50 +149,62 @@ export function AffiliateFamilySection({
           persona.
         </div>
       ) : (
-        <div className="affiliate-family-table-wrap">
-          <table className="affiliate-family-table">
-            <thead>
-              <tr>
-                <th>Vínculo</th>
-                <th>Apellido y nombre</th>
-                <th>DNI</th>
-                <th>Fecha de nacimiento</th>
-                <th>Edad</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {familiaresActivos.map((familiar) => (
-                <tr key={familiar.id}>
-                  <td data-label="Vínculo">
+        <div className="affiliate-family-list">
+          {familiaresActivos.map((familiar) => (
+            <article
+              className="affiliate-family-card"
+              key={familiar.id}
+            >
+              <header>
+                <div>
+                  <span>
                     {mostrarVinculo(familiar.vinculo)}
-                  </td>
+                  </span>
 
-                  <td data-label="Apellido y nombre">
-                    <strong>{familiar.apellido_nombres}</strong>
+                  <h3>{familiar.apellido_nombres}</h3>
+                </div>
 
-                    {familiar.posee_discapacidad && (
-                      <span className="affiliate-family-disability">
-                        Discapacidad informada
-                      </span>
-                    )}
-                  </td>
+                {familiar.posee_discapacidad && (
+                  <strong>DISCAPACIDAD INFORMADA</strong>
+                )}
+              </header>
 
-                  <td data-label="DNI">
+              <dl>
+                <div>
+                  <dt>Documento</dt>
+                  <dd>
+                    {mostrar(familiar.documento_tipo)}{" "}
                     {mostrar(familiar.documento_numero)}
-                  </td>
+                  </dd>
+                </div>
 
-                  <td data-label="Fecha de nacimiento">
-                    {mostrarFecha(familiar.fecha_nacimiento)}
-                  </td>
+                <div>
+                  <dt>Fecha de nacimiento</dt>
+                  <dd>
+                    {mostrarFecha(
+                      familiar.fecha_nacimiento,
+                    )}
+                  </dd>
+                </div>
 
-                  <td data-label="Edad">
-                    {calcularEdad(familiar.fecha_nacimiento)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                <div>
+                  <dt>Edad</dt>
+                  <dd>
+                    {calcularEdad(
+                      familiar.fecha_nacimiento,
+                    )}
+                  </dd>
+                </div>
+              </dl>
+
+              {familiar.observaciones && (
+                <p className="affiliate-family-observation">
+                  <strong>Observaciones:</strong>{" "}
+                  {familiar.observaciones}
+                </p>
+              )}
+            </article>
+          ))}
         </div>
       )}
 
@@ -211,6 +222,7 @@ export function AffiliateFamilySection({
             <div className="affiliate-family-form-grid">
               <label className="wide">
                 <span>Apellido y nombres *</span>
+
                 <input
                   name="apellido_nombres"
                   required
@@ -222,7 +234,11 @@ export function AffiliateFamilySection({
               <label>
                 <span>Vínculo *</span>
 
-                <select name="vinculo" required defaultValue="">
+                <select
+                  name="vinculo"
+                  required
+                  defaultValue=""
+                >
                   <option value="" disabled>
                     Seleccionar
                   </option>
@@ -234,7 +250,9 @@ export function AffiliateFamilySection({
                   <option value="HIJA">HIJA</option>
                   <option value="PADRE">PADRE</option>
                   <option value="MADRE">MADRE</option>
-                  <option value="HERMANO/A">HERMANO/A</option>
+                  <option value="HERMANO/A">
+                    HERMANO/A
+                  </option>
                   <option value="OTRO">OTRO</option>
                 </select>
               </label>
@@ -256,6 +274,7 @@ export function AffiliateFamilySection({
 
               <label>
                 <span>Número de documento</span>
+
                 <input
                   name="documento_numero"
                   inputMode="numeric"
@@ -264,6 +283,7 @@ export function AffiliateFamilySection({
 
               <label>
                 <span>CUIL</span>
+
                 <input
                   name="cuil"
                   inputMode="numeric"
@@ -273,6 +293,7 @@ export function AffiliateFamilySection({
 
               <label>
                 <span>Fecha de nacimiento</span>
+
                 <input
                   name="fecha_nacimiento"
                   type="date"
@@ -281,6 +302,7 @@ export function AffiliateFamilySection({
 
               <label>
                 <span>Teléfono</span>
+
                 <input
                   name="telefono"
                   type="tel"
@@ -290,6 +312,7 @@ export function AffiliateFamilySection({
 
               <label>
                 <span>Correo electrónico</span>
+
                 <input
                   name="correo_electronico"
                   type="email"
@@ -310,6 +333,7 @@ export function AffiliateFamilySection({
 
               <label className="wide">
                 <span>Observaciones</span>
+
                 <textarea
                   name="observaciones"
                   rows={3}
