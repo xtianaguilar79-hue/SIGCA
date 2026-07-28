@@ -2177,7 +2177,7 @@ body:has(.print-report-page) .notification-bell,body:has(.print-report-page) .th
 
 /* Ficha principal del afiliado */
 
-.delivery-affiliate-card {
+.benefit-recipient-selector-shell {
   overflow: hidden;
   border: 1px solid #cbdadd;
   border-radius: 18px;
