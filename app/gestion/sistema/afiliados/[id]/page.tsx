@@ -123,10 +123,10 @@ export default async function FichaAfiliadoPage({
   familiaresResult,
   beneficiosResult,
 ] = await Promise.all([
-    supabase
-      .from("afiliados")
-      .select(
-        `
+  supabase
+    .from("afiliados")
+    .select(
+      `
         id,
         numero_aoma,
         apellido_nombres,
@@ -153,79 +153,79 @@ export default async function FichaAfiliadoPage({
         created_at,
         updated_at
       `,
-      )
-      .eq("id", id)
-      .maybeSingle(),
+    )
+    .eq("id", id)
+    .maybeSingle(),
 
-    supabase
-      .from("estados_afiliado")
-      .select("nombre")
-      .eq("habilitado", true)
-      .order("orden"),
-   
-    supabase
-  .from("beneficios_entregas")
-  .select(
-    `
-      id,
-      cantidad,
-      fecha_entrega,
-      fecha_entrega_confirmada,
-      observaciones,
-      destinatario_tipo,
-      destinatario_nombre_original,
-      origen_registro,
-      entregado_por,
-      created_at,
-      beneficio:beneficios(
-        nombre,
-        categoria
-      ),
-      familiar:afiliados_familiares(
+  supabase
+    .from("estados_afiliado")
+    .select("nombre")
+    .eq("habilitado", true)
+    .order("orden"),
+
+  supabase
+    .from("afiliados_historial_estado")
+    .select(
+      `
+        id,
+        estado_anterior,
+        estado_nuevo,
+        observacion,
+        cambiado_por,
+        cambiado_at
+      `,
+    )
+    .eq("afiliado_id", id)
+    .order("cambiado_at", { ascending: false }),
+
+  supabase
+    .from("afiliados_familiares")
+    .select(
+      `
+        id,
         apellido_nombres,
-        vinculo
-      )
-    `,
-  )
-  .eq("afiliado_id", id)
-  .order("created_at", { ascending: false }),
+        vinculo,
+        documento_tipo,
+        documento_numero,
+        fecha_nacimiento,
+        cuil,
+        telefono,
+        correo_electronico,
+        posee_discapacidad,
+        observaciones,
+        activo
+      `,
+    )
+    .eq("afiliado_id", id)
+    .order("apellido_nombres"),
 
-    supabase
-      .from("afiliados_historial_estado")
-      .select(
-        `
-          id,
-          estado_anterior,
-          estado_nuevo,
-          observacion,
-          cambiado_por,
-          cambiado_at
-        `,
-      )
-      .eq("afiliado_id", id)
-      .order("cambiado_at", { ascending: false }),
-    supabase
-  .from("afiliados_familiares")
-  .select(
-    `
-      id,
-      apellido_nombres,
-      vinculo,
-      documento_tipo,
-      documento_numero,
-      fecha_nacimiento,
-      cuil,
-      telefono,
-      correo_electronico,
-      posee_discapacidad,
-      observaciones,
-      activo
-    `,
-  )
-  .eq("afiliado_id", id)
-  .order("apellido_nombres"),
-  ]);
-
+  supabase
+    .from("beneficios_entregas")
+    .select(
+      `
+        id,
+        cantidad,
+        fecha_entrega,
+        fecha_entrega_confirmada,
+        observaciones,
+        destinatario_tipo,
+        destinatario_nombre_original,
+        origen_registro,
+        entregado_por,
+        created_at,
+        beneficio:beneficios(
+          nombre,
+          categoria
+        ),
+        familiar:afiliados_familiares(
+          apellido_nombres,
+          vinculo
+        )
+      `,
+    )
+    .eq("afiliado_id", id)
+    .order("created_at", { ascending: false }),
+]);
   const afiliado = afiliadoResult.data;
   const error = afiliadoResult.error;
   const estados = estadosResult.data || [];
