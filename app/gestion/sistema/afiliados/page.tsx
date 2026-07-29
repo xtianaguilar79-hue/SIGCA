@@ -59,8 +59,7 @@ export default async function PadronAfiliadosPage({
     isAdmin ||
     Boolean(
       affiliatePermission?.habilitado &&
-        affiliatePermission?.puede_consultar &&
-        affiliatePermission?.alcance !== "ninguno",
+        affiliatePermission?.puede_consultar,
     );
 
   if (!canViewAffiliates) {
