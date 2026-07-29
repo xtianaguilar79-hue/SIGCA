@@ -607,19 +607,33 @@ const [savedApplicationId, setSavedApplicationId] = useState(
       observaciones: textOrNull(person.observaciones),
     };
 
-    const { error } = applicationId
-      ? await supabase.from("afiliaciones").update(applicationData).eq("id", applicationId).eq("estado", "pendiente_firma")
-      : await supabase.from("afiliaciones").insert(applicationData);
+    let saveError: string | null = null;
 
-    setSaving(false);
+if (savedApplicationId) {
+  const { error } = await supabase
+    .from("afiliaciones")
+    .update(applicationData)
+    .eq("id", savedApplicationId)
+    .eq("estado", "pendiente_firma");
 
-    if (error) {
-      setSaveMessage({
-        type: "error",
-        text: `No se pudo guardar la solicitud: ${error.message}`,
-      });
-      return;
-    }
+  saveError = error?.message || null;
+} else {
+  const { data, error } = await supabase
+    .from("afiliaciones")
+    .insert(applicationData)
+    .select("id")
+    .single();
+
+  saveError = error?.message || null;
+
+  if (data?.id) {
+    setSavedApplicationId(String(data.id));
+  }
+}
+
+if (saveError) {
+  throw new Error(saveError);
+}
 
     setSaved(true);
     setSaveMessage({
