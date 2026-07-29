@@ -47,8 +47,7 @@ export async function cambiarEstadoAfiliado(
     isAdmin ||
     Boolean(
       affiliatePermission?.habilitado &&
-        affiliatePermission?.puede_aprobar &&
-        affiliatePermission?.alcance !== "ninguno",
+        affiliatePermission?.puede_aprobar,
     );
 
   if (!canApproveAffiliate) {
