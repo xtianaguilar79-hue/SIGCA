@@ -52,8 +52,7 @@ export default async function EditarAfiliadoPage({
     isAdmin ||
     Boolean(
       affiliatePermission?.habilitado &&
-        affiliatePermission?.puede_editar &&
-        affiliatePermission?.alcance !== "ninguno",
+        affiliatePermission?.puede_editar,
     );
 
   if (!canEditAffiliate) {
