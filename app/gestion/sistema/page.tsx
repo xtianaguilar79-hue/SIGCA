@@ -24,56 +24,75 @@ export default async function SistemaPage() {
   if (
     !profile ||
     profile.activo === false ||
-    String(profile.estado).toLowerCase() !==
-      "aprobado"
+    String(profile.estado).toLowerCase() !== "aprobado"
   ) {
     redirect("/acceso");
   }
 
   const isAdmin =
-    String(profile.rol).toLowerCase() ===
-    "administrador";
+    String(profile.rol).toLowerCase() === "administrador";
 
-  const { data: assignedPermissions } = isAdmin
-    ? { data: [] }
-    : await supabase
-        .from("usuarios_permisos_sistema")
-        .select("modulo_clave")
-        .eq("usuario_id", user.id)
-        .eq("habilitado", true)
-        .eq("puede_consultar", true)
-        .neq("alcance", "ninguno");
+  let assignedPermissions: {
+    modulo_clave: string | null;
+  }[] = [];
+
+  if (!isAdmin) {
+    const { data: permissions } = await supabase
+      .from("usuarios_permisos_sistema")
+      .select("modulo_clave")
+      .eq("usuario_id", user.id)
+      .eq("habilitado", true)
+      .eq("puede_consultar", true);
+
+    assignedPermissions = permissions || [];
+  }
 
   const permissionKeys = new Set(
-    (assignedPermissions || []).map((item) =>
-      String(item.modulo_clave).toLowerCase(),
-    ),
+    assignedPermissions
+      .map((permission) =>
+        String(permission.modulo_clave || "")
+          .trim()
+          .toLowerCase(),
+      )
+      .filter(Boolean),
   );
 
-  const canAccessModule = (...keys: string[]) =>
+  const canAccessAffiliates =
     isAdmin ||
-    keys.some((key) =>
-      permissionKeys.has(key.toLowerCase()),
-    );
+    permissionKeys.has("afiliados") ||
+    permissionKeys.has("padron");
 
-  if (!isAdmin && permissionKeys.size === 0) {
+  const canAccessBenefits =
+    isAdmin || permissionKeys.has("beneficios");
+
+  const canAccessReports =
+    isAdmin || permissionKeys.has("reportes");
+
+  const canAccessCompanies =
+    isAdmin || permissionKeys.has("empresas");
+
+  const canAccessConfiguration =
+    isAdmin || permissionKeys.has("configuracion");
+
+  const canAccessSystem =
+    canAccessAffiliates ||
+    canAccessBenefits ||
+    canAccessReports ||
+    canAccessCompanies ||
+    canAccessConfiguration;
+
+  if (!canAccessSystem) {
     redirect("/gestion");
   }
 
-  const name = [
-    profile.nombre,
-    profile.apellido,
-  ]
+  const name = [profile.nombre, profile.apellido]
     .filter(Boolean)
     .join(" ");
 
   return (
     <main className="management">
       <aside className="side">
-        <Link
-          className="side-brand"
-          href="/gestion"
-        >
+        <Link className="side-brand" href="/gestion">
           <Image
             src="/logo-aoma.png"
             width={39}
@@ -104,10 +123,7 @@ export default async function SistemaPage() {
             Biblioteca
           </Link>
 
-          <Link
-            className="active"
-            href="/gestion/sistema"
-          >
+          <Link className="active" href="/gestion/sistema">
             Sistema
           </Link>
 
@@ -115,14 +131,20 @@ export default async function SistemaPage() {
             Mi perfil
           </Link>
 
-          <Link href="/gestion/usuarios">
-            Administración de usuarios
-          </Link>
+          {isAdmin && (
+            <Link href="/gestion/usuarios">
+              Administración de usuarios
+            </Link>
+          )}
         </nav>
 
         <div className="session">
           <strong>{name}</strong>
-          <span>Administrador</span>
+
+          <span>
+            {String(profile.rol || "Usuario autorizado")}
+          </span>
+
           <SignOutButton />
         </div>
       </aside>
@@ -137,119 +159,106 @@ export default async function SistemaPage() {
             <h1>Sistema</h1>
 
             <p>
-              Administración del padrón, beneficios,
-              empresas, reportes y parámetros
-              institucionales.
+              Acceso a las herramientas institucionales
+              habilitadas para tu función.
             </p>
           </div>
 
           <span className="secure">
-            {isAdmin
-              ? "● ACCESO ADMINISTRATIVO"
-              : "● ACCESO AUTORIZADO"}
+            ● ACCESO AUTORIZADO
           </span>
         </header>
 
         <div className="cards">
-          {canAccessModule("afiliados", "padron") && <Link
-            className="module module-link"
-            href="/gestion/sistema/afiliados"
-          >
-            <span>◎</span>
+          {canAccessAffiliates && (
+            <Link
+              className="module module-link"
+              href="/gestion/sistema/afiliados"
+            >
+              <span>◎</span>
 
-            <h2>Afiliados</h2>
+              <h2>Afiliados</h2>
 
-            <p>
-              Consulta del padrón, actualización de
-              datos, estados, familiares y
-              comunicaciones.
-            </p>
+              <p>
+                Consulta del padrón, información personal,
+                empresas, estados y grupo familiar.
+              </p>
 
-            <small>INGRESAR</small>
-          </Link>}
+              <small>INGRESAR</small>
+            </Link>
+          )}
 
-          {canAccessModule("beneficios") && <Link
-            className="module module-link"
-            href="/gestion/sistema/beneficios"
-          >
-            <span>◇</span>
+          {canAccessBenefits && (
+            <Link
+              className="module module-link"
+              href="/gestion/sistema/beneficios"
+            >
+              <span>◇</span>
 
-            <h2>Beneficios</h2>
+              <h2>Beneficios</h2>
 
-            <p>
-              Administración de beneficios, lugares de
-              entrega e historial de entregas a
-              afiliados.
-            </p>
+              <p>
+                Administración de beneficios y registro
+                de entregas a afiliados y familiares.
+              </p>
 
-            <small>INGRESAR</small>
-          </Link>}
+              <small>INGRESAR</small>
+            </Link>
+          )}
 
-          {canAccessModule("reportes") && <Link
-            className="module module-link"
-            href="/gestion/sistema/reportes"
-          >
-            <span>▥</span>
+          {canAccessReports && (
+            <Link
+              className="module module-link"
+              href="/gestion/sistema/reportes"
+            >
+              <span>▥</span>
 
-            <h2>Reportes</h2>
+              <h2>Reportes</h2>
 
-            <p>
-              Generación de listados institucionales
-              del padrón y de las empresas.
-            </p>
+              <p>
+                Información general del padrón,
+                empresas y datos institucionales.
+              </p>
 
-            <small>INGRESAR</small>
-          </Link>}
+              <small>INGRESAR</small>
+            </Link>
+          )}
 
-          {canAccessModule("empresas") && <Link
-            className="module module-link"
-            href="/gestion/sistema/empresas"
-          >
-            <span>▣</span>
+          {canAccessCompanies && (
+            <Link
+              className="module module-link"
+              href="/gestion/sistema/empresas"
+            >
+              <span>▣</span>
 
-            <h2>Empresas</h2>
+              <h2>Empresas</h2>
 
-            <p>
-              Alta, edición, activación y
-              administración de empresas y sus datos
-              institucionales.
-            </p>
+              <p>
+                Alta, edición, activación y administración
+                de empresas.
+              </p>
 
-            <small>INGRESAR</small>
-          </Link>}
+              <small>INGRESAR</small>
+            </Link>
+          )}
 
-          {canAccessModule("configuracion", "configuración") && <Link
-            className="module module-link"
-            href="/gestion/sistema/configuracion"
-          >
-            <span>⚙</span>
+          {canAccessConfiguration && (
+            <Link
+              className="module module-link"
+              href="/gestion/sistema/configuracion"
+            >
+              <span>⚙</span>
 
-            <h2>Configuración</h2>
+              <h2>Configuración</h2>
 
-            <p>
-              Provincias, departamentos, estados del
-              afiliado y futuras configuraciones del
-              sistema.
-            </p>
+              <p>
+                Provincias, departamentos, localidades,
+                estados y parámetros institucionales.
+              </p>
 
-            <small>INGRESAR</small>
-          </Link>}
-
-          {isAdmin && <Link
-            className="module module-link"
-            href="/gestion/sistema/permisos"
-          >
-            <span>🔐</span>
-
-            <h2>Permisos de acceso</h2>
-
-            <p>
-              Habilitación de módulos, acciones y alcance
-              de consulta para cada persona autorizada.
-            </p>
-
-            <small>ADMINISTRAR</small>
-          </Link>}
+              <small>INGRESAR</small>
+            </Link>
+          )}
         </div>
       </section>
     </main>
