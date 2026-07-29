@@ -44,8 +44,7 @@ export default async function ManagementPage() {
         .select("modulo_clave")
         .eq("usuario_id", user.id)
         .eq("habilitado", true)
-        .eq("puede_consultar", true)
-        .neq("alcance", "ninguno");
+        .eq("puede_consultar", true);
 
   const canAccessSystem =
     isAdmin || (systemPermissions?.length || 0) > 0;
