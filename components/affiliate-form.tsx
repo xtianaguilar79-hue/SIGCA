@@ -410,7 +410,10 @@ export function AffiliateForm({
   const [blankPerson, setBlankPerson] =
     useState(false);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState(Boolean(applicationId));
+const [savedApplicationId, setSavedApplicationId] = useState(
+  applicationId || "",
+);
   const [saveMessage, setSaveMessage] = useState<{
     type: "success" | "error";
     text: string;
