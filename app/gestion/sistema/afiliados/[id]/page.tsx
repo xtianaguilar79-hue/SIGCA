@@ -78,8 +78,7 @@ export default async function FichaAfiliadoPage({
   const hasAffiliateAccess =
     isAdmin ||
     Boolean(
-      affiliatePermission?.habilitado &&
-        affiliatePermission?.alcance !== "ninguno",
+      affiliatePermission?.habilitado,
     );
 
   const canViewAffiliate =
