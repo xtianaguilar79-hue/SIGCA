@@ -259,6 +259,19 @@ export default async function SistemaPage() {
               <small>INGRESAR</small>
             </Link>
           )}
+          {isAdmin && (
+  <Link
+    className="module module-link"
+    href="/gestion/sistema/permisos"
+  >
+    <span>🔐</span>
+    <h2>Administrar permisos del sistema</h2>
+    <p>
+      Habilitá los módulos y las funciones disponibles para cada usuario.
+    </p>
+    <small>ADMINISTRAR PERMISOS</small>
+  </Link>
+)}
         </div>
       </section>
     </main>
