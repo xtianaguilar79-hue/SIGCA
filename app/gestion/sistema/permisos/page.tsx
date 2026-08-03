@@ -329,7 +329,7 @@ export default async function PermisosSistemaPage({
       )
       .eq("usuario_id", usuarioSeleccionado.id);
 
-    permisos = (data || []) as Permiso[];
+    permisos = (data ?? []) as unknown as Permiso[];
   }
 
   const nombreAdministrador = [
