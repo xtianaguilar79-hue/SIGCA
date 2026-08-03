@@ -1051,4 +1051,54 @@ export default async function PermisosSistemaPage({
         }
 
         :root[data-theme="dark"]
-         
+          .permission-checks label {
+          color: #e1ecef;
+        }
+
+        @media (max-width: 1050px) {
+          .permissions-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 720px) {
+          .permission-user-selector {
+            grid-template-columns: 1fr;
+            padding: 21px;
+          }
+
+          .permission-user-selector form {
+            grid-template-columns: 1fr;
+          }
+
+          .permission-user-summary {
+            align-items: flex-start;
+            padding: 21px;
+          }
+
+          .permission-card > header {
+            flex-direction: column;
+            padding: 21px;
+          }
+
+          .permission-state {
+            align-self: flex-start;
+          }
+
+          .permission-card form {
+            padding: 21px;
+          }
+
+          .permission-checks,
+          .permission-scope-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .permission-scope-grid label:last-child {
+            grid-column: auto;
+          }
+        }
+      `}</style>
+    </main>
+  );
+}
