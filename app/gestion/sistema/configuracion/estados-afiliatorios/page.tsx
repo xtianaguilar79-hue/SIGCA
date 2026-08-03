@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   actualizarEstadoAfiliatorio,
   crearEstadoAfiliatorio,
-} from "./actions.ts";
+} from "./actions";
 
 export default async function EstadosAfiliatoriosPage({
   searchParams,
