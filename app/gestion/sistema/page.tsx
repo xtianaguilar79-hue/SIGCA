@@ -4,6 +4,29 @@ import { redirect } from "next/navigation";
 import { SignOutButton } from "@/components/sign-out-button";
 import { createClient } from "@/lib/supabase/server";
 
+type PermisoSistema = {
+  modulo_clave: string | null;
+  habilitado: boolean | null;
+  puede_consultar: boolean | null;
+  puede_crear: boolean | null;
+  puede_editar: boolean | null;
+  puede_aprobar: boolean | null;
+  puede_configurar: boolean | null;
+};
+
+function permisoUtilizable(permiso: PermisoSistema) {
+  return (
+    permiso.habilitado === true &&
+    (
+      permiso.puede_consultar === true ||
+      permiso.puede_crear === true ||
+      permiso.puede_editar === true ||
+      permiso.puede_aprobar === true ||
+      permiso.puede_configurar === true
+    )
+  );
+}
+
 export default async function SistemaPage() {
   const supabase = await createClient();
 
@@ -32,23 +55,40 @@ export default async function SistemaPage() {
   const isAdmin =
     String(profile.rol).toLowerCase() === "administrador";
 
-  let assignedPermissions: {
-    modulo_clave: string | null;
-  }[] = [];
+  let assignedPermissions: PermisoSistema[] = [];
 
   if (!isAdmin) {
-    const { data: permissions } = await supabase
-      .from("usuarios_permisos_sistema")
-      .select("modulo_clave")
-      .eq("usuario_id", user.id)
-      .eq("habilitado", true)
-      .eq("puede_consultar", true);
+    const { data: permissions, error: permissionsError } =
+      await supabase
+        .from("usuarios_permisos_sistema")
+        .select(
+          [
+            "modulo_clave",
+            "habilitado",
+            "puede_consultar",
+            "puede_crear",
+            "puede_editar",
+            "puede_aprobar",
+            "puede_configurar",
+          ].join(","),
+        )
+        .eq("usuario_id", user.id)
+        .eq("habilitado", true);
 
-    assignedPermissions = permissions || [];
+    if (permissionsError) {
+      console.error(
+        "No se pudieron consultar los permisos del sistema:",
+        permissionsError.message,
+      );
+    }
+
+    assignedPermissions =
+      (permissions || []) as unknown as PermisoSistema[];
   }
 
   const permissionKeys = new Set(
     assignedPermissions
+      .filter(permisoUtilizable)
       .map((permission) =>
         String(permission.modulo_clave || "")
           .trim()
@@ -57,37 +97,28 @@ export default async function SistemaPage() {
       .filter(Boolean),
   );
 
-  const canAccessAffiliates =
-    isAdmin ||
-    permissionKeys.has("afiliados") ||
-    permissionKeys.has("padron");
-
-  const canAccessBenefits =
-    isAdmin || permissionKeys.has("beneficios");
-
-  const canAccessReports =
-    isAdmin || permissionKeys.has("reportes");
-
-  const canAccessCompanies =
-    isAdmin || permissionKeys.has("empresas");
-
-  const canAccessConfiguration =
-    isAdmin || permissionKeys.has("configuracion");
-
-  const canAccessSystem =
-    canAccessAffiliates ||
-    canAccessBenefits ||
-    canAccessReports ||
-    canAccessCompanies ||
-    canAccessConfiguration;
-
-  if (!canAccessSystem) {
+  if (!isAdmin && permissionKeys.size === 0) {
     redirect("/gestion");
   }
 
   const name = [profile.nombre, profile.apellido]
     .filter(Boolean)
     .join(" ");
+
+  const canSeeAffiliates =
+    isAdmin || permissionKeys.has("afiliados");
+
+  const canSeeBenefits =
+    isAdmin || permissionKeys.has("beneficios");
+
+  const canSeeReports =
+    isAdmin || permissionKeys.has("reportes");
+
+  const canSeeCompanies =
+    isAdmin || permissionKeys.has("empresas");
+
+  const canSeeConfiguration =
+    isAdmin || permissionKeys.has("configuracion");
 
   return (
     <main className="management">
@@ -142,7 +173,9 @@ export default async function SistemaPage() {
           <strong>{name}</strong>
 
           <span>
-            {String(profile.rol || "Usuario autorizado")}
+            {isAdmin
+              ? "Administrador"
+              : String(profile.rol || "Usuario autorizado")}
           </span>
 
           <SignOutButton />
@@ -159,8 +192,9 @@ export default async function SistemaPage() {
             <h1>Sistema</h1>
 
             <p>
-              Acceso a las herramientas institucionales
-              habilitadas para tu función.
+              Administración del padrón, beneficios,
+              empresas, reportes y parámetros
+              institucionales.
             </p>
           </div>
 
@@ -170,7 +204,7 @@ export default async function SistemaPage() {
         </header>
 
         <div className="cards">
-          {canAccessAffiliates && (
+          {canSeeAffiliates && (
             <Link
               className="module module-link"
               href="/gestion/sistema/afiliados"
@@ -180,15 +214,15 @@ export default async function SistemaPage() {
               <h2>Afiliados</h2>
 
               <p>
-                Consulta del padrón, información personal,
-                empresas, estados y grupo familiar.
+                Consulta del padrón, actualización de datos,
+                estados, familiares y comunicaciones.
               </p>
 
               <small>INGRESAR</small>
             </Link>
           )}
 
-          {canAccessBenefits && (
+          {canSeeBenefits && (
             <Link
               className="module module-link"
               href="/gestion/sistema/beneficios"
@@ -198,15 +232,15 @@ export default async function SistemaPage() {
               <h2>Beneficios</h2>
 
               <p>
-                Administración de beneficios y registro
-                de entregas a afiliados y familiares.
+                Administración de beneficios, lugares de
+                entrega e historial de movimientos.
               </p>
 
               <small>INGRESAR</small>
             </Link>
           )}
 
-          {canAccessReports && (
+          {canSeeReports && (
             <Link
               className="module module-link"
               href="/gestion/sistema/reportes"
@@ -216,15 +250,15 @@ export default async function SistemaPage() {
               <h2>Reportes</h2>
 
               <p>
-                Información general del padrón,
-                empresas y datos institucionales.
+                Generación de reportes del padrón y de las
+                empresas en CSV y PDF.
               </p>
 
               <small>INGRESAR</small>
             </Link>
           )}
 
-          {canAccessCompanies && (
+          {canSeeCompanies && (
             <Link
               className="module module-link"
               href="/gestion/sistema/empresas"
@@ -235,14 +269,14 @@ export default async function SistemaPage() {
 
               <p>
                 Alta, edición, activación y administración
-                de empresas.
+                de empresas y sus datos institucionales.
               </p>
 
               <small>INGRESAR</small>
             </Link>
           )}
 
-          {canAccessConfiguration && (
+          {canSeeConfiguration && (
             <Link
               className="module module-link"
               href="/gestion/sistema/configuracion"
@@ -253,25 +287,30 @@ export default async function SistemaPage() {
 
               <p>
                 Provincias, departamentos, localidades,
-                estados y parámetros institucionales.
+                estados afiliatorios y parámetros del sistema.
               </p>
 
               <small>INGRESAR</small>
             </Link>
           )}
+
           {isAdmin && (
-  <Link
-    className="module module-link"
-    href="/gestion/sistema/permisos"
-  >
-    <span>🔐</span>
-    <h2>Administrar permisos del sistema</h2>
-    <p>
-      Habilitá los módulos y las funciones disponibles para cada usuario.
-    </p>
-    <small>ADMINISTRAR PERMISOS</small>
-  </Link>
-)}
+            <Link
+              className="module module-link"
+              href="/gestion/sistema/permisos"
+            >
+              <span>🔐</span>
+
+              <h2>Permisos del sistema</h2>
+
+              <p>
+                Habilitá módulos y acciones específicas para
+                cada usuario institucional.
+              </p>
+
+              <small>ADMINISTRAR</small>
+            </Link>
+          )}
         </div>
       </section>
     </main>
