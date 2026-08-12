@@ -3477,3 +3477,103 @@ body:has(.print-report-page) .notification-bell,body:has(.print-report-page) .th
     max-width: 100%;
   }
 }
+/* ===== MEJORA VISUAL: BENEFICIOS ===== */
+
+.benefit-catalog {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.benefit-catalog-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  border: 1px solid #cfdee2;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(6, 63, 80, 0.08);
+}
+
+.benefit-catalog-card h3 {
+  margin: 0;
+  color: var(--petroleo);
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+.benefit-catalog-card p {
+  margin: 0;
+  color: var(--gris);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.benefit-location-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.benefit-location-list > * {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #e5f2f4;
+  color: var(--petroleo);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+/* Modo oscuro */
+
+:root[data-theme="dark"] .benefit-catalog-card {
+  background: #18343e;
+  border-color: #49636c;
+}
+
+:root[data-theme="dark"] .benefit-catalog-card h3 {
+  color: #f2f7f8;
+}
+
+:root[data-theme="dark"] .benefit-catalog-card p {
+  color: #c4d3d7;
+}
+
+:root[data-theme="dark"] .benefit-location-list > * {
+  background: #244752;
+  color: #edf5f6;
+}
+
+/* Teléfonos */
+
+@media (max-width: 850px) {
+  .benefit-catalog {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .benefit-catalog-card {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .benefit-catalog-card h3 {
+    font-size: 22px;
+  }
+
+  .benefit-location-list {
+    gap: 9px;
+  }
+
+  .benefit-location-list > * {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+}
