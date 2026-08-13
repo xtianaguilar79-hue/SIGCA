@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { CompanyFilters } from "@/components/company-filters";
 import { SignOutButton } from "@/components/sign-out-button";
 import { createClient } from "@/lib/supabase/server";
+import { puedeAccederModulo } from "@/lib/permisos";
 
 const REGISTROS_POR_PAGINA = 25;
 
@@ -35,9 +36,23 @@ export default async function EmpresasPage({
   if (
     !profile ||
     profile.activo === false ||
-    String(profile.estado).toLowerCase() !== "aprobado" ||
-    String(profile.rol).toLowerCase() !== "administrador"
+    String(profile.estado).toLowerCase() !== "aprobado"
   ) {
+    redirect("/gestion");
+  }
+
+  const esAdministrador =
+    String(profile.rol).toLowerCase() === "administrador";
+
+  const autorizado = await puedeAccederModulo(
+    supabase,
+    user.id,
+    esAdministrador,
+    "empresas",
+    ["puede_consultar"],
+  );
+
+  if (!autorizado) {
     redirect("/gestion");
   }
 

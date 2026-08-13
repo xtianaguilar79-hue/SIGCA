@@ -3,12 +3,16 @@ import Link from "next/link";
 import {redirect} from "next/navigation";
 import {SignOutButton} from "@/components/sign-out-button";
 import {createClient} from "@/lib/supabase/server";
+import {puedeAccederModulo} from "@/lib/permisos";
 import {actualizarLocalidad,crearLocalidad} from "./actions";
 
 export default async function LocalidadesPage({searchParams}:{searchParams:Promise<{creada?:string;actualizada?:string;error?:string}>}){
  const supabase=await createClient();const{data:{user}}=await supabase.auth.getUser();if(!user)redirect("/acceso");
  const{data:profile}=await supabase.from("usuarios").select("nombre,apellido,rol,estado,activo").eq("id",user.id).maybeSingle();
- if(!profile||profile.activo===false||String(profile.estado).toLowerCase()!=="aprobado"||String(profile.rol).toLowerCase()!=="administrador")redirect("/gestion");
+ if(!profile||profile.activo===false||String(profile.estado).toLowerCase()!=="aprobado")redirect("/gestion");
+ const esAdministrador=String(profile.rol).toLowerCase()==="administrador";
+ const autorizado=await puedeAccederModulo(supabase,user.id,esAdministrador,"configuracion",["puede_consultar","puede_configurar"]);
+ if(!autorizado)redirect("/gestion");
  const[{data:departamentos},{data:localidades}]=await Promise.all([
   supabase.from("departamentos").select("id,nombre,provincias(nombre)").eq("habilitado",true).order("nombre"),
   supabase.from("localidades").select("id,nombre,codigo_postal,orden,habilitada,departamentos(nombre,provincias(nombre))").order("orden").order("nombre")

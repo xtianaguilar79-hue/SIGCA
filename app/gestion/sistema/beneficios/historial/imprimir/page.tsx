@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PrintReportButton } from "@/components/print-report-button";
 import { createClient } from "@/lib/supabase/server";
+import { puedeAccederModulo } from "@/lib/permisos";
 
 const TAMANO_LOTE = 1000;
 
@@ -38,9 +39,23 @@ export default async function ImprimirHistorialBeneficiosPage({
   if (
     !profile ||
     profile.activo === false ||
-    String(profile.estado).toLowerCase() !== "aprobado" ||
-    String(profile.rol).toLowerCase() !== "administrador"
+    String(profile.estado).toLowerCase() !== "aprobado"
   ) {
+    redirect("/gestion");
+  }
+
+  const esAdministrador =
+    String(profile.rol).toLowerCase() === "administrador";
+
+  const autorizado = await puedeAccederModulo(
+    supabase,
+    user.id,
+    esAdministrador,
+    "beneficios",
+    ["puede_consultar"],
+  );
+
+  if (!autorizado) {
     redirect("/gestion");
   }
 

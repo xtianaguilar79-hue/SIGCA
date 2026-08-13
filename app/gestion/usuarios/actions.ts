@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { esAdministradorGeneral } from "@/lib/permisos";
 
 const allowedRoles = new Set(["Administrador", "Dirigente", "Delegado", "Personal autorizado"]);
 const allowedStates = new Set(["Pendiente", "Aprobado", "Rechazado"]);
@@ -14,19 +15,30 @@ async function requireAdmin() {
   if (!profile || profile.activo === false || String(profile.estado).toLowerCase() !== "aprobado" || String(profile.rol).toLowerCase() !== "administrador") {
     throw new Error("No tenés autorización para realizar esta acción.");
   }
-  return { supabase, currentUserId: user.id };
+  const esGeneral = await esAdministradorGeneral(supabase, user.id);
+  return { supabase, currentUserId: user.id, esAdministradorGeneral: esGeneral };
 }
 
 const value = (formData: FormData, key: string) => String(formData.get(key) || "").trim();
 
 export async function updateInstitutionalUser(formData: FormData) {
-  const { supabase, currentUserId } = await requireAdmin();
+  const { supabase, currentUserId, esAdministradorGeneral } = await requireAdmin();
   const id = value(formData, "id");
   const rol = value(formData, "rol");
   const estado = value(formData, "estado");
   const activo = value(formData, "activo") === "true";
   if (!id || !allowedRoles.has(rol) || !allowedStates.has(estado)) throw new Error("Los datos recibidos no son válidos.");
   if (id === currentUserId && (!activo || estado !== "Aprobado" || rol !== "Administrador")) throw new Error("No podés quitarte tu propio acceso de administrador.");
+
+  const { data: usuarioActual } = await supabase.from("usuarios").select("rol").eq("id", id).maybeSingle();
+  const rolActual = String(usuarioActual?.rol || "");
+  const cambiaHaciaAdministrador = rol === "Administrador" && rolActual !== "Administrador";
+  const cambiaDesdeAdministrador = rol !== "Administrador" && rolActual === "Administrador";
+
+  if ((cambiaHaciaAdministrador || cambiaDesdeAdministrador) && !esAdministradorGeneral) {
+    throw new Error("Sólo el administrador general puede otorgar o quitar el rol de Administrador.");
+  }
+
   const { error } = await supabase.from("usuarios").update({ rol, estado, activo, empresa: value(formData, "empresa"), convenio: value(formData, "convenio") }).eq("id", id);
   if (error) throw new Error("No fue posible actualizar la cuenta.");
   revalidatePath("/gestion/usuarios");

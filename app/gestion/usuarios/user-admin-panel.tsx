@@ -20,6 +20,7 @@ type UserRow = {
   convenio: string | null;
   estado: string | null;
   activo: boolean | null;
+  administrador_general: boolean | null;
 };
 
 type CatalogItem = { id: string; nombre: string };
@@ -29,11 +30,13 @@ export function UserAdminPanel({
   companies,
   agreements,
   currentUserId,
+  esAdministradorGeneral,
 }: {
   users: UserRow[];
   companies: CatalogItem[];
   agreements: CatalogItem[];
   currentUserId: string;
+  esAdministradorGeneral: boolean;
 }) {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("Todos");
@@ -114,12 +117,20 @@ export function UserAdminPanel({
             user.rol === "Personal autorizado"
               ? "Persona autorizada"
               : user.rol || "Persona autorizada";
+          const esAdminActual = user.rol === "Administrador";
+          const puedeCambiarRolAdministrador =
+            esAdministradorGeneral || !esAdminActual;
 
           return (
             <article className="user-card" key={user.id}>
               <header className="user-card-header">
                 <div className="user-identity">
                   <h2>{fullName || "Nombre pendiente de completar"}</h2>
+                  {user.administrador_general && (
+                    <span className="user-general-admin-badge">
+                      Administrador general
+                    </span>
+                  )}
                   <p className="user-email">{user.mail || "Sin correo informado"}</p>
                   <p className="user-document">
                     DNI: {user.dni || "sin informar"}
@@ -140,11 +151,24 @@ export function UserAdminPanel({
                   <select
                     name="rol"
                     defaultValue={roleValue}
+                    title={
+                      puedeCambiarRolAdministrador
+                        ? undefined
+                        : "Sólo el administrador general puede otorgar o quitar el rol de Administrador."
+                    }
                   >
-                    <option>Administrador</option>
-                    <option>Dirigente</option>
-                    <option>Delegado</option>
-                    <option>Persona autorizada</option>
+                    <option disabled={!esAdministradorGeneral && !esAdminActual}>
+                      Administrador
+                    </option>
+                    <option disabled={!esAdministradorGeneral && esAdminActual}>
+                      Dirigente
+                    </option>
+                    <option disabled={!esAdministradorGeneral && esAdminActual}>
+                      Delegado
+                    </option>
+                    <option disabled={!esAdministradorGeneral && esAdminActual}>
+                      Persona autorizada
+                    </option>
                   </select>
                 </label>
 

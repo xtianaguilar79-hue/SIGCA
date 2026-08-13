@@ -3,8 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { puedeAccederModulo, type AccionPermiso } from "@/lib/permisos";
 
-async function verificarAdministrador() {
+async function verificarAdministrador(
+  acciones: AccionPermiso[] = ["puede_crear", "puede_editar"],
+) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -21,9 +24,23 @@ async function verificarAdministrador() {
   if (
     !profile ||
     profile.activo === false ||
-    String(profile.estado).toLowerCase() !== "aprobado" ||
-    String(profile.rol).toLowerCase() !== "administrador"
+    String(profile.estado).toLowerCase() !== "aprobado"
   ) {
+    redirect("/gestion");
+  }
+
+  const esAdministrador =
+    String(profile.rol).toLowerCase() === "administrador";
+
+  const autorizado = await puedeAccederModulo(
+    supabase,
+    user.id,
+    esAdministrador,
+    "beneficios",
+    acciones,
+  );
+
+  if (!autorizado) {
     redirect("/gestion");
   }
 
@@ -36,7 +53,7 @@ function fecha(formData: FormData, campo: string) {
 }
 
 export async function crearBeneficio(formData: FormData) {
-  const { supabase, user } = await verificarAdministrador();
+  const { supabase, user } = await verificarAdministrador(["puede_crear"]);
   const nombre = String(formData.get("nombre") || "").trim().toUpperCase();
   const descripcion = String(formData.get("descripcion") || "").trim();
   const stockTexto = String(formData.get("stock") || "").trim();
@@ -69,7 +86,10 @@ export async function crearBeneficio(formData: FormData) {
 }
 
 export async function cambiarEstadoBeneficio(formData: FormData) {
-  const { supabase } = await verificarAdministrador();
+  const { supabase } = await verificarAdministrador([
+    "puede_editar",
+    "puede_aprobar",
+  ]);
   const id = Number(formData.get("id"));
   const activo = String(formData.get("activo")) === "true";
 

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { puedeAccederModulo, type AccionPermiso } from "@/lib/permisos";
 
 function texto(formData: FormData, campo: string) {
   const valor = String(formData.get(campo) || "").trim();
@@ -14,7 +15,9 @@ function identificador(formData: FormData, campo: string) {
   return Number.isInteger(valor) && valor > 0 ? valor : null;
 }
 
-async function verificarAdministrador() {
+async function verificarAdministrador(
+  acciones: AccionPermiso[] = ["puede_crear", "puede_editar"],
+) {
   const supabase = await createClient();
 
   const {
@@ -34,9 +37,23 @@ async function verificarAdministrador() {
   if (
     !profile ||
     profile.activo === false ||
-    String(profile.estado).toLowerCase() !== "aprobado" ||
-    String(profile.rol).toLowerCase() !== "administrador"
+    String(profile.estado).toLowerCase() !== "aprobado"
   ) {
+    redirect("/gestion");
+  }
+
+  const esAdministrador =
+    String(profile.rol).toLowerCase() === "administrador";
+
+  const autorizado = await puedeAccederModulo(
+    supabase,
+    user.id,
+    esAdministrador,
+    "empresas",
+    acciones,
+  );
+
+  if (!autorizado) {
     redirect("/gestion");
   }
 
@@ -44,7 +61,7 @@ async function verificarAdministrador() {
 }
 
 export async function crearEmpresa(formData: FormData) {
-  const supabase = await verificarAdministrador();
+  const supabase = await verificarAdministrador(["puede_crear"]);
 
   const nombre = String(formData.get("nombre") || "")
     .trim()
@@ -109,7 +126,7 @@ export async function crearEmpresa(formData: FormData) {
 export async function actualizarEmpresa(
   formData: FormData,
 ) {
-  const supabase = await verificarAdministrador();
+  const supabase = await verificarAdministrador(["puede_editar"]);
 
   const id = String(formData.get("id") || "");
   const nombre = String(formData.get("nombre") || "")

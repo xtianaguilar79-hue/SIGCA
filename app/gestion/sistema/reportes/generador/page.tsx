@@ -5,6 +5,7 @@ import { CompanyCombobox } from "@/components/company-combobox";
 import { StatusCombobox } from "@/components/status-combobox";
 import { SignOutButton } from "@/components/sign-out-button";
 import { createClient } from "@/lib/supabase/server";
+import { puedeAccederModulo } from "@/lib/permisos";
 
 const VISTA_PREVIA = 50;
 
@@ -107,10 +108,23 @@ export default async function GeneradorReporteAfiliadosPage({
     !profile ||
     profile.activo === false ||
     String(profile.estado).toLowerCase() !==
-      "aprobado" ||
-    String(profile.rol).toLowerCase() !==
-      "administrador"
+      "aprobado"
   ) {
+    redirect("/gestion");
+  }
+
+  const esAdministrador =
+    String(profile.rol).toLowerCase() === "administrador";
+
+  const autorizado = await puedeAccederModulo(
+    supabase,
+    user.id,
+    esAdministrador,
+    "reportes",
+    ["puede_consultar", "puede_configurar"],
+  );
+
+  if (!autorizado) {
     redirect("/gestion");
   }
 

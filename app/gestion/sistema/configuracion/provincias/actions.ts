@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { puedeAccederModulo } from "@/lib/permisos";
 
 const RUTA = "/gestion/sistema/configuracion/provincias";
 
@@ -23,9 +24,23 @@ async function verificarAdministrador() {
   if (
     !profile ||
     profile.activo === false ||
-    String(profile.estado).toLowerCase() !== "aprobado" ||
-    String(profile.rol).toLowerCase() !== "administrador"
+    String(profile.estado).toLowerCase() !== "aprobado"
   ) {
+    redirect("/gestion");
+  }
+
+  const esAdministrador =
+    String(profile.rol).toLowerCase() === "administrador";
+
+  const autorizado = await puedeAccederModulo(
+    supabase,
+    user.id,
+    esAdministrador,
+    "configuracion",
+    ["puede_configurar"],
+  );
+
+  if (!autorizado) {
     redirect("/gestion");
   }
 

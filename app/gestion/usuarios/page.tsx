@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { SignOutButton } from "@/components/sign-out-button";
 import { createClient } from "@/lib/supabase/server";
+import { esAdministradorGeneral } from "@/lib/permisos";
 import { UserAdminPanel } from "./user-admin-panel";
 import "./admin-users.css";
 
@@ -29,12 +30,12 @@ export default async function UsersAdministrationPage() {
     redirect("/gestion");
   }
 
-  const [usersResult, companiesResult, agreementsResult] =
+  const [usersResult, companiesResult, agreementsResult, esGeneral] =
     await Promise.all([
       supabase
         .from("usuarios")
         .select(
-          "id,nombre,apellido,dni,telefono,mail,rol,empresa,convenio,estado,activo",
+          "id,nombre,apellido,dni,telefono,mail,rol,empresa,convenio,estado,activo,administrador_general",
         )
         .order("apellido"),
       supabase
@@ -47,6 +48,7 @@ export default async function UsersAdministrationPage() {
         .select("id,nombre")
         .eq("activo", true)
         .order("nombre"),
+      esAdministradorGeneral(supabase, user.id),
     ]);
 
   const name = [profile.nombre, profile.apellido].filter(Boolean).join(" ");
@@ -95,6 +97,7 @@ export default async function UsersAdministrationPage() {
           companies={companiesResult.data || []}
           agreements={agreementsResult.data || []}
           currentUserId={user.id}
+          esAdministradorGeneral={esGeneral}
         />
       </section>
     </main>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { SignOutButton } from "@/components/sign-out-button";
 import { createClient } from "@/lib/supabase/server";
+import { puedeAccederModulo } from "@/lib/permisos";
 import { actualizarEmpresa } from "../../actions";
 import { TerritoryFields } from "@/components/territory-fields";
 
@@ -30,9 +31,23 @@ export default async function EditarEmpresaPage({
   if (
     !profile ||
     profile.activo === false ||
-    String(profile.estado).toLowerCase() !== "aprobado" ||
-    String(profile.rol).toLowerCase() !== "administrador"
+    String(profile.estado).toLowerCase() !== "aprobado"
   ) {
+    redirect("/gestion");
+  }
+
+  const esAdministrador =
+    String(profile.rol).toLowerCase() === "administrador";
+
+  const autorizado = await puedeAccederModulo(
+    supabase,
+    user.id,
+    esAdministrador,
+    "empresas",
+    ["puede_editar"],
+  );
+
+  if (!autorizado) {
     redirect("/gestion");
   }
 

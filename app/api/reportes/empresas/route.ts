@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { puedeAccederModulo } from "@/lib/permisos";
 
 const TAMANO_LOTE = 1000;
 
@@ -47,9 +48,23 @@ export async function GET(request: Request) {
   if (
     !profile ||
     profile.activo === false ||
-    String(profile.estado).toLowerCase() !== "aprobado" ||
-    String(profile.rol).toLowerCase() !== "administrador"
+    String(profile.estado).toLowerCase() !== "aprobado"
   ) {
+    return new Response("Acceso no autorizado", { status: 403 });
+  }
+
+  const esAdministrador =
+    String(profile.rol).toLowerCase() === "administrador";
+
+  const autorizado = await puedeAccederModulo(
+    supabase,
+    user.id,
+    esAdministrador,
+    "reportes",
+    ["puede_consultar"],
+  );
+
+  if (!autorizado) {
     return new Response("Acceso no autorizado", { status: 403 });
   }
 

@@ -67,6 +67,19 @@
   overflow-wrap: anywhere;
 }
 
+.user-general-admin-badge {
+  display: inline-block;
+  margin: 0 0 0.45rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: var(--admin-accent, #1f6feb);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
 .user-document {
   margin: 0.35rem 0 0;
   color: var(--admin-muted);

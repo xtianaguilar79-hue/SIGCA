@@ -8,6 +8,7 @@ import type {
   BenefitRelative,
 } from "@/components/benefit-recipient-selector";
 import { createClient } from "@/lib/supabase/server";
+import { puedeAccederModulo } from "@/lib/permisos";
 import { registrarEntregaBeneficio } from "./actions";
 
 type SearchParams = Promise<{
@@ -68,9 +69,23 @@ export default async function EntregarBeneficioPage({
   if (
     !profile ||
     profile.activo === false ||
-    String(profile.estado).toLowerCase() !== "aprobado" ||
-    String(profile.rol).toLowerCase() !== "administrador"
+    String(profile.estado).toLowerCase() !== "aprobado"
   ) {
+    redirect("/gestion");
+  }
+
+  const esAdministrador =
+    String(profile.rol).toLowerCase() === "administrador";
+
+  const autorizado = await puedeAccederModulo(
+    supabase,
+    user.id,
+    esAdministrador,
+    "beneficios",
+    ["puede_crear", "puede_aprobar"],
+  );
+
+  if (!autorizado) {
     redirect("/gestion");
   }
 

@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { puedeAccederModulo } from "@/lib/permisos";
 
 const RUTA="/gestion/sistema/configuracion/departamentos";
 async function admin(){
@@ -9,7 +10,10 @@ async function admin(){
   const{data:{user}}=await supabase.auth.getUser();
   if(!user)redirect("/acceso");
   const{data:p}=await supabase.from("usuarios").select("rol,estado,activo").eq("id",user.id).maybeSingle();
-  if(!p||p.activo===false||String(p.estado).toLowerCase()!=="aprobado"||String(p.rol).toLowerCase()!=="administrador")redirect("/gestion");
+  if(!p||p.activo===false||String(p.estado).toLowerCase()!=="aprobado")redirect("/gestion");
+  const esAdministrador=String(p.rol).toLowerCase()==="administrador";
+  const autorizado=await puedeAccederModulo(supabase,user.id,esAdministrador,"configuracion",["puede_configurar"]);
+  if(!autorizado)redirect("/gestion");
   return supabase;
 }
 export async function crearDepartamento(formData:FormData){

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { SignOutButton } from "@/components/sign-out-button";
 import { createClient } from "@/lib/supabase/server";
+import { puedeAccederModulo } from "@/lib/permisos";
 import { actualizarDepartamento, crearDepartamento } from "./actions";
 
 export default async function DepartamentosPage({searchParams}:{searchParams:Promise<{creado?:string;actualizado?:string;error?:string}>}){
@@ -10,7 +11,10 @@ export default async function DepartamentosPage({searchParams}:{searchParams:Pro
   const{data:{user}}=await supabase.auth.getUser();
   if(!user)redirect("/acceso");
   const{data:profile}=await supabase.from("usuarios").select("nombre,apellido,rol,estado,activo").eq("id",user.id).maybeSingle();
-  if(!profile||profile.activo===false||String(profile.estado).toLowerCase()!=="aprobado"||String(profile.rol).toLowerCase()!=="administrador")redirect("/gestion");
+  if(!profile||profile.activo===false||String(profile.estado).toLowerCase()!=="aprobado")redirect("/gestion");
+  const esAdministrador=String(profile.rol).toLowerCase()==="administrador";
+  const autorizado=await puedeAccederModulo(supabase,user.id,esAdministrador,"configuracion",["puede_consultar","puede_configurar"]);
+  if(!autorizado)redirect("/gestion");
   const[{data:provincias},{data:departamentos}]=await Promise.all([
     supabase.from("provincias").select("id,nombre").eq("habilitada",true).order("orden"),
     supabase.from("departamentos").select("id,nombre,orden,habilitado,provincias(nombre)").order("orden").order("nombre"),

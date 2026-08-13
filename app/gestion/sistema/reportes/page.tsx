@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { SignOutButton } from "@/components/sign-out-button";
 import { createClient } from "@/lib/supabase/server";
+import { puedeAccederModulo } from "@/lib/permisos";
 
 export default async function ReportesPage() {
   const supabase = await createClient();
@@ -18,9 +19,25 @@ export default async function ReportesPage() {
   if (
     !profile ||
     profile.activo === false ||
-    String(profile.estado).toLowerCase() !== "aprobado" ||
-    String(profile.rol).toLowerCase() !== "administrador"
-  ) redirect("/gestion");
+    String(profile.estado).toLowerCase() !== "aprobado"
+  ) {
+    redirect("/gestion");
+  }
+
+  const esAdministrador =
+    String(profile.rol).toLowerCase() === "administrador";
+
+  const autorizado = await puedeAccederModulo(
+    supabase,
+    user.id,
+    esAdministrador,
+    "reportes",
+    ["puede_consultar"],
+  );
+
+  if (!autorizado) {
+    redirect("/gestion");
+  }
 
   const [
     { count: totalAfiliados },
