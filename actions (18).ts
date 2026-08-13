@@ -1,0 +1,196 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { puedeAccederModulo, type AccionPermiso } from "@/lib/permisos";
+
+function texto(formData: FormData, campo: string) {
+  const valor = String(formData.get(campo) || "").trim();
+  return valor || null;
+}
+
+function identificador(formData: FormData, campo: string) {
+  const valor = Number(formData.get(campo));
+  return Number.isInteger(valor) && valor > 0 ? valor : null;
+}
+
+async function verificarAdministrador(
+  acciones: AccionPermiso[] = ["puede_crear", "puede_editar"],
+) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/acceso");
+  }
+
+  const { data: profile } = await supabase
+    .from("usuarios")
+    .select("rol,estado,activo")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (
+    !profile ||
+    profile.activo === false ||
+    String(profile.estado).toLowerCase() !== "aprobado"
+  ) {
+    redirect("/gestion");
+  }
+
+  const esAdministrador =
+    String(profile.rol).toLowerCase() === "administrador";
+
+  const autorizado = await puedeAccederModulo(
+    supabase,
+    user.id,
+    esAdministrador,
+    "empresas",
+    acciones,
+  );
+
+  if (!autorizado) {
+    redirect("/gestion");
+  }
+
+  return supabase;
+}
+
+export async function crearEmpresa(formData: FormData) {
+  const supabase = await verificarAdministrador(["puede_crear"]);
+
+  const nombre = String(formData.get("nombre") || "")
+    .trim()
+    .toUpperCase();
+
+  if (nombre.length < 2) {
+    redirect(
+      "/gestion/sistema/empresas/nueva?error=nombre",
+    );
+  }
+
+  const { data: existente } = await supabase
+    .from("empresas")
+    .select("id")
+    .eq("nombre", nombre)
+    .maybeSingle();
+
+  if (existente) {
+    redirect(
+      "/gestion/sistema/empresas/nueva?error=duplicada",
+    );
+  }
+
+  const { error } = await supabase
+    .from("empresas")
+    .insert({
+      nombre,
+      razon_social: texto(formData, "razon_social"),
+      rama: texto(formData, "rama"),
+      domicilio: texto(formData, "domicilio"),
+      localidad: texto(formData, "localidad"),
+      provincia: texto(formData, "provincia"),
+      provincia_id: identificador(formData, "provincia_id"),
+      departamento_id: identificador(formData, "departamento_id"),
+      localidad_id: identificador(formData, "localidad_id"),
+      codigo_postal: texto(formData, "codigo_postal"),
+      cuit: texto(formData, "cuit"),
+      correo_electronico: texto(
+        formData,
+        "correo_electronico",
+      ),
+      telefono: texto(formData, "telefono"),
+      activa: formData.get("activa") === "on",
+    });
+
+  if (error) {
+    redirect(
+      "/gestion/sistema/empresas/nueva?error=guardado",
+    );
+  }
+
+  revalidatePath("/gestion/sistema/empresas");
+  revalidatePath(
+    "/gestion/sindical/afiliaciones/nueva",
+  );
+
+  redirect(
+    "/gestion/sistema/empresas?empresa_creada=1",
+  );
+}
+
+export async function actualizarEmpresa(
+  formData: FormData,
+) {
+  const supabase = await verificarAdministrador(["puede_editar"]);
+
+  const id = String(formData.get("id") || "");
+  const nombre = String(formData.get("nombre") || "")
+    .trim()
+    .toUpperCase();
+
+  if (!/^\d+$/.test(id)) {
+    redirect("/gestion/sistema/empresas");
+  }
+
+  if (nombre.length < 2) {
+    redirect(
+      `/gestion/sistema/empresas/${id}/editar?error=nombre`,
+    );
+  }
+
+  const { data: duplicada } = await supabase
+    .from("empresas")
+    .select("id")
+    .eq("nombre", nombre)
+    .neq("id", Number(id))
+    .maybeSingle();
+
+  if (duplicada) {
+    redirect(
+      `/gestion/sistema/empresas/${id}/editar?error=duplicada`,
+    );
+  }
+
+  const { error } = await supabase
+    .from("empresas")
+    .update({
+      nombre,
+      razon_social: texto(formData, "razon_social"),
+      rama: texto(formData, "rama"),
+      domicilio: texto(formData, "domicilio"),
+      localidad: texto(formData, "localidad"),
+      provincia: texto(formData, "provincia"),
+      provincia_id: identificador(formData, "provincia_id"),
+      departamento_id: identificador(formData, "departamento_id"),
+      localidad_id: identificador(formData, "localidad_id"),
+      codigo_postal: texto(formData, "codigo_postal"),
+      cuit: texto(formData, "cuit"),
+      correo_electronico: texto(
+        formData,
+        "correo_electronico",
+      ),
+      telefono: texto(formData, "telefono"),
+      activa: formData.get("activa") === "on",
+    })
+    .eq("id", Number(id));
+
+  if (error) {
+    redirect(
+      `/gestion/sistema/empresas/${id}/editar?error=guardado`,
+    );
+  }
+
+  revalidatePath("/gestion/sistema/empresas");
+  revalidatePath(
+    "/gestion/sindical/afiliaciones/nueva",
+  );
+
+  redirect(
+    "/gestion/sistema/empresas?empresa_actualizada=1",
+  );
+}
