@@ -1,0 +1,203 @@
+.actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0 0 20px;
+}
+
+.action {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 14px;
+  align-items: center;
+  min-height: 92px;
+  padding: 17px 18px;
+  border: 1px solid #cfdee2;
+  border-radius: 15px;
+  background: #fff;
+  color: var(--petroleo);
+  text-decoration: none;
+  box-shadow: 0 7px 20px rgba(6, 63, 80, 0.07);
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.action > span {
+  grid-row: 1 / 3;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: #e5f2f4;
+  color: #17677a;
+  font-size: 23px;
+  font-weight: 900;
+}
+
+.action strong,
+.action small {
+  display: block;
+  min-width: 0;
+}
+
+.action strong {
+  align-self: end;
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.action small {
+  align-self: start;
+  margin-top: 4px;
+  color: #61777e;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.primary {
+  border-color: var(--petroleo);
+  background: var(--petroleo);
+  color: #fff;
+}
+
+.primary > span {
+  background: var(--dorado);
+  color: var(--petroleo-oscuro);
+}
+
+.primary small {
+  color: #c7dce1;
+}
+
+.action:hover {
+  border-color: #8cb5be;
+  box-shadow: 0 12px 28px rgba(6, 63, 80, 0.13);
+  transform: translateY(-2px);
+}
+
+.action:focus-visible,
+.createPanel > summary:focus-visible {
+  outline: 3px solid rgba(214, 163, 62, 0.45);
+  outline-offset: 3px;
+}
+
+.createPanel {
+  margin: 0 0 24px;
+  overflow: hidden;
+  border: 1px solid #cfdee2;
+  border-radius: 15px;
+  background: #fff;
+}
+
+.createPanel > summary {
+  padding: 18px 21px;
+  background: #e8f2f4;
+  color: var(--petroleo);
+  font-size: 17px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.createPanel[open] > summary {
+  border-bottom: 4px solid var(--dorado);
+  background: var(--petroleo);
+  color: #fff;
+}
+
+.createForm {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  padding: 22px;
+}
+
+.createForm > label:not(:global(.consent-field)) {
+  display: grid;
+  gap: 7px;
+}
+
+.createForm label > span {
+  color: var(--petroleo);
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.createForm input,
+.createForm textarea {
+  width: 100%;
+  min-height: 48px;
+  padding: 11px 13px;
+  border: 1px solid #b9cbd0;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--tinta);
+  font: inherit;
+}
+
+.createForm textarea {
+  resize: vertical;
+}
+
+.createForm :global(.consent-field) {
+  align-self: center;
+}
+
+.createForm :global(.submit) {
+  align-self: end;
+  min-height: 48px;
+  margin: 0;
+}
+
+:global(:root[data-theme="dark"]) .action,
+:global(:root[data-theme="dark"]) .createPanel {
+  border-color: #49636c;
+  background: #18343e;
+  color: #f2f7f8;
+}
+
+:global(:root[data-theme="dark"]) .action > span,
+:global(:root[data-theme="dark"]) .createPanel > summary {
+  background: #244752;
+  color: #d7edf2;
+}
+
+:global(:root[data-theme="dark"]) .action small {
+  color: #b8cbd0;
+}
+
+:global(:root[data-theme="dark"]) .primary,
+:global(:root[data-theme="dark"]) .createPanel[open] > summary {
+  border-color: #08758a;
+  background: #07566a;
+  color: #fff;
+}
+
+:global(:root[data-theme="dark"]) .createForm label > span {
+  color: #edf5f6;
+}
+
+:global(:root[data-theme="dark"]) .createForm input,
+:global(:root[data-theme="dark"]) .createForm textarea {
+  border-color: #49636c;
+  background: #10272f;
+  color: #edf5f6;
+}
+
+@media (max-width: 850px) {
+  .actions {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .action {
+    min-height: 84px;
+    padding: 15px;
+  }
+
+  .createForm {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+}
+

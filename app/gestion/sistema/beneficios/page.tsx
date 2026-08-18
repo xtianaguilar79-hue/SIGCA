@@ -7,6 +7,7 @@ import {
   cambiarEstadoBeneficio,
   crearBeneficio,
 } from "./actions";
+import styles from "./benefits-actions.module.css";
 
 function mostrarFecha(valor: string | null) {
   if (!valor) return "Sin fecha definida";
@@ -259,10 +260,10 @@ export default async function BeneficiosPage({
           </article>
         </div>
 
-        <div className="benefits-main-actions">
+        <div className={styles.actions}>
           {puedeCrear && (
             <Link
-              className="benefit-main-action primary"
+              className={`${styles.action} ${styles.primary}`}
               href="/gestion/sistema/beneficios/entregar"
             >
               <span>＋</span>
@@ -275,7 +276,7 @@ export default async function BeneficiosPage({
 
           {puedeConsultar && (
             <Link
-              className="benefit-main-action"
+              className={styles.action}
               href="/gestion/sistema/beneficios/historial"
             >
               <span>▤</span>
@@ -288,7 +289,7 @@ export default async function BeneficiosPage({
 
           {puedeConfigurar && (
             <Link
-              className="benefit-main-action"
+              className={styles.action}
               href="/gestion/sistema/beneficios/lugares"
             >
               <span>⌖</span>
@@ -301,14 +302,14 @@ export default async function BeneficiosPage({
         </div>
 
         {puedeCrear && (
-          <details className="admin-create-panel">
+          <details className={styles.createPanel}>
             <summary>
               ＋ Crear nuevo beneficio
             </summary>
 
             <form
               action={crearBeneficio}
-              className="admin-create-form"
+              className={styles.createForm}
             >
               <label>
                 <span>Nombre</span>
