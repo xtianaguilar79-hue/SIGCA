@@ -2,6 +2,7 @@
 
 import { ChangeEvent, ClipboardEvent, useEffect, useId, useMemo, useRef, useState } from "react";
 import { deleteAudio, listAudios, saveAudio, StoredAudio } from "@/lib/offline-audio-store";
+import { transcribeLocally } from "@/lib/local-audio-transcription";
 
 type RecognitionResult = { isFinal: boolean; 0: { transcript: string } };
 type RecognitionEvent = { resultIndex: number; results: ArrayLike<RecognitionResult> };
@@ -56,8 +57,8 @@ function formatDuration(seconds: number) {
   return `${minutes}:${remainder}`;
 }
 
-function PendingAudioItem({ audio, busy, online, onTranscribe }: {
-  audio: StoredAudio; busy: boolean; online: boolean; onTranscribe: () => void;
+function PendingAudioItem({ audio, busy, onTranscribe }: {
+  audio: StoredAudio; busy: boolean; onTranscribe: () => void;
 }) {
   const source = useMemo(() => URL.createObjectURL(audio.blob), [audio.blob]);
   useEffect(() => () => URL.revokeObjectURL(source), [source]);
@@ -73,7 +74,7 @@ function PendingAudioItem({ audio, busy, online, onTranscribe }: {
     <div><strong>{audio.name}</strong><small>{formatSize(audio.size)} · guardado {new Date(audio.createdAt).toLocaleString("es-AR")}</small></div>
     <audio controls preload="metadata" src={source}/>
     <div className="pending-actions">
-      <button type="button" onClick={onTranscribe} disabled={busy || !online}>{busy ? "Transcribiendo…" : "Transcribir ahora"}</button>
+      <button type="button" onClick={onTranscribe} disabled={busy}>{busy ? "Transcribiendo…" : "Transcribir en este dispositivo"}</button>
       <button type="button" className="secondary" onClick={download}>Descargar copia</button>
     </div>
     <style jsx>{`
@@ -104,6 +105,7 @@ export function SpeechTextarea({ label, name, rows, placeholder, initialValue = 
   const [fieldKey, setFieldKey] = useState("");
   const [capturing, setCapturing] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const [localStatus, setLocalStatus] = useState("");
 
   useEffect(() => {
     const key = `${window.location.pathname}:${name}`;
@@ -220,25 +222,18 @@ export function SpeechTextarea({ label, name, rows, placeholder, initialValue = 
   }
 
   async function transcribeStored(audio: StoredAudio) {
-    if (!navigator.onLine) {
-      setError("No hay conexión. El audio permanece guardado en este dispositivo.");
-      return;
-    }
-    setTranscribingId(audio.id); setError(""); setNotice("");
-    const file = new File([audio.blob], audio.name, { type: audio.type || MIME_BY_EXTENSION[extensionOf(audio.name)] || "audio/webm" });
-    const body = new FormData(); body.set("audio", file);
+    setTranscribingId(audio.id); setError(""); setNotice(""); setLocalStatus("Preparando el transcriptor local…");
     try {
-      const response = await fetch("/api/transcribir-audio", { method: "POST", body });
-      const result = (await response.json()) as { text?: string; error?: string };
-      if (!response.ok || !result.text) throw new Error(result.error || "No se pudo transcribir.");
-      setValue((current) => `${current}${current.trim() ? " " : ""}${result.text}`);
+      const text = await transcribeLocally(audio.blob, setLocalStatus);
+      setValue((current) => `${current}${current.trim() ? " " : ""}${text}`);
       await deleteAudio(audio.id);
       await refreshPending();
-      setNotice("Audio transcripto. La copia pendiente se eliminó del dispositivo.");
+      setNotice("Audio transcripto localmente. La copia pendiente se eliminó del dispositivo.");
     } catch (cause) {
       const message = cause instanceof Error ? cause.message : "No se pudo transcribir el audio.";
-      setError(`${message} El audio sigue guardado y no se perdió.`);
-    } finally { setTranscribingId(""); }
+      const connectionHint = navigator.onLine ? "" : " La primera descarga del modelo necesita conexión.";
+      setError(`${message}${connectionHint} El audio sigue guardado y no se perdió.`);
+    } finally { setTranscribingId(""); setLocalStatus(""); }
   }
 
   async function keepAudio(file: File) {
@@ -289,14 +284,15 @@ export function SpeechTextarea({ label, name, rows, placeholder, initialValue = 
     <small className={`connection ${online ? "online" : "offline"}`}>{online ? "Con conexión" : "Sin conexión · los audios quedarán guardados"}</small>
     {recording && <small className="recording-message">● Escuchando y transcribiendo…</small>}
     {notice && <small className="speech-notice" role="status">{notice}</small>}
+    {localStatus && <small className="local-status" role="status">{localStatus}</small>}
     {error && <small className="speech-error" role="alert">{error}</small>}
     {pending.length > 0 && <section className="pending-audios" aria-label={`Audios pendientes de ${label}`}>
       <header><strong>Audios pendientes</strong><span>{pending.length}</span></header>
-      <p>Están guardados solamente en este dispositivo. Podés escucharlos, descargar una copia o transcribirlos cuando haya conexión.</p>
-      <ul>{pending.map((audio) => <PendingAudioItem key={audio.id} audio={audio} busy={transcribingId === audio.id} online={online} onTranscribe={() => void transcribeStored(audio)}/>)}</ul>
+      <p>Están guardados solamente en este dispositivo. La primera transcripción descarga un modelo local; las siguientes pueden funcionar sin conexión.</p>
+      <ul>{pending.map((audio) => <PendingAudioItem key={audio.id} audio={audio} busy={transcribingId === audio.id} onTranscribe={() => void transcribeStored(audio)}/>)}</ul>
     </section>}
     <style jsx>{`
-      .speech-field{display:grid;gap:8px;color:#173b49;font-size:14px;font-weight:900}.speech-field>div{position:relative}.speech-field textarea{width:100%;padding:12px 58px 12px 12px;border:1px solid #aebfc4;border-radius:8px;background:white;color:#173b49;font:16px/1.45 inherit;resize:vertical}.speech-field>div>button{position:absolute;right:8px;top:8px;display:grid;place-items:center;width:42px;height:42px;border:1px solid #9cb0b6;border-radius:50%;background:#edf5f6;cursor:pointer}.speech-field button span{font-size:19px}.speech-field button.recording{border-color:#b6352a;background:#ffe8e4;animation:pulse 1.2s infinite}.offline-recorder{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid #b8cbd0;border-radius:10px;background:#f4f8f9}.offline-recorder.active{border-color:#c75b4f;background:#fff3f1}.offline-recorder>div{display:grid;gap:3px}.offline-recorder small{color:#60777f;font-size:12px}.offline-recorder.active small{color:#a62d24}.offline-recorder button{flex:0 0 auto;padding:9px 12px;border:1px solid #0b5264;border-radius:8px;background:#0b5264;color:white;font:800 13px inherit;cursor:pointer}.offline-recorder button span{color:#f2bd42}.offline-recorder button.stop{border-color:#a62d24;background:#a62d24}.offline-recorder button.stop span{color:white}.audio-file{width:fit-content;padding:9px 12px;border:1px solid #9cb0b6;border-radius:7px;background:#edf5f6;color:#0b5264;font-size:13px;cursor:pointer}.audio-file input{display:none}.connection{width:fit-content;padding:4px 8px;border-radius:999px;font-size:12px}.connection.online{background:#e3f3eb;color:#176548}.connection.offline{background:#fff1d6;color:#805413}.recording-message,.speech-error,.speech-notice{font-size:13px;font-weight:800}.recording-message{color:#a62d24}.speech-error{color:#812f24}.speech-notice{color:#176548}.pending-audios{display:grid;gap:8px;margin-top:3px;padding:12px;border:1px solid #c8d8dc;border-radius:10px;background:#f7fafb}.pending-audios header{display:flex;align-items:center;justify-content:space-between}.pending-audios header span{display:grid;place-items:center;min-width:24px;height:24px;border-radius:999px;background:#0b5264;color:white}.pending-audios p{margin:0;color:#526c75;font-size:12px;line-height:1.45;font-weight:600}.pending-audios ul{display:grid;gap:9px;margin:0;padding:0;list-style:none}@media(max-width:620px){.offline-recorder{align-items:stretch;flex-direction:column}.offline-recorder button{width:100%}}@keyframes pulse{50%{box-shadow:0 0 0 7px #d4483830}}
+      .speech-field{display:grid;gap:8px;color:#173b49;font-size:14px;font-weight:900}.speech-field>div{position:relative}.speech-field textarea{width:100%;padding:12px 58px 12px 12px;border:1px solid #aebfc4;border-radius:8px;background:white;color:#173b49;font:16px/1.45 inherit;resize:vertical}.speech-field>div>button{position:absolute;right:8px;top:8px;display:grid;place-items:center;width:42px;height:42px;border:1px solid #9cb0b6;border-radius:50%;background:#edf5f6;cursor:pointer}.speech-field button span{font-size:19px}.speech-field button.recording{border-color:#b6352a;background:#ffe8e4;animation:pulse 1.2s infinite}.offline-recorder{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid #b8cbd0;border-radius:10px;background:#f4f8f9}.offline-recorder.active{border-color:#c75b4f;background:#fff3f1}.offline-recorder>div{display:grid;gap:3px}.offline-recorder small{color:#60777f;font-size:12px}.offline-recorder.active small{color:#a62d24}.offline-recorder button{flex:0 0 auto;padding:9px 12px;border:1px solid #0b5264;border-radius:8px;background:#0b5264;color:white;font:800 13px inherit;cursor:pointer}.offline-recorder button span{color:#f2bd42}.offline-recorder button.stop{border-color:#a62d24;background:#a62d24}.offline-recorder button.stop span{color:white}.audio-file{width:fit-content;padding:9px 12px;border:1px solid #9cb0b6;border-radius:7px;background:#edf5f6;color:#0b5264;font-size:13px;cursor:pointer}.audio-file input{display:none}.connection{width:fit-content;padding:4px 8px;border-radius:999px;font-size:12px}.connection.online{background:#e3f3eb;color:#176548}.connection.offline{background:#fff1d6;color:#805413}.recording-message,.speech-error,.speech-notice,.local-status{font-size:13px;font-weight:800}.recording-message{color:#a62d24}.speech-error{color:#812f24}.speech-notice{color:#176548}.local-status{padding:8px 10px;border-radius:7px;background:#e8f1f8;color:#154f70}.pending-audios{display:grid;gap:8px;margin-top:3px;padding:12px;border:1px solid #c8d8dc;border-radius:10px;background:#f7fafb}.pending-audios header{display:flex;align-items:center;justify-content:space-between}.pending-audios header span{display:grid;place-items:center;min-width:24px;height:24px;border-radius:999px;background:#0b5264;color:white}.pending-audios p{margin:0;color:#526c75;font-size:12px;line-height:1.45;font-weight:600}.pending-audios ul{display:grid;gap:9px;margin:0;padding:0;list-style:none}@media(max-width:620px){.offline-recorder{align-items:stretch;flex-direction:column}.offline-recorder button{width:100%}}@keyframes pulse{50%{box-shadow:0 0 0 7px #d4483830}}
       :global(:root[data-theme="dark"]) .speech-field{color:#f2f7f8}:global(:root[data-theme="dark"]) .speech-field textarea{background:#0b222a;border-color:#5f7b84;color:#f5f8f9}:global(:root[data-theme="dark"]) .speech-field>div>button{background:#244752;border-color:#718a92}:global(:root[data-theme="dark"]) .speech-field button.recording{background:#5a2925;border-color:#e77c70}:global(:root[data-theme="dark"]) .offline-recorder{background:#102b34;border-color:#48636c}:global(:root[data-theme="dark"]) .offline-recorder.active{background:#3b2424;border-color:#c76d64}:global(:root[data-theme="dark"]) .offline-recorder small{color:#bdd0d5}:global(:root[data-theme="dark"]) .offline-recorder.active small{color:#ff9a90}:global(:root[data-theme="dark"]) .audio-file{background:#244752;border-color:#718a92;color:#f2f7f8}:global(:root[data-theme="dark"]) .pending-audios{background:#102b34;border-color:#48636c}:global(:root[data-theme="dark"]) .pending-audios p{color:#bdd0d5}:global(:root[data-theme="dark"]) .recording-message{color:#ff9a90}:global(:root[data-theme="dark"]) .speech-error{color:#ffc3aa}:global(:root[data-theme="dark"]) .speech-notice{color:#8ee0bd}
     `}</style>
   </div>;
