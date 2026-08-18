@@ -56,6 +56,7 @@ export function SignedAffiliationUpload({
       archivo_firmado_path: newPath,
       archivo_firmado_nombre: file.name,
       archivo_firmado_en: new Date().toISOString(),
+      estado: "firmada",
     }).eq("id", applicationId);
 
     if (updateError) {
@@ -69,7 +70,7 @@ export function SignedAffiliationUpload({
     setPath(newPath);
     setName(file.name);
     setLoading(false);
-    setMessage("Ficha firmada guardada correctamente.");
+    setMessage("Ficha firmada guardada. El secretario administrativo ya fue notificado.");
   }
 
   async function openFile() {

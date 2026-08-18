@@ -31,6 +31,7 @@ export function DocumentSearch({ html }: { html: string }) {
 
   const [query, setQuery] = useState("");
   const [counter, setCounter] = useState("0 resultados");
+  const [matchCount, setMatchCount] = useState(0);
 
   function escapeRegExp(value: string) {
     return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -51,6 +52,7 @@ export function DocumentSearch({ html }: { html: string }) {
     container.normalize();
     matchesRef.current = [];
     currentRef.current = -1;
+    setMatchCount(0);
   }
 
   function showMatch(index: number) {
@@ -180,6 +182,7 @@ export function DocumentSearch({ html }: { html: string }) {
         "mark.document-search-match"
       )
     );
+    setMatchCount(matchesRef.current.length);
 
     if (matchesRef.current.length) {
       showMatch(0);
@@ -231,7 +234,7 @@ export function DocumentSearch({ html }: { html: string }) {
               onClick={() =>
                 showMatch(currentRef.current - 1)
               }
-              disabled={!matchesRef.current.length}
+              disabled={!matchCount}
               aria-label="Resultado anterior"
             >
               {"<"}
@@ -243,7 +246,7 @@ export function DocumentSearch({ html }: { html: string }) {
               onClick={() =>
                 showMatch(currentRef.current + 1)
               }
-              disabled={!matchesRef.current.length}
+              disabled={!matchCount}
               aria-label="Resultado siguiente"
             >
               {">"}

@@ -83,7 +83,6 @@ export function StatusCombobox({
         value={texto}
         placeholder="Todos los estados"
         autoComplete="off"
-        aria-expanded={abierto}
         aria-controls="estado-affiliate-options"
         onFocus={() => setAbierto(true)}
         onChange={(event) => {
@@ -109,6 +108,7 @@ export function StatusCombobox({
           <button
             type="button"
             role="option"
+            aria-selected={!valor}
             onMouseDown={(event) =>
               event.preventDefault()
             }
@@ -121,6 +121,7 @@ export function StatusCombobox({
             <button
               type="button"
               role="option"
+              aria-selected={estado.nombre === valor}
               key={estado.nombre}
               onMouseDown={(event) =>
                 event.preventDefault()

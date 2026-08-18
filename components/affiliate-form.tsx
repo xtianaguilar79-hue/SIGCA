@@ -456,6 +456,8 @@ const [savedApplicationId, setSavedApplicationId] = useState(
     }
 
     void downloadSavedPdf();
+  // La descarga automática debe ejecutarse una sola vez con la solicitud cargada inicialmente.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoDownload]);
 
   function selectCompany(value: string) {
@@ -561,7 +563,7 @@ const [savedApplicationId, setSavedApplicationId] = useState(
         type: "error",
         text: "Para guardar la solicitud completá el nombre y el número de documento.",
       });
-      return;
+      return false;
     }
 
     setSaving(true);
@@ -608,6 +610,7 @@ const [savedApplicationId, setSavedApplicationId] = useState(
     };
 
     let saveError: string | null = null;
+    let resolvedApplicationId = savedApplicationId || applicationId || "";
 
 if (savedApplicationId) {
   const { error } = await supabase
@@ -627,21 +630,26 @@ if (savedApplicationId) {
   saveError = error?.message || null;
 
   if (data?.id) {
-    setSavedApplicationId(String(data.id));
+    resolvedApplicationId = String(data.id);
+    setSavedApplicationId(resolvedApplicationId);
   }
 }
 
 if (saveError) {
-  throw new Error(saveError);
+  setSaving(false);
+  setSaveMessage({ type: "error", text: `No se pudo guardar la solicitud: ${saveError}` });
+  return false;
 }
 
     setSaved(true);
+    setSaving(false);
     setSaveMessage({
       type: "success",
       text: applicationId
         ? "Los cambios fueron guardados correctamente."
         : "Solicitud guardada correctamente como pendiente de firma.",
     });
+    return resolvedApplicationId;
   }
 
   function getPdfFileName() {
@@ -663,6 +671,13 @@ if (saveError) {
 
   async function downloadForm() {
     try {
+      const savedId = await savePendingApplication();
+      if (!savedId) return;
+      const supabase = createClient();
+      const { error: downloadStateError } = await supabase.from("afiliaciones").update({
+        descargada_en: new Date().toISOString(),
+      }).eq("id", savedId);
+      if (downloadStateError) throw new Error("La solicitud se guardó, pero no pudo registrarse la descarga.");
       const bytes = await createOfficialPdf(employer, person);
       const safeBytes = new Uint8Array(bytes);
       const blob = new Blob([safeBytes.buffer as ArrayBuffer], {

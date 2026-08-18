@@ -121,7 +121,6 @@ export function CompanyCombobox({
         value={texto}
         placeholder={placeholder}
         autoComplete="off"
-        aria-expanded={abierto}
         aria-controls={`${name}-company-options`}
         onFocus={() => setAbierto(true)}
         onChange={(event) =>
@@ -139,6 +138,7 @@ export function CompanyCombobox({
             <button
               type="button"
               role="option"
+              aria-selected={String(empresa.id) === valor}
               key={empresa.id}
               onMouseDown={(event) =>
                 event.preventDefault()
