@@ -17,14 +17,15 @@ create table if not exists public.sistema_modulos (
   orden integer not null default 0,
   activo boolean not null default true
 );
+alter table public.sistema_modulos add column if not exists ruta text;
 
-insert into public.sistema_modulos (clave, nombre, descripcion, orden, activo) values
-  ('afiliados','Afiliados','Consulta y modificación del padrón y circuito de afiliaciones.',10,true),
-  ('beneficios','Beneficios','Consulta, entrega y administración de beneficios.',20,true),
-  ('empresas','Empresas','Consulta, altas, bajas y modificaciones de empresas.',30,true),
-  ('configuracion','Configuración','Administración de parámetros institucionales.',40,true),
-  ('reportes','Reportes','Consulta y generación de reportes.',50,true)
-on conflict (clave) do update set nombre=excluded.nombre, descripcion=excluded.descripcion, orden=excluded.orden, activo=excluded.activo;
+insert into public.sistema_modulos (clave, nombre, descripcion, ruta, orden, activo) values
+  ('afiliados','Afiliados','Consulta y modificación del padrón y circuito de afiliaciones.','/gestion/sistema/afiliados',10,true),
+  ('beneficios','Beneficios','Consulta, entrega y administración de beneficios.','/gestion/sistema/beneficios',20,true),
+  ('empresas','Empresas','Consulta, altas, bajas y modificaciones de empresas.','/gestion/sistema/empresas',30,true),
+  ('configuracion','Configuración','Administración de parámetros institucionales.','/gestion/sistema/configuracion',40,true),
+  ('reportes','Reportes','Consulta y generación de reportes.','/gestion/sistema/reportes',50,true)
+on conflict (clave) do update set nombre=excluded.nombre, descripcion=excluded.descripcion, ruta=excluded.ruta, orden=excluded.orden, activo=excluded.activo;
 
 create table if not exists public.usuarios_permisos_sistema (
   id uuid primary key default gen_random_uuid(),
@@ -111,7 +112,9 @@ create table if not exists public.reclamos_destinatarios (
 
 create table if not exists public.notificaciones (
   id uuid primary key default gen_random_uuid(),
-  usuario_id uuid not null references auth.users(id) on delete cascade,
+  destinatario_id uuid not null references auth.users(id) on delete cascade,
+  actor_id uuid references auth.users(id),
+  tipo text not null,
   titulo text not null,
   mensaje text,
   enlace text,
@@ -119,14 +122,16 @@ create table if not exists public.notificaciones (
   clave_unica text,
   creado_en timestamptz not null default now()
 );
-alter table public.notificaciones add column if not exists usuario_id uuid;
+alter table public.notificaciones add column if not exists destinatario_id uuid;
+alter table public.notificaciones add column if not exists actor_id uuid;
+alter table public.notificaciones add column if not exists tipo text;
 alter table public.notificaciones add column if not exists titulo text;
 alter table public.notificaciones add column if not exists mensaje text;
 alter table public.notificaciones add column if not exists enlace text;
 alter table public.notificaciones add column if not exists leida boolean not null default false;
 alter table public.notificaciones add column if not exists clave_unica text;
 alter table public.notificaciones add column if not exists creado_en timestamptz not null default now();
-create unique index if not exists notificaciones_usuario_clave_uidx on public.notificaciones(usuario_id, clave_unica) where clave_unica is not null;
+create unique index if not exists notificaciones_destinatario_clave_uidx on public.notificaciones(destinatario_id, clave_unica) where clave_unica is not null;
 
 create or replace function public.sigca_puede_ver_reclamo(r public.reclamos_sindicales)
 returns boolean language sql stable security definer set search_path=public as $$
@@ -158,14 +163,14 @@ create policy "destinatarios asignar" on public.reclamos_destinatarios for all t
 alter table public.notificaciones enable row level security;
 drop policy if exists "notificaciones propias" on public.notificaciones;
 drop policy if exists "notificaciones marcar propias" on public.notificaciones;
-create policy "notificaciones propias" on public.notificaciones for select to authenticated using (usuario_id=auth.uid());
-create policy "notificaciones marcar propias" on public.notificaciones for update to authenticated using (usuario_id=auth.uid()) with check (usuario_id=auth.uid());
+create policy "notificaciones propias" on public.notificaciones for select to authenticated using (destinatario_id=auth.uid());
+create policy "notificaciones marcar propias" on public.notificaciones for update to authenticated using (destinatario_id=auth.uid()) with check (destinatario_id=auth.uid());
 
 create or replace function public.sigca_notificar_reclamo_nuevo()
 returns trigger language plpgsql security definer set search_path=public as $$
 begin
-  insert into public.notificaciones(usuario_id,titulo,mensaje,enlace,clave_unica)
-  values(new.creado_por,'Seguimiento de reclamo',new.titulo,'/gestion/sindical/reclamos/'||new.id,'reclamo:'||new.id||':creado')
+  insert into public.notificaciones(destinatario_id,actor_id,tipo,titulo,mensaje,enlace,clave_unica)
+  values(new.creado_por,new.creado_por,'seguimiento_reclamo','Seguimiento de reclamo',new.titulo,'/gestion/sindical/reclamos/'||new.id,'reclamo:'||new.id||':creado')
   on conflict do nothing;
   return new;
 end; $$;
@@ -177,8 +182,8 @@ returns trigger language plpgsql security definer set search_path=public as $$
 declare v_titulo text;
 begin
   select titulo into v_titulo from public.reclamos_sindicales where id=new.reclamo_id;
-  insert into public.notificaciones(usuario_id,titulo,mensaje,enlace,clave_unica)
-  values(new.usuario_id,'Reclamo compartido',v_titulo,'/gestion/sindical/reclamos/'||new.reclamo_id,'reclamo:'||new.reclamo_id||':compartido')
+  insert into public.notificaciones(destinatario_id,actor_id,tipo,titulo,mensaje,enlace,clave_unica)
+  values(new.usuario_id,auth.uid(),'reclamo_compartido','Reclamo compartido',v_titulo,'/gestion/sindical/reclamos/'||new.reclamo_id,'reclamo:'||new.reclamo_id||':compartido')
   on conflict do nothing;
   return new;
 end; $$;
@@ -193,23 +198,50 @@ alter table public.afiliaciones add column if not exists archivo_firmado_en time
 alter table public.afiliaciones add column if not exists presentada_fisicamente_en timestamptz;
 alter table public.afiliaciones add column if not exists presentada_fisicamente_por uuid;
 
+drop policy if exists "afiliaciones consultar por permiso" on public.afiliaciones;
+drop policy if exists "afiliaciones completar propias" on public.afiliaciones;
+drop policy if exists "afiliaciones gestionar por permiso" on public.afiliaciones;
+create policy "afiliaciones consultar por permiso" on public.afiliaciones for select to authenticated using (
+  public.sigca_es_administrador() or creado_por=auth.uid() or exists(
+    select 1 from public.usuarios_permisos_sistema p where p.usuario_id=auth.uid() and p.modulo_clave='afiliados'
+      and p.habilitado=true and p.puede_consultar=true and p.alcance<>'ninguno'
+  )
+);
+create policy "afiliaciones completar propias" on public.afiliaciones for update to authenticated
+  using (creado_por=auth.uid() and estado='pendiente_firma')
+  with check (creado_por=auth.uid() and estado in ('pendiente_firma','firmada'));
+create policy "afiliaciones gestionar por permiso" on public.afiliaciones for update to authenticated using (
+  public.sigca_es_administrador() or exists(
+    select 1 from public.usuarios_permisos_sistema p where p.usuario_id=auth.uid() and p.modulo_clave='afiliados'
+      and p.habilitado=true and p.puede_aprobar=true and p.alcance<>'ninguno'
+  )
+) with check (
+  public.sigca_es_administrador() or exists(
+    select 1 from public.usuarios_permisos_sistema p where p.usuario_id=auth.uid() and p.modulo_clave='afiliados'
+      and p.habilitado=true and p.puede_aprobar=true and p.alcance<>'ninguno'
+  )
+);
+
 create or replace function public.sigca_notificar_afiliacion()
 returns trigger language plpgsql security definer set search_path=public as $$
 begin
+  if tg_op='UPDATE' and new.estado='aprobada' and old.estado is distinct from 'presentada' then
+    raise exception 'La ficha debe marcarse como presentada físicamente antes de aprobarla';
+  end if;
   if tg_op='INSERT' then
-    insert into public.notificaciones(usuario_id,titulo,mensaje,enlace,clave_unica)
-    values(new.creado_por,'Ficha de afiliación pendiente','Descargá, hacé firmar y subí la ficha de '||coalesce(new.apellido_nombres,'la nueva afiliación'),'/gestion/sindical/afiliaciones/solicitudes','afiliacion:'||new.id||':pendiente-firma') on conflict do nothing;
+    insert into public.notificaciones(destinatario_id,actor_id,tipo,titulo,mensaje,enlace,clave_unica)
+    values(new.creado_por,new.creado_por,'afiliacion_pendiente','Ficha de afiliación pendiente','Descargá, hacé firmar y subí la ficha de '||coalesce(new.apellido_nombres,'la nueva afiliación'),'/gestion/sindical/afiliaciones/solicitudes','afiliacion:'||new.id||':pendiente-firma') on conflict do nothing;
   elsif new.estado='firmada' and old.estado is distinct from new.estado then
-    insert into public.notificaciones(usuario_id,titulo,mensaje,enlace,clave_unica)
-    select u.id,'Nueva ficha firmada para cargar',coalesce(new.apellido_nombres,'Nueva afiliación')||' ya tiene ficha firmada.','/gestion/sindical/afiliaciones/solicitudes','afiliacion:'||new.id||':firmada'
+    insert into public.notificaciones(destinatario_id,actor_id,tipo,titulo,mensaje,enlace,clave_unica)
+    select u.id,new.creado_por,'ficha_firmada','Nueva ficha firmada para cargar',coalesce(new.apellido_nombres,'Nueva afiliación')||' ya tiene ficha firmada.','/gestion/sindical/afiliaciones/solicitudes','afiliacion:'||new.id||':firmada'
     from public.usuarios u left join public.usuarios_permisos_sistema p on p.usuario_id=u.id and p.modulo_clave='afiliados'
     where u.activo=true and lower(u.estado)='aprobado' and (lower(u.rol)='administrador' or (p.habilitado=true and p.puede_aprobar=true)) on conflict do nothing;
-    insert into public.notificaciones(usuario_id,titulo,mensaje,enlace,clave_unica)
-    values(new.creado_por,'Presentación física pendiente','Presentá físicamente la ficha firmada ante el secretario administrativo.','/gestion/sindical/afiliaciones/solicitudes','afiliacion:'||new.id||':presentar') on conflict do nothing;
+    insert into public.notificaciones(destinatario_id,actor_id,tipo,titulo,mensaje,enlace,clave_unica)
+    values(new.creado_por,new.creado_por,'presentacion_fisica','Presentación física pendiente','Presentá físicamente la ficha firmada ante el secretario administrativo.','/gestion/sindical/afiliaciones/solicitudes','afiliacion:'||new.id||':presentar') on conflict do nothing;
   elsif new.estado='presentada' and old.estado is distinct from new.estado then
     new.presentada_fisicamente_en := coalesce(new.presentada_fisicamente_en,now());
     new.presentada_fisicamente_por := coalesce(new.presentada_fisicamente_por,auth.uid());
-    update public.notificaciones set leida=true where usuario_id=new.creado_por and clave_unica='afiliacion:'||new.id||':presentar';
+    update public.notificaciones set leida=true where destinatario_id=new.creado_por and clave_unica='afiliacion:'||new.id||':presentar';
   elsif new.estado in ('aprobada','rechazada','archivada') and old.estado is distinct from new.estado then
     update public.notificaciones set leida=true where clave_unica like 'afiliacion:'||new.id||':%';
   end if;
@@ -222,20 +254,20 @@ create or replace function public.sigca_generar_recordatorios()
 returns integer language plpgsql security definer set search_path=public as $$
 declare generated integer := 0; affected integer;
 begin
-  insert into public.notificaciones(usuario_id,titulo,mensaje,enlace,clave_unica)
-  select coalesce(r.responsable_id,r.creado_por),'Reclamo pendiente de realizar','Debés realizar: '||r.titulo,'/gestion/sindical/reclamos/'||r.id,'reclamo:'||r.id||':realizar:'||current_date
+  insert into public.notificaciones(destinatario_id,actor_id,tipo,titulo,mensaje,enlace,clave_unica)
+  select coalesce(r.responsable_id,r.creado_por),r.creado_por,'recordatorio_reclamo','Reclamo pendiente de realizar','Debés realizar: '||r.titulo,'/gestion/sindical/reclamos/'||r.id,'reclamo:'||r.id||':realizar:'||current_date
   from public.reclamos_sindicales r where r.reclamo_realizado=false and r.fecha_recordatorio<=current_date and r.estado not in ('resuelto','cerrado','archivado')
   on conflict do nothing;
   get diagnostics affected=row_count; generated:=generated+affected;
 
-  insert into public.notificaciones(usuario_id,titulo,mensaje,enlace,clave_unica)
-  select coalesce(r.responsable_id,r.creado_por),'Respuesta de reclamo próxima','Mañana debés tener respuesta de: '||r.titulo,'/gestion/sindical/reclamos/'||r.id,'reclamo:'||r.id||':respuesta-manana:'||r.fecha_limite
+  insert into public.notificaciones(destinatario_id,actor_id,tipo,titulo,mensaje,enlace,clave_unica)
+  select coalesce(r.responsable_id,r.creado_por),r.creado_por,'recordatorio_respuesta','Respuesta de reclamo próxima','Mañana debés tener respuesta de: '||r.titulo,'/gestion/sindical/reclamos/'||r.id,'reclamo:'||r.id||':respuesta-manana:'||r.fecha_limite
   from public.reclamos_sindicales r where r.reclamo_realizado=true and r.fecha_limite=current_date+1 and r.estado not in ('resuelto','cerrado','archivado')
   on conflict do nothing;
   get diagnostics affected=row_count; generated:=generated+affected;
 
-  insert into public.notificaciones(usuario_id,titulo,mensaje,enlace,clave_unica)
-  select a.creado_por,'Ficha firmada pendiente','Subí la ficha firmada de '||coalesce(a.apellido_nombres,'la afiliación'),'/gestion/sindical/afiliaciones/solicitudes','afiliacion:'||a.id||':recordatorio:'||current_date
+  insert into public.notificaciones(destinatario_id,actor_id,tipo,titulo,mensaje,enlace,clave_unica)
+  select a.creado_por,a.creado_por,'recordatorio_afiliacion','Ficha firmada pendiente','Subí la ficha firmada de '||coalesce(a.apellido_nombres,'la afiliación'),'/gestion/sindical/afiliaciones/solicitudes','afiliacion:'||a.id||':recordatorio:'||current_date
   from public.afiliaciones a where a.estado='pendiente_firma' and a.descargada_en is not null
   on conflict do nothing;
   get diagnostics affected=row_count; generated:=generated+affected;
