@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { SignOutButton } from "@/components/sign-out-button";
 import { SignedAffiliationUpload } from "@/components/signed-affiliation-upload";
 import { ApproveAffiliationForm } from "@/components/approve-affiliation-form";
+import { puedeAccederModulo } from "@/lib/permisos";
 
 const STATUS_LABELS: Record<string, string> = {
   pendiente_firma: "Pendiente de firma",
@@ -30,6 +31,12 @@ async function updateApplicationStatus(formData: FormData) {
   }
 
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/acceso");
+  const { data: actor } = await supabase.from("usuarios").select("rol,estado,activo").eq("id", user.id).maybeSingle();
+  const esAdmin = String(actor?.rol || "").toLowerCase() === "administrador";
+  const autorizado = actor?.activo !== false && String(actor?.estado || "").toLowerCase() === "aprobado" && await puedeAccederModulo(supabase, user.id, esAdmin, "afiliados", ["puede_aprobar"]);
+  if (!autorizado) redirect("/gestion/sindical/afiliaciones/solicitudes?resultado=error");
   const { error } = await supabase.from("afiliaciones").update({ estado }).eq("id", id);
 
   if (error) redirect(`${route}?resultado=error`);
@@ -46,6 +53,12 @@ async function approveAndRegisterAffiliate(formData: FormData) {
   if (!id) redirect(`${route}?resultado=error_aprobacion`);
 
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/acceso");
+  const { data: actor } = await supabase.from("usuarios").select("rol,estado,activo").eq("id", user.id).maybeSingle();
+  const esAdmin = String(actor?.rol || "").toLowerCase() === "administrador";
+  const autorizado = actor?.activo !== false && String(actor?.estado || "").toLowerCase() === "aprobado" && await puedeAccederModulo(supabase, user.id, esAdmin, "afiliados", ["puede_aprobar"]);
+  if (!autorizado) redirect(`${route}?resultado=error_aprobacion`);
   const { data, error } = await supabase.rpc(
     "aprobar_solicitud_afiliacion",
     { p_solicitud_id: id },
@@ -121,6 +134,7 @@ export default async function SolicitudesPage({
 
   const name = [profile.nombre, profile.apellido].filter(Boolean).join(" ");
   const isAdmin = String(profile.rol).toLowerCase() === "administrador";
+  const canApprove = await puedeAccederModulo(supabase, user.id, isAdmin, "afiliados", ["puede_aprobar"]);
 
   return (
     <main className="management">
@@ -217,7 +231,7 @@ export default async function SolicitudesPage({
                   <div><dt>Correo</dt><dd>{text(application.correo)}</dd></div>
                   <div><dt>Estado</dt><dd>{STATUS_LABELS[application.estado] || application.estado}</dd></div>
                 </dl>
-                {isAdmin && (
+                {canApprove && (
                   <>
                     <form className="application-status-form" action={updateApplicationStatus}>
                       <input type="hidden" name="id" value={application.id} />
@@ -229,7 +243,7 @@ export default async function SolicitudesPage({
                         <button type="submit">Guardar estado</button>
                       </div>
                     </form>
-                    {(application.estado === "firmada" || application.estado === "presentada") && (
+                    {application.estado === "presentada" && (
                       <ApproveAffiliationForm
                         applicationId={application.id}
                         action={approveAndRegisterAffiliate}

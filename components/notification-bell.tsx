@@ -38,12 +38,13 @@ export function NotificationBell() {
   }
 
   useEffect(() => {
-    void loadNotifications();
+    const initialLoad = window.setTimeout(loadNotifications, 0);
     const timer = window.setInterval(loadNotifications, 60000);
     const refresh = () => void loadNotifications();
     window.addEventListener("focus", refresh);
     return () => {
       window.clearInterval(timer);
+      window.clearTimeout(initialLoad);
       window.removeEventListener("focus", refresh);
     };
   }, []);

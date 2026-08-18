@@ -37,14 +37,6 @@ const adminNavigation = {
   icon: "⚙",
 };
 
-function normalizeText(value: string) {
-  return value
-    .trim()
-    .toLocaleLowerCase("es")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
-
 function isCurrentRoute(
   currentPath: string,
   href: string
@@ -97,124 +89,15 @@ export function MobileSideMenu() {
             nav.querySelectorAll<HTMLAnchorElement>("a")
           );
 
-          const sessionRole =
-            side
-              .querySelector(".session span")
-              ?.textContent?.trim() || "";
-
-          const hasAdminLink = currentLinks.some(
-            (link) =>
-              normalizeText(link.textContent || "") ===
-              normalizeText(
-                "Administración de usuarios"
-              )
-          );
-
-          const isAdministrator =
-            normalizeText(sessionRole).includes(
-              "administrador"
-            );
-
-          const navigationItems = [
-            ...mainNavigation,
-            ...(hasAdminLink || isAdministrator
-              ? [adminNavigation]
-              : []),
-          ];
-
-          const expectedSignature = navigationItems
-            .map((item) => item.href)
-            .join("|");
-
-          const currentSignature = currentLinks
-            .filter(
-              (link) =>
-                normalizeText(link.textContent || "") !==
-                "afiliaciones"
-            )
-            .map((link) => {
-              const url = new URL(
-                link.href,
-                window.location.origin
-              );
-
-              return url.pathname;
-            })
-            .join("|");
-
-          if (currentSignature !== expectedSignature) {
-            const fragment =
-              document.createDocumentFragment();
-
-            navigationItems.forEach((item) => {
-              const link =
-                document.createElement("a");
-
-              link.href = item.href;
-              link.textContent = item.label;
-              link.dataset.navIcon = item.icon;
-
-              if (
-                isCurrentRoute(
-                  currentPath,
-                  item.href
-                )
-              ) {
-                link.classList.add("active");
-                link.setAttribute(
-                  "aria-current",
-                  "page"
-                );
-              }
-
-              fragment.appendChild(link);
-            });
-
-            nav.replaceChildren(fragment);
-          } else {
-            currentLinks.forEach((link) => {
-              const item = navigationItems.find(
-                (navigationItem) => {
-                  const url = new URL(
-                    link.href,
-                    window.location.origin
-                  );
-
-                  return (
-                    url.pathname ===
-                    navigationItem.href
-                  );
-                }
-              );
-
-              if (!item) return;
-
-              link.textContent = item.label;
-              link.href = item.href;
-              link.dataset.navIcon = item.icon;
-
-              const active = isCurrentRoute(
-                currentPath,
-                item.href
-              );
-
-              link.classList.toggle(
-                "active",
-                active
-              );
-
-              if (active) {
-                link.setAttribute(
-                  "aria-current",
-                  "page"
-                );
-              } else {
-                link.removeAttribute(
-                  "aria-current"
-                );
-              }
-            });
-          }
+          currentLinks.forEach((link) => {
+            const url = new URL(link.href, window.location.origin);
+            const knownItem = [...mainNavigation, adminNavigation].find((item) => item.href === url.pathname);
+            link.dataset.navIcon = knownItem?.icon || (url.pathname === "/gestion/sistema" ? "⚙" : "◆");
+            const active = isCurrentRoute(currentPath, url.pathname);
+            link.classList.toggle("active", active);
+            if (active) link.setAttribute("aria-current", "page");
+            else link.removeAttribute("aria-current");
+          });
         });
 
       preparing = false;

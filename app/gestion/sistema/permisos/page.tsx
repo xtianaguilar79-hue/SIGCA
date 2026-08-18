@@ -14,16 +14,8 @@ const ALCANCES_VALIDOS = [
   "sede",
 ] as const;
 
-const CAMPOS_PERMISO = [
-  "puede_consultar",
-  "puede_crear",
-  "puede_editar",
-  "puede_aprobar",
-  "puede_configurar",
-] as const;
-
 type Alcance = (typeof ALCANCES_VALIDOS)[number];
-type CampoPermiso = (typeof CAMPOS_PERMISO)[number];
+type CampoPermiso = "puede_consultar" | "puede_crear" | "puede_editar" | "puede_aprobar" | "puede_configurar";
 
 type Permiso = {
   modulo_clave: string;

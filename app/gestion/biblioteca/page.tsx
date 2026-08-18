@@ -38,14 +38,15 @@ export default async function BibliotecaPage() {
   const isAdmin =
     String(profile.rol).toLowerCase() === "administrador";
 
-  const resumenes = documentosBiblioteca.map(
-    ({
-      contenidoHtml: _contenidoHtml,
-      ambito: _ambito,
-      partes: _partes,
-      ...documento
-    }) => documento
-  );
+  const resumenes = documentosBiblioteca.map((documento) => ({
+    id: documento.id,
+    tipo: documento.tipo,
+    numero: documento.numero,
+    titulo: documento.titulo,
+    categoria: documento.categoria,
+    resumen: documento.resumen,
+    palabrasClave: documento.palabrasClave,
+  }));
 
   return (
     <main className="management">
