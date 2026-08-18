@@ -107,6 +107,11 @@ export function SpeechTextarea({ label, name, rows, placeholder, initialValue = 
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [localStatus, setLocalStatus] = useState("");
 
+  function appendTranscript(text: string) {
+    const cleanText = text.trim();
+    if (cleanText) setValue((current) => `${current}${current.trim() ? " " : ""}${cleanText}`);
+  }
+
   useEffect(() => {
     const key = `${window.location.pathname}:${name}`;
     setFieldKey(key);
@@ -210,7 +215,7 @@ export function SpeechTextarea({ label, name, rows, placeholder, initialValue = 
       for (let index = event.resultIndex; index < event.results.length; index += 1) {
         if (event.results[index].isFinal) transcript += event.results[index][0].transcript;
       }
-      if (transcript.trim()) setValue((current) => `${current}${current.trim() ? " " : ""}${transcript.trim()}`);
+      appendTranscript(transcript);
     };
     service.onerror = () => { setError("No se pudo reconocer la voz. Revisá la conexión y el permiso del micrófono."); setRecording(false); };
     service.onend = () => setRecording(false);
@@ -225,7 +230,7 @@ export function SpeechTextarea({ label, name, rows, placeholder, initialValue = 
     setTranscribingId(audio.id); setError(""); setNotice(""); setLocalStatus("Preparando el transcriptor local…");
     try {
       const text = await transcribeLocally(audio.blob, setLocalStatus);
-      setValue((current) => `${current}${current.trim() ? " " : ""}${text}`);
+      appendTranscript(text);
       await deleteAudio(audio.id);
       await refreshPending();
       setNotice("Audio transcripto localmente. La copia pendiente se eliminó del dispositivo.");
