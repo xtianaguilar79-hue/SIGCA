@@ -70,6 +70,7 @@ export default async function ManagementPage() {
           <Link
             className="active"
             href="/gestion"
+            prefetch={false}
           >
             Inicio institucional
           </Link>
