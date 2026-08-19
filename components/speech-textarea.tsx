@@ -2,7 +2,7 @@
 
 import { ChangeEvent, ClipboardEvent, useEffect, useId, useMemo, useRef, useState } from "react";
 import { deleteAudio, listAudios, saveAudio, StoredAudio } from "@/lib/offline-audio-store";
-import { transcribeLocally } from "@/lib/local-audio-transcription";
+import { supportsSavedAudioRecognition, transcribeSavedAudio } from "@/lib/browser-audio-transcription";
 
 type RecognitionResult = { isFinal: boolean; 0: { transcript: string } };
 type RecognitionEvent = { resultIndex: number; results: ArrayLike<RecognitionResult> };
@@ -16,6 +16,7 @@ type RecognitionConstructor = new () => Recognition;
 
 const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
 const MAX_RECORDING_SECONDS = 30 * 60;
+const PROCESSING_AUDIO_IDS = new Set<string>();
 const AUDIO_EXTENSIONS = new Set(["flac", "m4a", "mp3", "mp4", "mpeg", "mpga", "oga", "ogg", "opus", "wav", "webm"]);
 const MIME_BY_EXTENSION: Record<string, string> = {
   flac: "audio/flac", m4a: "audio/mp4", mp3: "audio/mpeg", mp4: "audio/mp4",
@@ -105,7 +106,8 @@ export function SpeechTextarea({ label, name, rows, placeholder, initialValue = 
   const [fieldKey, setFieldKey] = useState("");
   const [capturing, setCapturing] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
-  const [localStatus, setLocalStatus] = useState("");
+  const [transcriptionStatus, setTranscriptionStatus] = useState("");
+  const wasOffline = useRef(false);
 
   function appendTranscript(text: string) {
     const cleanText = text.trim();
@@ -117,8 +119,25 @@ export function SpeechTextarea({ label, name, rows, placeholder, initialValue = 
     setFieldKey(key);
     setOnline(navigator.onLine);
     void navigator.storage?.persist?.();
-    void listAudios(key).then(setPending).catch(() => setError("No se pudo abrir el depósito local de audios."));
-    const updateConnection = () => setOnline(navigator.onLine);
+    void listAudios(key).then((audios) => {
+      setPending(audios);
+      const oldestAudio = audios.at(-1);
+      if (navigator.onLine && oldestAudio) void transcribeStoredAudio(oldestAudio, key, true);
+    }).catch(() => setError("No se pudo abrir el depósito local de audios."));
+    const updateConnection = () => {
+      const connected = navigator.onLine;
+      setOnline(connected);
+      if (!connected) wasOffline.current = true;
+      if (connected && wasOffline.current) {
+        wasOffline.current = false;
+        void listAudios(key).then((audios) => {
+          setPending(audios);
+          if (audios.length) setNotice("Volvió la conexión. SIGCA comenzará a transcribir el primer audio pendiente.");
+          const oldestAudio = audios.at(-1);
+          if (oldestAudio) void transcribeStoredAudio(oldestAudio, key, true);
+        });
+      }
+    };
     window.addEventListener("online", updateConnection);
     window.addEventListener("offline", updateConnection);
     return () => {
@@ -226,19 +245,35 @@ export function SpeechTextarea({ label, name, rows, placeholder, initialValue = 
     if (key) setPending(await listAudios(key));
   }
 
-  async function transcribeStored(audio: StoredAudio) {
-    setTranscribingId(audio.id); setError(""); setNotice(""); setLocalStatus("Preparando el transcriptor local…");
+  async function transcribeStoredAudio(audio: StoredAudio, key = fieldKey, automatic = false) {
+    if (PROCESSING_AUDIO_IDS.has(audio.id)) return;
+    PROCESSING_AUDIO_IDS.add(audio.id);
+    setTranscribingId(audio.id); setError(""); setNotice(""); setTranscriptionStatus("Preparando la transcripción…");
+    let nextAudio: StoredAudio | undefined;
     try {
-      const text = await transcribeLocally(audio.blob, setLocalStatus);
+      const text = await transcribeSavedAudio(audio.blob, setTranscriptionStatus);
       appendTranscript(text);
       await deleteAudio(audio.id);
-      await refreshPending();
-      setNotice("Audio transcripto localmente. La copia pendiente se eliminó del dispositivo.");
+      const remaining = await listAudios(key);
+      setPending(remaining);
+      nextAudio = automatic ? remaining.at(-1) : undefined;
+      setNotice(nextAudio
+        ? `Audio transcripto. SIGCA continuará con ${remaining.length} pendiente${remaining.length === 1 ? "" : "s"}.`
+        : "Audio transcripto con el reconocimiento del micrófono. La copia pendiente se eliminó del dispositivo.");
     } catch (cause) {
       const message = cause instanceof Error ? cause.message : "No se pudo transcribir el audio.";
-      const connectionHint = navigator.onLine ? "" : " La primera descarga del modelo necesita conexión.";
-      setError(`${message}${connectionHint} El audio sigue guardado y no se perdió.`);
-    } finally { setTranscribingId(""); setLocalStatus(""); }
+      const automaticHint = automatic ? " Podés volver a intentarlo con el botón Transcribir." : "";
+      setError(`${message}${automaticHint} El audio sigue guardado y no se perdió.`);
+    } finally {
+      PROCESSING_AUDIO_IDS.delete(audio.id);
+      setTranscribingId("");
+      setTranscriptionStatus("");
+    }
+    if (nextAudio) await transcribeStoredAudio(nextAudio, key, true);
+  }
+
+  async function transcribeStored(audio: StoredAudio) {
+    await transcribeStoredAudio(audio);
   }
 
   async function keepAudio(file: File) {
@@ -247,9 +282,13 @@ export function SpeechTextarea({ label, name, rows, placeholder, initialValue = 
     if (!fieldKey) { setError("Esperá un instante y volvé a seleccionar el audio."); return; }
     setError(""); setNotice("Guardando el audio en este dispositivo…");
     try {
+      const estimate = await navigator.storage?.estimate?.();
+      const nearingLimit = Boolean(estimate?.quota && ((estimate.usage || 0) + file.size) / estimate.quota >= 0.8);
       await saveAudio(fieldKey, normalizeAudio(file));
       await refreshPending(fieldKey);
-      setNotice(navigator.onLine ? "Audio guardado. Quedó listo para escucharlo o transcribirlo más tarde." : "Sin conexión: audio guardado en este dispositivo para usarlo más tarde.");
+      setNotice(nearingLimit
+        ? "Audio guardado. El almacenamiento del navegador superó el 80%; descargá copias de los audios importantes."
+        : navigator.onLine ? "Audio guardado. Quedó listo para escucharlo o transcribirlo más tarde." : "Sin conexión: audio guardado en este dispositivo para usarlo más tarde.");
     } catch {
       setError("El dispositivo no permitió guardar el audio. Revisá el espacio disponible del navegador.");
       setNotice("");
@@ -289,11 +328,13 @@ export function SpeechTextarea({ label, name, rows, placeholder, initialValue = 
     <small className={`connection ${online ? "online" : "offline"}`}>{online ? "Con conexión" : "Sin conexión · los audios quedarán guardados"}</small>
     {recording && <small className="recording-message">● Escuchando y transcribiendo…</small>}
     {notice && <small className="speech-notice" role="status">{notice}</small>}
-    {localStatus && <small className="local-status" role="status">{localStatus}</small>}
+    {transcriptionStatus && <small className="local-status" role="status">{transcriptionStatus}</small>}
     {error && <small className="speech-error" role="alert">{error}</small>}
     {pending.length > 0 && <section className="pending-audios" aria-label={`Audios pendientes de ${label}`}>
       <header><strong>Audios pendientes</strong><span>{pending.length}</span></header>
-      <p>Están guardados solamente en este dispositivo. La primera transcripción descarga un modelo local; las siguientes pueden funcionar sin conexión.</p>
+      <p>{supportsSavedAudioRecognition()
+        ? "Están guardados solamente en este dispositivo. Al volver la conexión, SIGCA usa el mismo reconocimiento de voz del micrófono."
+        : "Están guardados solamente en este dispositivo. Para transcribirlos usá Chrome o Edge actualizado en una computadora."}</p>
       <ul>{pending.map((audio) => <PendingAudioItem key={audio.id} audio={audio} busy={transcribingId === audio.id} onTranscribe={() => void transcribeStored(audio)}/>)}</ul>
     </section>}
     <style jsx>{`
@@ -302,4 +343,3 @@ export function SpeechTextarea({ label, name, rows, placeholder, initialValue = 
     `}</style>
   </div>;
 }
-
