@@ -119,11 +119,13 @@ export function SpeechTextarea({ label, name, rows, placeholder, initialValue = 
     setFieldKey(key);
     setOnline(navigator.onLine);
     void navigator.storage?.persist?.();
-    void listAudios(key).then((audios) => {
-      setPending(audios);
-      const oldestAudio = audios.at(-1);
-      if (navigator.onLine && oldestAudio) void transcribeStoredAudio(oldestAudio, key, true);
-    }).catch(() => setError("No se pudo abrir el depósito local de audios."));
+    void listAudios(key)
+  .then(setPending)
+  .catch(() =>
+    setError(
+      "No se pudo abrir el depósito local de audios."
+    )
+  );
     const updateConnection = () => {
       const connected = navigator.onLine;
       setOnline(connected);
