@@ -138,32 +138,39 @@ export default async function SistemaPage() {
         </Link>
 
         <nav>
-          <Link href="/gestion">
+          <Link href="/gestion"
+            prefetch={false}>
             Inicio institucional
           </Link>
 
-          <Link href="/gestion/sindical">
+          <Link href="/gestion/sindical"
+            prefetch={false}>
             Gestión sindical
           </Link>
 
-          <Link href="/gestion/formacion">
+          <Link href="/gestion/formacion"
+            prefetch={false}>
             Formación Sindical
           </Link>
 
-          <Link href="/gestion/biblioteca">
+          <Link href="/gestion/biblioteca"
+            prefetch={false}>
             Biblioteca
           </Link>
 
-          <Link className="active" href="/gestion/sistema">
+          <Link className="active" href="/gestion/sistema"
+            prefetch={false}>
             Sistema
           </Link>
 
-          <Link href="/gestion/perfil">
+          <Link href="/gestion/perfil"
+            prefetch={false}>
             Mi perfil
           </Link>
 
           {isAdmin && (
-            <Link href="/gestion/usuarios">
+            <Link href="/gestion/usuarios"
+              prefetch={false}>
               Administración de usuarios
             </Link>
           )}
