@@ -78,11 +78,13 @@ export default async function ManagementPage() {
           <a href="#">Afiliaciones</a>
           <a href="#">Gestión sindical</a>
 
-          <Link href="/gestion/formacion">
+          <Link href="/gestion/formacion"
+            prefetch={false}>
             Formación Sindical
           </Link>
 
-          <Link href="/gestion/biblioteca">
+          <Link href="/gestion/biblioteca"
+            prefetch={false}>
             Biblioteca
           </Link>
 
