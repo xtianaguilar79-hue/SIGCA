@@ -33,8 +33,7 @@ function chromiumDesktopVersion() {
 }
 
 export function supportsSavedAudioRecognition() {
-  // En PC Chrome/Edge 135+ usa método nativo. En móvil/cualquier otro, usa el servidor.
-  // Siempre devolvemos true porque hay fallback disponible.
+  // Siempre true porque hay fallback al servidor disponible
   return true;
 }
 
@@ -55,7 +54,7 @@ async function transcribeViaServer(blob: Blob, onStatus: (message: string) => vo
 
   let response: Response;
   try {
-    response = await fetch("/api/transcribe", {
+    response = await fetch("/api/transcribir-audio", {
       method: "POST",
       body: formData,
     });
@@ -73,6 +72,10 @@ async function transcribeViaServer(blob: Blob, onStatus: (message: string) => vo
 
   if (response.status === 429) {
     throw new Error("Se alcanzó el límite gratuito. Esperá un minuto e intentá nuevamente.");
+  }
+
+  if (response.status === 401) {
+    throw new Error("Tu sesión expiró. Recargá la página e iniciá sesión nuevamente.");
   }
 
   if (!response.ok) {
