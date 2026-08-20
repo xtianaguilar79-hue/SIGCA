@@ -33,7 +33,9 @@ function chromiumDesktopVersion() {
 }
 
 export function supportsSavedAudioRecognition() {
-  return Boolean(recognitionClass()) && chromiumDesktopVersion() >= 135;
+  // En PC Chrome/Edge 135+ usa método nativo. En móvil/cualquier otro, usa el servidor.
+  // Siempre devolvemos true porque hay fallback disponible.
+  return true;
 }
 
 function recognitionErrorMessage(code?: string) {
@@ -44,12 +46,53 @@ function recognitionErrorMessage(code?: string) {
   return "El navegador no pudo transcribir este audio.";
 }
 
-async function runTranscription(blob: Blob, onStatus: (message: string) => void) {
-  const RecognitionClass = recognitionClass();
-  if (!RecognitionClass || !supportsSavedAudioRecognition()) {
-    throw new Error("Para transcribir audios guardados con el mismo sistema del micrófono, usá Chrome o Edge 135 o posterior en una computadora.");
+async function transcribeViaServer(blob: Blob, onStatus: (message: string) => void): Promise<string> {
+  onStatus("Enviando audio al servicio de transcripción…");
+
+  const file = new File([blob], "audio.webm", { type: blob.type || "audio/webm" });
+  const formData = new FormData();
+  formData.append("audio", file);
+
+  let response: Response;
+  try {
+    response = await fetch("/api/transcribe", {
+      method: "POST",
+      body: formData,
+    });
+  } catch (cause) {
+    const message = cause instanceof Error ? cause.message : "Error de red";
+    throw new Error(`No se pudo conectar con el servidor: ${message}`);
   }
-  if (!navigator.onLine) throw new Error("La transcripción está pendiente hasta que vuelva la conexión.");
+
+  const data = await response.json().catch(() => null);
+
+  if (response.status === 503) {
+    const retryAfter = data?.retryAfter || 20;
+    throw new Error(`El modelo está cargando. Esperá ${retryAfter} segundos e intentá nuevamente.`);
+  }
+
+  if (response.status === 429) {
+    throw new Error("Se alcanzó el límite gratuito. Esperá un minuto e intentá nuevamente.");
+  }
+
+  if (!response.ok) {
+    const message = data?.error || "El servicio de transcripción respondió con un error.";
+    throw new Error(message);
+  }
+
+  if (!data || typeof data.text !== "string" || !data.text.trim()) {
+    throw new Error("La transcripción no devolvió texto válido.");
+  }
+
+  onStatus("Transcripción completada.");
+  return data.text.trim();
+}
+
+async function transcribeViaBrowser(blob: Blob, onStatus: (message: string) => void): Promise<string> {
+  const RecognitionClass = recognitionClass();
+  if (!RecognitionClass) {
+    throw new Error("Este navegador no soporta reconocimiento de voz.");
+  }
 
   const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
   if (!AudioContextClass) throw new Error("Este navegador no puede preparar el audio guardado.");
@@ -111,6 +154,22 @@ async function runTranscription(blob: Blob, onStatus: (message: string) => void)
     await context.close().catch(() => undefined);
     URL.revokeObjectURL(sourceUrl);
   }
+}
+
+async function runTranscription(blob: Blob, onStatus: (message: string) => void): Promise<string> {
+  const canUseBrowser = chromiumDesktopVersion() >= 135 && Boolean(recognitionClass());
+
+  if (canUseBrowser) {
+    try {
+      return await transcribeViaBrowser(blob, onStatus);
+    } catch (browserError) {
+      console.warn("[transcribe] Método nativo falló, usando fallback del servidor:", browserError);
+      onStatus("El método nativo falló. Intentando con el servidor…");
+      return transcribeViaServer(blob, onStatus);
+    }
+  }
+
+  return transcribeViaServer(blob, onStatus);
 }
 
 export function transcribeSavedAudio(blob: Blob, onStatus: (message: string) => void) {
