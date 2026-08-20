@@ -1,5 +1,3 @@
-"use client";
-
 const DATABASE_NAME = "sigca-audios-locales";
 const STORE_NAME = "audios";
 const DATABASE_VERSION = 1;
@@ -41,9 +39,13 @@ export async function saveAudio(fieldKey: string, file: File) {
   const database = await openDatabase();
   const transaction = database.transaction(STORE_NAME, "readwrite");
   const audio: StoredAudio = {
-    id: crypto.randomUUID(), fieldKey,
+    id: crypto.randomUUID(),
+    fieldKey,
     name: file.name || `audio-${new Date().toISOString().replaceAll(":", "-")}.webm`,
-    type: file.type, size: file.size, createdAt: Date.now(), blob: file,
+    type: file.type,
+    size: file.size,
+    createdAt: Date.now(),
+    blob: file,
   };
   transaction.objectStore(STORE_NAME).put(audio);
   await finishTransaction(transaction);
@@ -70,4 +72,3 @@ export async function deleteAudio(id: string) {
   await finishTransaction(transaction);
   database.close();
 }
-
