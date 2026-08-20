@@ -3,45 +3,12 @@ import { createClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 
-// Modelo pequeño, garantizado en capa gratuita
-const HUGGING_FACE_MODEL = "openai/whisper-small";
-const HUGGING_FACE_API_URL = "https://api-inference.huggingface.co/models";
 const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
 const AUDIO_EXTENSIONS = new Set(["flac", "m4a", "mp3", "mp4", "mpeg", "mpga", "oga", "ogg", "opus", "wav", "webm"]);
 
 function isSupportedAudio(file: File) {
   const extension = file.name.split(".").pop()?.toLowerCase() || "";
   return file.type.startsWith("audio/") || AUDIO_EXTENSIONS.has(extension);
-}
-
-async function callHuggingFace(token: string, formData: FormData, attempt: number = 1): Promise<Response> {
-  const url = `${HUGGING_FACE_API_URL}/${HUGGING_FACE_MODEL}`;
-  
-  console.log(`[transcribir-audio] Intento ${attempt} - URL:`, url);
-  
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
-    
-    console.log(`[transcribir-audio] Respuesta intento ${attempt}:`, response.status, response.statusText);
-    return response;
-  } catch (error) {
-    console.error(`[transcribir-audio] Error en intento ${attempt}:`, error);
-    
-    // Si es error de DNS y es el primer intento, reintentar una vez
-    if (attempt === 1 && String(error).includes("ENOTFOUND")) {
-      console.log("[transcribir-audio] Error de DNS, reintentando en 2 segundos...");
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      return callHuggingFace(token, formData, attempt + 1);
-    }
-    
-    throw error;
-  }
 }
 
 export async function POST(request: Request) {
@@ -55,18 +22,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Sesión no válida." }, { status: 401 });
   }
 
-  console.log("[transcribir-audio] Usuario autenticado:", user.email);
-
-  const token = process.env.HUGGING_FACE_TOKEN;
-  if (!token) {
-    console.error("[transcribir-audio] Error: Falta HUGGING_FACE_TOKEN en Vercel");
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) {
+    console.error("[transcribir-audio] Error: Falta GROQ_API_KEY en Vercel");
     return NextResponse.json(
       { error: "El servicio de transcripción no está configurado en el servidor." },
       { status: 500 }
     );
   }
-
-  console.log("[transcribir-audio] Token encontrado (primeros 10 chars):", token.substring(0, 10) + "...");
 
   const input = await request.formData();
   const file = input.get("audio");
@@ -88,76 +51,51 @@ export async function POST(request: Request) {
   });
 
   try {
-    const audioBuffer = await file.arrayBuffer();
-    const mimeType = file.type || "audio/webm";
-    const blob = new Blob([audioBuffer], { type: mimeType });
+    // Groq requiere que el archivo se envíe como FormData con el nombre "file"
+    const formData = new FormData();
+    formData.append("file", file, file.name || "audio.webm");
+    formData.append("model", "whisper-large-v3");
+    formData.append("language", "es"); // Forzar español para mejor precisión
 
-    const hfFormData = new FormData();
-    hfFormData.append("file", blob, file.name || "audio.webm");
+    console.log("[transcribir-audio] Enviando a Groq (Whisper v3)...");
 
-    console.log("[transcribir-audio] Enviando a Hugging Face...");
+    const response = await fetch("https://api.groq.com/openai/v1/audio/transcriptions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: formData,
+    });
 
-    const hfResponse = await callHuggingFace(token, hfFormData);
+    console.log("[transcribir-audio] Respuesta de Groq:", response.status, response.statusText);
 
-    // Modelo cargando (503)
-    if (hfResponse.status === 503) {
-      const retryData = await hfResponse.json().catch(() => null);
-      console.warn("[transcribir-audio] Modelo cargando:", retryData);
-      const estimatedTime = retryData?.estimated_time || 20;
-      return NextResponse.json(
-        {
-          error: `El modelo está cargando. Esperá ${Math.ceil(estimatedTime)} segundos e intentá nuevamente.`,
-          code: "MODEL_LOADING",
-          retryAfter: Math.ceil(estimatedTime),
-        },
-        { status: 503 }
-      );
-    }
-
-    // Rate limit (429)
-    if (hfResponse.status === 429) {
-      console.warn("[transcribir-audio] Rate limit alcanzado");
-      return NextResponse.json(
-        {
-          error: "Se alcanzó el límite gratuito. Esperá un minuto e intentá nuevamente.",
-          code: "RATE_LIMIT",
-        },
-        { status: 429 }
-      );
-    }
-
-    // Token inválido (401)
-    if (hfResponse.status === 401) {
-      const errorText = await hfResponse.text();
-      console.error("[transcribir-audio] Token inválido:", errorText);
-      return NextResponse.json(
-        { error: "El token de Hugging Face es inválido. Contactá al administrador." },
-        { status: 401 }
-      );
-    }
-
-    // Otros errores HTTP
-    if (!hfResponse.ok) {
-      const errorText = await hfResponse.text();
-      console.error("[transcribir-audio] Error de Hugging Face:", hfResponse.status, errorText);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("[transcribir-audio] Error de Groq:", response.status, errorText);
+      
+      if (response.status === 429) {
+        return NextResponse.json(
+          { error: "Se alcanzó el límite de requests gratuitos. Esperá un momento e intentá nuevamente." },
+          { status: 429 }
+        );
+      }
+      
       return NextResponse.json(
         { error: `Error del servicio de transcripción: ${errorText}` },
         { status: 502 }
       );
     }
 
-    const result = await hfResponse.json().catch(() => null);
-    console.log("[transcribir-audio] Resultado de Hugging Face:", result);
+    const result = await response.json();
+    console.log("[transcribir-audio] Transcripción exitosa. Texto:", result.text?.substring(0, 50) + "...");
 
-    if (!result || typeof result.text !== "string" || !result.text.trim()) {
-      console.error("[transcribir-audio] Respuesta vacía o inválida:", result);
+    if (!result.text || !result.text.trim()) {
       return NextResponse.json(
         { error: "No se detectó voz en el audio. Verificá que el micrófono haya captado sonido." },
         { status: 422 }
       );
     }
 
-    console.log("[transcribir-audio] Transcripción exitosa, longitud:", result.text.length);
     return NextResponse.json({ text: result.text.trim() });
   } catch (error) {
     console.error("[transcribir-audio] Error inesperado:", error);
