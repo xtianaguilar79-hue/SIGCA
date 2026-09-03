@@ -671,13 +671,17 @@ if (saveError) {
 
   async function downloadForm() {
     try {
-      const savedId = await savePendingApplication();
-      if (!savedId) return;
-      const supabase = createClient();
-      const { error: downloadStateError } = await supabase.from("afiliaciones").update({
-        descargada_en: new Date().toISOString(),
-      }).eq("id", savedId);
-      if (downloadStateError) throw new Error("La solicitud se guardó, pero no pudo registrarse la descarga.");
+      // Descargar/imprimir una ficha no debe obligar a crear una solicitud.
+      // Si ya existe una solicitud guardada, registramos la descarga; si no,
+      // generamos el PDF con los datos actuales (incluso completamente en blanco).
+      const existingId = savedApplicationId || applicationId || "";
+      if (existingId) {
+        const supabase = createClient();
+        const { error: downloadStateError } = await supabase.from("afiliaciones").update({
+          descargada_en: new Date().toISOString(),
+        }).eq("id", existingId);
+        if (downloadStateError) throw new Error("No pudo registrarse la descarga de la solicitud.");
+      }
       const bytes = await createOfficialPdf(employer, person);
       const safeBytes = new Uint8Array(bytes);
       const blob = new Blob([safeBytes.buffer as ArrayBuffer], {
@@ -707,6 +711,7 @@ if (saveError) {
       <form
         className="form-shell wide affiliation-editor"
         onSubmit={printForm}
+        noValidate
       >
         <section className="affiliation-options">
           <div className="field">
