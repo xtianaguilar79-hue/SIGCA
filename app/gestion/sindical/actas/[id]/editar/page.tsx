@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 
 function value(data: unknown) { return String(data || ""); }
 function localDateTime(data: string) {
-  return new Intl.DateTimeFormat("sv-SE", { timeZone: "America/Argentina/BuenOS_Aires", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date(data)).replace(" ", "T");
+  return new Intl.DateTimeFormat("sv-SE", { timeZone: "America/Argentina/Buenos_Aires", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date(data)).replace(" ", "T");
 }
 
 export default async function EditarActaPage({ params }: { params: Promise<{ id: string }> }) {
